@@ -1,0 +1,149 @@
+﻿@charset "utf-8";
+
+
+/*首頁*/
+
+.titlebg{
+	background-image: url(images/t_bg.png);
+	background-repeat: no-repeat;
+	background-position: left 8pt;
+	height: 28px;
+	text-align: left;
+	padding-bottom: 10px;}
+/*標題*/
+.titlew{	
+    font-size: 15px;
+	text-decoration:none;
+	color: #59564D;
+	padding-left: 20px;
+	padding-left: 20px;
+	padding-top: 10px;}
+.titlew1{	
+    font-size: 15px;
+	text-decoration:none;
+	color: #59564D;
+	text-align:center;
+	/*padding-left: 20px;*/
+	padding-right: 40px;
+	padding-top: 10px;
+    letter-spacing:-1px;
+    }
+/*內文*/
+.word2 {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	text-decoration: none;
+	color: #68645E;
+	text-align: left;
+	line-height:1.2em;
+}
+/*news*/
+.word3 {
+	font-size: 20px;
+	text-decoration:none;
+	color: #59564D;
+	padding-top: 5px;
+	padding-left: 20px;
+	line-height: 28px;
+}
+.word4 {
+	font-size: 13px;
+	text-decoration: none;
+	color: #68645E;
+	line-height: 19px;
+	text-align: justify;
+	padding-top: 10px;
+	padding-right: 20px;
+	padding-bottom: 20px;
+	padding-left: 0px;
+}
+/*頁碼*/
+.word5 a:link {
+	font-size: 13px;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+.word5 a:visited {
+	font-size: 13px;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+.word5 a:hover {
+	font-size: 13px;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+
+.word5 a:active {
+	font-size: 13px;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+.word6 {
+	font-size: 14px;
+	text-decoration: none;
+	color: #68645E;
+	font-weight: bold;
+	text-align: left;
+}
+
+.word7 {
+	font-size: 14px;
+	text-decoration: none;
+	color: #68645E;
+	vertical-align:middle;
+}
+
+.word8 {
+	font-size: 15px;
+	text-decoration: none;
+	color: #79894F;
+}
+
+.word9 {
+	font-size: 14px;
+	text-decoration: none;
+	color: #ffffff;
+		vertical-align:middle;
+}
+
+.word10 {
+	font-size: 15px;
+	text-decoration:none;
+	color: #59564D;
+	padding-left: 20px;
+	padding-top: 2px;
+}
+
+.word11 {
+	font-size: 14px;
+	text-decoration: none;
+	color: #68645E;
+	font-weight: bold;
+	text-align: right;
+}
+/*意見信箱*/
+.contact_broder {
+	border: #ecefe4 1px solid;
+	background-color: #ecefe4;
+}
+
+.btn {
+	font-size: 15px;
+	float: left;
+	color: #fff;
+	background-color: #8d9b6b;
+	padding: 5px 15px;
+	margin: 10px 5px;
+	font-weight: bold;
+	text-decoration: none;
+}
+.btn a:link {color: #fff;text-decoration: none;}
+.btn:hover {
+	color: #fff;
+	text-decoration: none;
+	background-color: #3d5529;
+}

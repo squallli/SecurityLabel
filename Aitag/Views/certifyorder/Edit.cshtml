@@ -1,0 +1,394 @@
+﻿@model Aitag.Models.certifyorder
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn3 = dbobj.get_conn("Aitag_DBContext");
+    string allpkg = "";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";            
+            // if ($("#cerno").val() == "")
+            // { errmsg = "請選擇縣市代碼\n"; }
+            if ($("#citemid").val() == "")
+            { errmsg += "請輸入認證項目\n"; }
+
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入農戶姓名\n"; }
+
+            if ($("#vendno").val() == "")
+            { errmsg += "請輸入委託廠商\n"; }
+
+            if ($("#certime").val() == "")
+            { errmsg += "請輸入期別\n"; }
+
+            if ($("#adddate").val() == "")
+            { errmsg += "請選擇申請日期\n"; }
+            else
+            { errmsg = errmsg + check_date(document.FormAdd.adddate, "申請日期") }
+
+            for (var g = 1 ; g < ($("input[name='heavyval']").length) + 1 ; g++)
+            {
+                if ($("#heavyval" + g + "").val() == "")
+                { errmsg += "請輸入(" + g + ")容重量\n"; }
+                else
+                {
+                    if (isNaN($("#heavyval" + g + "").val()) == true)
+                        errmsg = errmsg + "(" + g + ")容重量請輸入數字\n";
+                }
+
+                if ($("#produceval" + g + "").val() == "")
+                { errmsg += "請輸入(" + g + ")稻穀總產量\n"; }
+                else
+                {
+                    if (isNaN($("#produceval" + g + "").val()) == true)
+                        errmsg = errmsg + "(" + g + ")稻穀總產量請輸入數字\n";
+                }
+
+                if ($("#prodname" + g + "").val() == "")
+                { errmsg += "請輸入(" + g + ")碾製成品\n"; }
+               
+                if ($("#prodheavy" + g + "").val() == "")
+                { errmsg += "請輸入(" + g + ")公斤\n"; }
+                else
+                {
+                    if (isNaN($("#prodheavy" + g + "").val()) == true)
+                        errmsg = errmsg + "(" + g + ")公斤請輸入數字\n";
+                }
+
+                if ($("#bgid" + g + "").val() == "")
+                { errmsg += "請選擇(" + g + ")包裝(公斤)\n"; }
+                //if ($("select[name='bgid'] option ").val() == "")
+                //{ errmsg += "請選擇(" + g + ")包裝(公斤)\n"; }
+
+                if ($("#opcount" + g + "").val() == "")
+                { errmsg += "請輸入(" + g + ")張數\n"; }
+                else
+                {
+                    if (isNaN($("#opcount" + g + "").val()) == true)
+                        errmsg = errmsg + "(" + g + ")張數請輸入數字\n";
+                }                
+            }
+
+            if ($("input[name='ldno']").length == 0)
+            { errmsg += "目前無土地資料\n"; }
+           
+            //var i = 1;
+            //$('input[name="heavyval"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請輸入(" + i + ")容重量\n"; }
+            //    i++
+            //});
+            
+            //var i = 1;
+            //$('input[name="produceval"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請輸入(" + i + ")稻穀總產量\n"; }
+            //    i++
+            //});
+
+            //var i = 1;
+            //$('input[name="prodname"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請輸入(" + i + ")碾製成品\n"; }
+            //    i++
+            //});
+
+            //var i = 1;
+            //$('input[name="prodheavy"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請輸入(" + i + ")公斤\n"; }
+            //    i++
+            //});
+
+            //var i = 1;
+            //$('select[name="bgid"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請選擇(" + i + ")包裝(公斤)\n"; }
+            //    i++
+            //});
+
+            //var i = 1;
+            //$('input[name="opcount"]').each(function () {
+            //    if ($(this).val() == "")
+            //    { errmsg += "請輸入(" + i + ")張數\n"; }
+            //    i++
+            //});
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Editcheck", "certifyorder", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcerno" name="qcerno" value="@ViewBag.qcerno">
+                <input type="hidden" id="qcstatus" name="qcstatus" value="@ViewBag.qcstatus">
+                <input type="hidden" id="qcitemid" name="qcitemid" value="@ViewBag.qcitemid">
+                <input type="hidden" id="qfarmerno" name="qfarmerno" value="@ViewBag.qfarmerno">
+                <input type="hidden" id="qscerdate" name="qscerdate" value="@ViewBag.qscerdate">
+                <input type="hidden" id="qecerdate" name="qecerdate" value="@ViewBag.qecerdate">
+                <input type="hidden" id="qsdealdate" name="qsdealdate" value="@ViewBag.qsdealdate">
+                <input type="hidden" id="qedealdate" name="qedealdate" value="@ViewBag.qedealdate">
+                <input type="hidden" id="costatus" name="costatus" value="@Model.costatus">
+                <input type="hidden" id="csid" name="csid" value="@Model.csid" />
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料修改</td>
+                    </tr>
+                    
+                    <tr>
+                        <td align="right"> 標章申請編號</td>
+                        <td align="left">
+                            @Model.codno
+                            <input type="hidden" name="codno" id="codno" value="@Model.codno" />
+                            <input type="hidden" name="costatus" id="costatus" value="@Model.costatus" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 認證項目</td>
+                        <td align="left">
+                            @dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + Model.citemid + "' and comid = '" + Session["comid"] + "'  order by citemid")
+                            <input type="hidden" name="citemid" id="citemid" value="@Model.citemid" />
+                            @{
+                             string kg1 = dbobj.get_dbvalue(comconn, "select qtykg from certifyitem where citemid = '" + Model.citemid + "'");
+                             }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 農戶姓名</td>
+                        <td align="left">
+                            @dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Model.farmerno + "'")
+                            <input type="hidden" name="farmerno" id="farmerno" value="@Model.farmerno" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 委託廠商</td>
+                        <td align="left">
+                            @dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Model.vendno + "'")
+                            <input type="hidden" name="vendno" id="vendno" value="@Model.vendno" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 期　　別</td>
+                        <td align="left">
+                            <input type=text name="certime" id="certime" value="@Model.certime" size=12 maxlength=10 class=c12border>&nbsp;
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 申請日期</td>
+                        <td align="left">
+                            <input type=text name="adddate" id="adddate" value="@dbobj.get_date(Model.adddate.ToString(),"1")" size=12 maxlength=10 class=c12border>&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn1", "adddate", "%Y/%m/%d");
+                            </script>
+
+                        </td>
+                    </tr>
+                    <input type=hidden name="cgivedate" id="cgivedate" value="@dbobj.get_date(Model.cgivedate.ToString(), "1")" size=12 maxlength=10 class=c12border>
+                    @*<tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 核發日期</td>
+                        <td align="left">
+                            <input type=text name="cgivedate" id="cgivedate" value="@dbobj.get_date(Model.cgivedate.ToString(), "1")" size=12 maxlength=10 class=c12border>&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn2" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn2", "cgivedate", "%Y/%m/%d");
+                            </script>
+
+                        </td>
+                    </tr>*@
+                    <tr>
+                        <td align="right"> 檢附文件</td>
+                        <td>
+                            @Html.Raw(dbobj.get_checkboxobj(comconn, "select chkcode,chkitem from checkcode where chkclass='80'", "doccheck", Model.doccheck))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 備註</td>
+                        <td>
+                            <textarea cols="80" rows="5" name="cocomment" id="cocomment">@Model.cocomment</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="headfont">申請土地資料</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table align="center" border="0" cellpadding="5" cellspacing="0" class="maintable" width="90%">
+                                <tr>
+                                    <td align="center" width=20% colspan=2>農地座落</td>
+                                    <td align="center" rowspan=2 width=10%>種植面積</td>
+                                    <td align="center" rowspan=2 width=10%>容重量</td>
+                                    <td align="center" rowspan=2 width=10%>稻穀總產量</td>
+                                    <td align="center" width=20% colspan=2>碾製成品重量比</td>
+                                    <td align="center" width=20% colspan=2>申請數量</td>
+                                </tr>
+                                <tr>
+                                    <td align="center">地段</td>
+                                    <td align="center">地號</td>
+                                    <td align="center">碾製成品</td>
+                                    <td align="center">公斤</td>
+                                    <td align="center">包裝(公斤)</td>
+                                    <td align="center">張數</td>
+                                </tr>
+                               @{
+                                string sqlstr = "select *  from  viewcertifycheckdet where farmerno = '" + Model.farmerno + "' and cstatus in ('05','06')";
+                                SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+                                SqlDataReader dr = cmd.ExecuteReader();
+                                int i = 1;
+                                while (dr.Read())
+                                {
+                                    <tr>
+                                        <input type="hidden" name="ldno" value="@dr["ldno"].ToString()" />
+                                        <input type="hidden" name="fwarea" value="@dr["fwarea"].ToString()" />
+                                        <input type="hidden" name="cerdid" value="@dr["cerdid"].ToString()" />
+                                        <td align="center">@dr["ltitle"].ToString()</td>
+                                        <td align="center">@dr["landno1"]@*-@dr["landno2"]*@</td>
+                                        <td align="center">@dr["fwarea"].ToString()</td>
+
+
+                                        @{sqlstr = "select *  from  certifyorderdet where codno = '" + Model.codno + "' and cerdid = '" + dr["cerdid"].ToString() + "'";
+                                        SqlCommand cmd1 = new SqlCommand(sqlstr, comconn2);
+                                        SqlDataReader dr1 = cmd1.ExecuteReader();
+                                        if (dr1.Read())
+                                        {
+                                       
+                                                <td align="center"><input type=text size=10 name=heavyval id="heavyval@(i)" value="@dr1["heavyval"].ToString() "></td>
+                                                <td align="center"><input type=text size=10 name=produceval id="produceval@(i)" value="@dr1["produceval"].ToString() "></td>
+                                                <td align="center"><input type=text size=10 name=prodname id="prodname@(i)" value="@dr1["prodname"].ToString() "></td>
+                                                <td align="center"><input type=text size=10 name=prodheavy id="prodheavy@(i)" value="@dr1["prodheavy"].ToString() "></td>
+                                                <td align="center">
+                                                    @*@{Selectstatus = "select bgid,bgtitle from bag where citemid = '" + Model.citemid + "' order by bgid";
+                                                      Selectstatus = dbobj.get_selectobj(comconn1, Selectstatus, "bgid", @dr1["bgid"].ToString(), "1");}@Html.Raw(Selectstatus)*@
+                                                    <select name="bgid" id="bgid@(i)" onchange="changekg(@i,$('#bgid@(i) option:selected').index())">
+                                                        <option value="">請選擇</option>
+                                                        @{
+                                            string sqlb = "select * from bag where citemid = '" + Model.citemid + "' and comid = '" + Session["comid"] + "' order by bgid";
+                                            SqlCommand cmd2 = new SqlCommand(sqlb, comconn3);
+                                            SqlDataReader dr3 = cmd2.ExecuteReader();
+                                            while (dr3.Read())
+                                            {
+                                                allpkg += dr3["bgkg"].ToString() + ",";
+                                                <option value="@dr3["bgid"].ToString()" @if (dr3["bgid"].ToString() == dr1["bgid"].ToString()) { @Html.Raw(" selected ")}>@dr3["bgtitle"].ToString()</option>
+                                            }
+                                            dr3.Close();
+                                            dr3.Dispose();
+}
+                                                        comconn3.Close();
+                                                        comconn3.Dispose();
+                                                    </select>
+
+                                                </td>
+                                                <td align="center"><input type=text size=10 name=opcount id="opcount@(i)" value="@dr1["opcount"].ToString() "></td>
+                                       
+                                          }
+                                          else
+                                        { 
+                                            decimal allheavy = Math.Round(decimal.Parse(dr["fwarea"].ToString())*decimal.Parse(kg1),3);
+                                            decimal proh = Math.Round(allheavy * decimal.Parse("0.7"),3);
+                                            <td align="center"><input type=text size=10 name=heavyval id="heavyval@(i)" value="@(allheavy)"></td>
+                                                <td align="center"><input type=text size=10 name=produceval id="produceval@(i)" value="@(allheavy)"></td>
+                                                <td align="center"><input type=text size=10 name=prodname id="prodname@(i)" value=""></td>
+                                                <td align="center"><input type=text size=10 name=prodheavy id="prodheavy@(i)" value="@proh"></td>
+                                                <td align="center">
+                                                    @*@{Selectstatus = "select bgid,bgtitle from bag where citemid = '" + Model.citemid + "' order by bgid";
+                                                      Selectstatus = dbobj.get_selectobj(comconn1, Selectstatus, "bgid", "", "1");}@Html.Raw(Selectstatus)*@
+                                                    <select name="bgid" id="bgid@(i)" onchange="changekg(@i,$('#bgid@(i) option:selected').index())">
+                                                        <option value="">請選擇</option>
+                                                        @{
+                                            string sqlb = "select * from bag where citemid = '" + Model.citemid + "' and comid = '" + Session["comid"] + "' order by bgid";
+
+                                            SqlCommand cmd2 = new SqlCommand(sqlb, comconn3);
+                                            SqlDataReader dr3 = cmd2.ExecuteReader();
+                                            while (dr3.Read())
+                                            {
+                                                allpkg += dr3["bgkg"].ToString() + ",";
+                                                <option value="@dr3["bgid"].ToString()" @if ("" == dr3["bgid"].ToString()) { @Html.Raw(" selected ")    }>@dr3["bgtitle"].ToString()</option>
+
+                                            }
+                                            dr3.Close();
+                                            dr3.Dispose();
+                                                        }
+                                                        comconn3.Close();
+                                                        comconn3.Dispose();
+                                                    </select>
+
+
+
+                                                </td>
+                                                <td align="center"><input type=text size=10 name=opcount id="opcount@(i)" value=""></td>
+                                    
+                                        }
+
+                                            dr1.Close();
+                                            dr1.Dispose();
+                                        }
+                                    </tr>
+                                    i++;
+                                }
+                            dr.Close();
+                            dr.Dispose();
+                            }
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            @if (Model.costatus.ToString() == "0") {
+                                <input type="submit" value="確認" class="abutton" />
+                                <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            }
+                            @Html.ActionLink("回上頁", "List", "certifyorder", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+                comconn1.Close();
+                comconn1.Dispose();
+                comconn2.Close();
+                comconn2.Dispose();
+            }
+        </td>
+    </tr>
+
+</table>
+<script>
+    var allpkgdata = "@(allpkg)";
+    var allpkgarr = allpkgdata.split(",");
+    function changekg(tmpi,tmpsel)
+    {
+        //$("#opcount" + tmpi).val(Math.Round($("#prodheavy" + tmpi).val() / allpkgarr(tmpi), 0));
+        //alert(allpkgarr[tmpi+1]);
+        //alert(tmpsel)
+        $("#opcount" + tmpi).val(Math.ceil(parseFloat($("#prodheavy" + tmpi).val()) / parseFloat(allpkgarr[tmpsel-1])));
+    }
+</script>

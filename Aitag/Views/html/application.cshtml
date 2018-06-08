@@ -1,0 +1,233 @@
+﻿@using MvcPaging
+@using System.Data.SqlClient
+@{
+    Layout = "~/views/shared/_frontLayout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+
+<script type="text/javascript">    
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+
+            if ($("#fabyear").val() == "")
+            { errmsg += "請選擇申請年份\n"; }
+
+            if ($("#fabmonth").val() == "")
+            { errmsg += "請選擇申請月份\n"; }
+
+            if ($("#fabday").val() == "")
+            { errmsg += "請選擇申請日期\n"; } 
+
+            if ($("#citemid").val() == "")
+            { errmsg += "請選擇認證項目\n"; }
+
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入申請人\n"; }
+
+            if ($("#vendno").val() == "")
+            { errmsg += "請輸入受委託廠商\n"; }
+
+            //if ($("#fmob").val() == "")
+            //{ errmsg += "請輸入連絡電話\n"; }
+
+            //if ($("input[name='doccheck']:checked").val() == undefined)
+            //{ errmsg += "請選擇檢附文件\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+<!--article-->
+<div class="article">
+ <div class="container">
+  <div class="maintitle"><h1>認證標章申請表</h1></div>
+@using (Html.BeginForm("Application", "html", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+{
+     @Html.ValidationSummary(true)
+    <input type="hidden" id="sysflag" name="sysflag" value="A">   
+    <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+    <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+    
+ <div class="member">
+    <div class="newbox"> 
+        <p>申請標章後，可至"查詢歷史紀錄"查看狀態 。(*必填)</p>
+            <h6>
+                <span class="title01"><i>*</i>申請代碼：</span>
+                <input type="text" name="codno" id="codno" size="21" value="@DateTime.Now.ToString("yyyyMMddhhmmssfffff")"><span class="ps01"></span>
+            </h6>
+
+            <h6>
+                <span class="title01"><i>*</i>申請日期</span>
+                <select name="fabyear" id="fabyear">
+                    <option value="">西元</option>
+                    @for (int i = DateTime.Now.Year; i >= 1920; i--)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </select>年
+                <select name="fabmonth" id="fabmonth">
+                    <option value="">月</option>
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        if (i <= 9)
+                        {
+                        <option value="0@(i)">0@(i)</option>
+                        }
+                        else
+                        {
+                        <option value="@i">@i</option>
+                        }
+                    }
+                </select>月
+                <select name="fabday" id="fabday">
+                    <option value="">日</option>
+                    @for (int i = 1; i <= 31; i++)
+                    {
+                        if (i <= 9)
+                        {
+                         <option value="0@(i)">0@(i)</option>
+                        }
+                        else
+                        {
+                        <option value="@i">@i</option>
+                        }
+                    }
+                </select>日
+            </h6>
+
+            <h6>
+                <span class="title01"><i>*</i>認證項目</span>
+                @{String Selectstatus = "select citemid,citemname from certifyitem where comid = '" + Session["comid"] + "' order by citemid";
+                Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "citemid", "", "1");}@Html.Raw(Selectstatus)
+            </h6>
+
+            <h6>
+                @{
+                    string Sessionftype1 = "";                
+                    if (Session["ftype"].ToString() == "1")
+                    {
+                        Sessionftype1 = Session["farmerno"].ToString();
+                    }
+                    else
+                    {
+                        Sessionftype1 = "";
+                    }
+                }
+                <span class="title01"><i>*</i>申請人</span>
+                <input type="text" id="farmerno" name="farmerno" value="@Sessionftype1" autocomplete="off" placeholder="請輸入關鍵字" onkeyup="drop_prod(this.value)">
+                <input type="text" id="farmername" value="@dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Sessionftype1 + "'")" class="textrdonly" size="40" />
+                <div class="img1" id="ajaxgo" style="position:absolute;display:none;overflow:auto;height:200px;width:30%">
+                </div>
+                <script>
+                    function drop_prod(tmpval) {
+                        var dvsql = "select top 20 * from (select DISTINCT farmer.farmerno , farmer.farmername from  farmwork AS farmwork LEFT JOIN  farmer AS farmer ON farmwork.farmerno = farmer.farmerno where fstatus = '1' and farmer.comid = '" + @Session["comid"] + "' and (farmer.farmerno like '%" + tmpval + "%' or farmer.farmername like '%" + tmpval + "%' or farmer.ftel like '%" + tmpval + "%'  or farmer.fmob like '%" + tmpval + "%' or farmer.fcomment like '%" + tmpval + "%')) as tmpdb";
+                        ajax_drop('ajaxgo', dvsql, 'farmerno', 'farmername', '');
+                    }
+                </script>
+   
+            </h6>
+
+
+            <h6>
+                <span class="title01"><i>*</i>農戶地址</span>
+                @*<select name="cid" id="cid" class='c12border'>
+                    <option selected>請選擇</option>
+                </select>&nbsp;
+                <select name="pcode" id="pcode" class='c12border'>
+                    <option selected>請選擇</option>
+                </select>
+                <script>
+                    $('#cid').load("@Fweblink/Ajax/township?Code=cid:,condition:");
+
+                    $("#cid").change(function () {
+                        var tmpval = $("#cid").val();
+                        if (tmpval != "") {
+                            $('#pcode').load("@Fweblink/Ajax/township?Code=pcode:,cid:" + tmpval);
+                        }
+                    });
+                </script>
+                <input type="text" id="faddr1" name="faddr1" value="">*@
+                @Session["faddr"].ToString()
+            </h6>
+            <h6>
+                <span class="title01"><i>&nbsp;</i>身分證字號</span>
+                <input type="text" name="idcard" id="idcard" size="10" maxlength="10" value=""><span class="ps01">英文及數字共10碼</span>
+            </h6>
+
+            <h6>
+                @{
+                    string Sessionftype2 = "";
+                    if (Session["ftype"].ToString() == "2")
+                    {
+                        Sessionftype2 = Session["farmerno"].ToString();
+                    }
+                    else
+                    {
+                        Sessionftype2 = "";
+                    }
+                }
+                <span class="title01"><i>*</i>受委託廠商</span>
+                @*@if (Session["ftype"].ToString() == "2")
+                {<input type="text" name="codno" id="codno" size="20" value=" "><span class=" ps01"></span>}
+                else 
+                 {*@                                                                                         
+                 <input type="text" id="vendno" name="vendno" autocomplete="off" placeholder="請輸入關鍵字" value="@Sessionftype2" onkeyup="drop_prod1(this.value)">
+                <input type="text" id="vendname" value="@dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Sessionftype2 + "'")" class="textrdonly" size="40" />
+                <div class="img1" id="ajaxgo1" style="position:absolute;display:none;overflow:auto;height:200px;width:30%">
+                </div>
+                <script>
+                    function drop_prod1(tmpval) {
+                        var dvsql = "select top 20 farmerno , farmername from farmer where ftype = '2' and fstatus = '1' and comid = '" + @Session["comid"] + "' and  (farmerno like '%" + tmpval + "%' or farmername like '%" + tmpval + "%' or ftel like '%" + tmpval + "%'  or fmob like '%" + tmpval + "%' or fcomment like '%" + tmpval + "%')";
+                        ajax_drop('ajaxgo1', dvsql, 'vendno', 'vendname', '');
+                    }
+                </script>    
+                @*}*@
+            </h6>
+
+            <h6>
+                <span class="title01"><i>*</i>連絡電話</span>
+                @Session["fmob"].ToString()                
+            </h6>
+
+            <h6>
+                <span class="title01"><i>*</i>申請期別</span>
+                <input type=text name="certime" id="certime" value="@(DateTime.Now.Year-1911)年第一期" size=12 maxlength=10>
+            </h6>
+            <h6>
+                <span class="title01"><i>*</i>檢附文件</span>
+                @*<input name="doccheck" type="checkbox" value="1"> 農地使用證明
+                <input name="doccheck" type="checkbox" value="2"> 容量重量證明
+                <input name="doccheck" type="checkbox" value="3"> 農藥殘毒檢驗單
+                <input name="doccheck" type="checkbox" value="4"> 身份證影本
+                <input name="doccheck" type="checkbox" value="5"> 田間栽培管理紀錄單
+                <input name="doccheck" type="checkbox" value="6"> 地磅單
+                <input name="doccheck" type="checkbox" value="7"> 食味值檢測單*@
+                @Html.Raw(dbobj.get_checkboxobj(comconn, "select chkcode,chkitem from checkcode where chkclass='80'", "doccheck", ""))
+            </h6>
+
+            <div class="btnbox"><input type="submit" value="確定" class="btn"></div>
+
+</div>
+</div>
+}
+   @{
+       comconn.Close();
+       comconn.Dispose();
+   }
+   
+   
+   
+   
+ </div>
+</div>
+<!--article-end-->

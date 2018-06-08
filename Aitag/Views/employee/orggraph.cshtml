@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "";
+    ViewBag.Title = "orggraph";
+}
+<html>
+<head>
+    <title>資訊入口網站系統</title>
+    <link rel="stylesheet" href="../inc/ie4.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<script language="javascript">
+function displaydiv(dvobj,tmpimg)
+{
+if(dvobj.style.display=='none')
+{
+ dvobj.style.display = 'block'
+ tmpimg.src = './images/folopen.gif'
+ }
+else
+{
+ dvobj.style.display = 'none'
+ tmpimg.src = './images/folclose.gif'
+  }
+}
+</script>
+<body topmargin=10 leftmargin=10>
+    <table cellpadding=0 cellspacing=0 width=100% class=c12 style=font-size:11pt>
+        <tr>
+            <td>
+                <img src=/images/org.gif align=absmiddle> 聯廣集團
+            </td>
+        </tr>
+        @Html.Raw(ViewBag.mcontent)
+        </table>
+    </body>
+</html>

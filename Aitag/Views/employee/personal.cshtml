@@ -1,0 +1,198 @@
+﻿@model List<Aitag.Models.employee>
+@using System.Data;
+@using System.Data.SqlClient;
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+
+    string NOWempworkcomp = "";
+    //NOWempworkcomp = Request["empworkcomp"].Trim();
+    if (NOWempworkcomp == "")
+    {
+        NOWempworkcomp = (string)Session["comid"];
+    }
+
+
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#FormList").submit(function (e) {
+            var errmsg = "";
+            
+            
+            if ($("input[name='emppasswd']").val() == "")
+            { errmsg += "請輸入登入密碼\n"; }
+            
+            if ($("select[name='empname']").val() == "")
+            { errmsg = input + "請輸入姓名\n" }
+
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+
+    });
+
+    
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("personal", "Employee", FormMethod.Post, new { @name = "FormList", @id = "FormList" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+
+            <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                <tr valign=top>
+                    <td align="center">
+                        <font color=#cc3322>
+                            【個人資料】<br>此個資有受保護，只能看到個人資料
+                        </font>
+                    </td>
+                </tr>
+            </table>
+
+    <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+        <tr>
+            <td class="headfont" colspan="4" align="left">修改畫面</td>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <input type="hidden" id="empid" name="empid" value="@item.empid">
+
+            <tr>
+                <td align=right width=15%>身份類別</td>
+                <td width=30%>
+                    @{string emptype = ""; emptype = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass='11' and chkcode='" + @item.emptype + "'");}
+                    @emptype
+                </td>
+                <td align=right width=15%>在職狀況</td>
+                <td width=30%>
+                    @{string empstatus = ""; empstatus = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass='12' and chkcode='" + @item.empstatus + "'");}
+                    @empstatus
+                </td>
+            </tr>
+            <tr>
+                <td align=right>帳號</td>
+                <td> <input type=text name="empid" maxlength=20 size=25 class=c12border style="background:#dedede" readonly value="@item.empid" ></td>
+                <td align=right><img src="~/images/art.gif" border="0" /> 登入密碼</td>
+                <td>
+                    <input type=text name="emppasswd" maxlength=20 size=25 class=c12border value="@item.emppasswd">
+                    <br><font color=#990000>請使用英文或數字</font>
+                </td>
+            </tr>
+            <tr>
+                <td align=right><img src="~/images/art.gif" border="0" /> 姓名</td>
+                <td> <input type=text name="empname" maxlength=50 size=25 class=c12border value="@item.empname"></td>
+                <td align=right>英文名</td>
+                <td> <input type=text name="empenname" maxlength=50 size=25 class=c12border value="@item.empenname"></td>
+            </tr>
+            <tr>
+                <td align=right>員工編號</td>
+                <td colspan=3> <input type=text name="empno" maxlength=20 size=25 class=c12border style="background:#dedede" readonly value="@item.empno"></td>
+            </tr>
+            <tr>
+                <td align=right>出生日期</td>
+                @{
+                    DateTime empbirth = Convert.ToDateTime(item.empbirth);
+                }
+                <td>
+                    西元
+                    <select name="byear">
+                        <option value="">----</option>
+                        @for (int i = DateTime.Now.Year; i >= 1920; i--)
+                        {
+                            <option value="@i" @if (empbirth.Year == i) { @Html.Raw("selected"); }>@i</option>
+                        }
+                    </select>
+        
+                    <select name="bmonth">
+	                    <option value="">--</option>
+                          @for (int i = 1; i <= 12; i++)
+                          {
+                            <option value="@i" @if (empbirth.Month == i) { @Html.Raw("selected") ; }>@i</option>
+                          }
+                    </select>
+        
+                    <select name="bday">
+	                  <option value="">--</option>
+                          @for (int i = 1; i <= 31; i++)
+                          {
+                            <option value="@i" @if (empbirth.Day == i) { @Html.Raw("selected") ; }>@i</option>
+                          }
+                    </select>
+            
+                </td>
+                <td align=right>性別</td>
+                <td>
+                    @{string empsex = ""; empsex = dbobj.get_radioobj(comconn, "select chkcode, chkitem from checkcode where chkclass='01' ", "empsex", @item.empsex);}
+                    
+                    <input type=radio id=empsex name='empsex' value='1' @if (@item.empsex == "1") { @Html.Raw("checked"); }> 男 
+                    <input type=radio id=empsex name='empsex' value='0' @if (@item.empsex == "0") { @Html.Raw("checked"); }> 女
+                </td>
+            </tr>
+            <tr>
+                <td align=right>戶籍地址</td>
+                <td colspan=3> <input type=text name="eaddress" maxlength=100 size=90 class=c12border value="@item.eaddress"></td>
+            </tr>
+            <tr>
+                <td align=right>聯絡住址</td>
+                <td colspan=3> <input type=text name="enaddress" maxlength=100 size=90 class=c12border  value="@item.enaddress"></td>
+            </tr>
+            <tr>
+                <td align=right>電話</td>
+                <td> <input type=text name="entel" maxlength=20 size=25 class=c12border  value="@item.entel"></td>
+                <td align=right>手機</td>
+                <td> <input type=text name="enmob" maxlength=20 size=25 class=c12border  value="@item.enmob"></td>
+            </tr>
+            <tr>
+                <td align=right>電子郵件</td>
+                <td> <input type=text name="enemail" maxlength=100 size=50 class=c12border  value="@item.enemail"></td>
+                <td align=right> 新增日期</td>
+                <td >@Convert.ToDateTime(item.jobdate).ToShortDateString()</td>
+            </tr>
+             <tr>
+                <td align=right>備註</td>
+                <td colspan=3> <textarea name="empcomment" rows=5 cols=60 class=c12border>@item.empcomment</textarea></td>
+            </tr>
+
+
+                    <tr bgcolor=dedede>
+                        <td colspan=4 align=center>
+                            <input type=submit value="確認" class=abutton id=submit1 name=submit1>
+                            <input type=reset value="重新輸入" class=abutton id=reset1 name=reset1>
+                        </td>
+                    </tr>
+                    }
+</table>
+
+
+
+                    comconn.Close();
+                    comconn.Dispose();
+            }
+
+
+</td>
+    </tr>
+</table>
+

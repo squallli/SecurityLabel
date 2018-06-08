@@ -1,0 +1,144 @@
+﻿@model Aitag.Models.mainclass
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#ssid").val() == "")
+            { errmsg = "請選擇所屬選單\n"; }
+
+            if ($("#mclasstitle").val() == "")
+            { errmsg += "請輸入系統類別名稱\n"; }
+
+            if ($("#mcorder").val() == "")
+            { errmsg += "請輸入類別順序\n"; }
+            else
+            {
+                if (isNaN($("#mcorder").val()) == true)
+                    errmsg = errmsg + "類別順序請輸入數字";
+            }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "mainclass", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qmclasstitle" name="qmclasstitle" value="@ViewBag.qmclasstitle">
+                <input type="hidden" id="qssid" name="qssid" value="@ViewBag.qssid">
+                <input type="hidden" id="mclassid" name="mclassid" value="@Model.mclassid">
+                                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料修改</td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 所屬選單</td>
+                        <td align="left">
+                            @{
+                string sublevelname = "";
+                                            }
+                                            <select name="sid">
+                                                <option value="">請選擇</option>
+                                                @{
+                                string sql = "select sid , sublevelname,lid,uplink from sublevel1 where functype in('0','1','2','3','4','5') and comid='" + Session["comid"].ToString() + "'  order by uplink";
+
+                                SqlCommand cmd = new SqlCommand();
+                                cmd.Connection = comconn;
+                                cmd.CommandText = sql;
+                                SqlDataReader dr = cmd.ExecuteReader();
+                                while (dr.Read())
+                                {
+                                    if (dr["lid"].ToString() == "2")
+                                    {
+                                        sublevelname = dr["sublevelname"].ToString();
+                                    }
+                                    else
+                                    {
+                                        sublevelname = dbobj.get_dbvalue(comconn1, "select sublevelname from sublevel1 where sid ='" + dr["uplink"].ToString() + "'") + "<-" + dr["sublevelname"].ToString();
+                                    }
+                                    if (Model.sid.ToString() == dr["sid"].ToString())
+                                    {   
+                                        <option value="@dr["sid"].ToString()" selected >@sublevelname</option>
+                                    }
+
+                                    else
+                                    {
+                                        <option value="@dr["sid"].ToString()">@sublevelname</option>
+                                    }
+                                }
+                                dr.Close();
+                                dr.Dispose();
+}
+                                            </select>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><img src="~/images/art.gif" border="0" /> 系統類別名稱</td>
+                                        <td align="left">
+                                            <input type=text name="mclasstitle" id="mclasstitle" maxlength=80 size=40 class=c12border value="@Model.mclasstitle">
+                                            @Html.ValidationMessageFor(m => m.mclasstitle)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><img src="~/images/art.gif" border="0" /> 類別順序</td>
+                                        <td align="left">
+                                            <input type="text" maxlength="9" class="c12border" id="mcorder" name="mcorder" style="width:60px;" value="@Model.mcorder" /><font color=990000 style="font-size:9pt"> 數字越小排越前面</font>
+                                            @Html.ValidationMessageFor(m => m.mcorder)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"> 系統類別版主</td>
+                                        <td align="left">
+                                            @Html.Raw(dbobj.get_selectobj(comconn, "select empid , empname  from employee where empworkcomp = '" + Session["comid"].ToString() + "' and not empstatus in('3','4') order by empid", "owner", @Model.owner, "1"))
+                                            @Html.ValidationMessageFor(m => m.owner)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" colspan="2" class="footerfont">
+                                            <input type="submit" value="確認" class="abutton" />
+                                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                                            @Html.ActionLink("回上頁", "List", "mainclass", new { }, new { @class = "abutton" })
+
+                                        </td>
+                                    </tr>
+                    
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

@@ -1,0 +1,221 @@
+﻿@model Aitag.Models.allcompany
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if (FormAdd.comtype[0].checked == false && FormAdd.comtype[1].checked == false && FormAdd.comtype[2].checked == false && FormAdd.comtype[3].checked == false)
+            { errmsg += "請選擇客戶廠商\n"; }
+
+        
+            if ($("#comtitle").val() == "")
+            { errmsg += "請輸入公司全名\n"; }
+
+            if ($("#comsttitle").val() == "")
+            { errmsg += "請輸入公司簡稱\n"; }
+
+
+            if ($("#comtel").val() == "")
+            { errmsg += "請輸入聯絡電話\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "allcompany", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcomid" name="qcomid" value="@ViewBag.qcomid">
+                <input type="hidden" id="qcsno" name="qcsno" value="@ViewBag.qcsno">
+                <input type="hidden" id="qcomtitle" name="qcomtitle" value="@ViewBag.qcomtitle">
+    <input type="hidden" id="comstatus" name="comstatus" value="@Model.comstatus">
+
+                                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">資料修改
+                            @{
+                int k = 2;
+                            }
+                            <input type=button value="1.修改" onclick="location.href='/allcompany/edit?comid=@Model.comid'" />
+                            @if (Model.comtype.ToString().IndexOf("1") >= 0)
+                            {
+                                <input type=button value="@(k).客戶產品" onclick="location.href='/allcompany/prodlist?allcomid=@Model.comid&fprodid=0'" />
+                                k++;
+                            }
+                            @if (Model.comtype.ToString().IndexOf("2") >= 0)
+                            {
+                                <input type=button value="@(k).媒體資訊" onclick="location.href='/allcompany/medialist?allcomid=@(Model.comid)&mcno=@(ViewBag.mcno)'" />
+                                k++;
+                            }
+                            <input type=button value="@(k).交易條件" onclick="location.href='/allcompany/brlist?allcomid=@Model.comid&bseason=@(ViewBag.bseason)'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 客戶/廠商</td>
+                        <td align="left">
+                            @{
+                string comtype = Model.comtype;
+                            }
+                            <input type="checkbox" name="comtype" value="1" @if(comtype.IndexOf("1")>=0){@("checked")} > 客戶
+                            <input type="checkbox" name="comtype" value="2" @if (comtype.IndexOf("2") >= 0) { @("checked") }> 媒體廠商
+                            <input type="checkbox" name="comtype" value="3" @if (comtype.IndexOf("3") >= 0) { @("checked")  }> 媒體代理商
+                            <input type="checkbox" name="comtype" value="4" @if (comtype.IndexOf("4") >= 0) { @("checked")   }> 其他
+                        </td>
+                        <td align="right"> 狀態</td>
+                        <td align="left">
+                            <select name="cflag" id="cflag">
+                                <option value="1" @if (Model.cflag == "1")
+                                                  { @("selected") }>使用中</option>
+                                <option value="0" @if (Model.cflag == "0") { @("selected")  }>停用</option>
+
+                            </select>
+                            <script>$('#cflag').val('@Model.cflag');</script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司代碼</td>
+                        <td align="left">
+                            <input type="hidden" class="c12border" id="comid" name="comid" readonly style="width:60px;background:#aaaaaa" value="@Model.comid" />
+                            @Model.comid
+                        </td>
+                        <td align="right"> 統一編號</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="comsno" name="comsno" style="width:120px;" value="@Model.comsno" />
+                        </td>
+                      
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司全名</td>
+                        <td align="left" colspan="3">
+                            <input type="text"  class="c12border" id="comtitle" name="comtitle" style="width:400px;" value="@Model.comtitle" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" />  公司簡稱</td>
+                        <td align="left">
+                            <input type="text"  class="c12border" id="comsttitle" name="comsttitle" style="width:200px;" value="@Model.comsttitle" />
+                        </td>
+                        <td align="right"> 負責人</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="ownman" name="ownman" style="width:150px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司地址</td>
+                        <td align="left" colspan="3">
+                            <input type="text" class="c12border" id="comadd" name="comadd" style="width:400px;" value="@Model.comadd" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 聯絡電話</td>
+                        <td align="left">
+                            <input type="text"  class="c12border" id="comtel" name="comtel" style="width:200px;" value="@Model.comtel" />
+                        </td>
+                        <td align="right"> 傳真電話</td>
+                        <td align="left">
+                            <input type="text"  class="c12border" id="comfax" name="comfax" style="width:200px;" value="@Model.comfax" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司網址</td>
+                        <td align="left" colspan="3">
+                            <input type="text" class="c12border" id="comhttp" name="comhttp" style="width:400px;" value="@Model.comhttp" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 建置日期</td>
+                        <td align="left" colspan="3">
+                            <input type="hidden" id="badddate" name="badddate" value="@Model.badddate" />
+                            @{
+                                
+                                if (@Model.badddate != null)
+                                {@Html.Raw(Model.badddate.Value.ToString("yyyy/MM/dd")) }
+                            }
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">請/付款方式</td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            帳務結算基準日
+                        </td>
+                        <td align="left">
+                            每月 <input type="text" name="ppayday" size="10" value="@Model.ppayday"> 日</td>
+                        <td align="right">
+                            付款方式
+                        </td>
+                        <td align="left">
+                            <input type="radio" name="paytype" value="1" @if (Model.paytype == "1"){ @("checked")  }> 銀行匯款 <input type="radio" name="paytype" value="2" @if (Model.paytype == "2") { @("checked")  }> 支票
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            付款條件
+                        </td>
+                        <td align="left" colspan="3">
+                           刊播前預付 <input type="text" name="paypart1" size="10" value="@Model.paypart1"> % , 刊播後 <input type="text" name="paypart2" size="10" value="@Model.paypart2"> % 
+                        </td>
+                      
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            請款文件
+                        </td>
+                        <td align="left" colspan="3">
+                            廣告刊播之次月 <input type="text" name="docday" size="10" value="@Model.docday"> 日前，檢附以下文件。
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            &nbsp;
+                        </td>
+                        <td colspan="3">
+                            @Html.Raw(dbobj.get_checkboxobj(comconn, "select chkcode , chkitem from checkcode where chkclass = '91'", "doctype",Model.doctype))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="4" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "allcompany", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

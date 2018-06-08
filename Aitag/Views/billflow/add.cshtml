@@ -1,0 +1,231 @@
+﻿@model UniteErp.Models.billflow
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    UniteErp.Models.NDcommon dbobj = new UniteErp.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("UniteErp_DBContext");
+    Model.flowscount = 0;
+    Model.flowecount = 0;
+    Model.btop = 0;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        
+
+        $("#billflow").submit(function (e) {
+            var errmsg = "";
+            if ($("#billid").val() == "")
+            { errmsg += "請輸入呈核單類別\n"; }
+
+            if ($("#btop").val() == "") {
+                errmsg += "請輸入優先順序\n";
+            }
+            else {
+                if (isNaN($("#btop").val()) == true) {
+                    errmsg += "優先順序請輸入數字\n";
+                }
+            }
+            
+            if ($("#comclass").val() == "")
+            { errmsg += "請選擇所屬公司\n"; }
+
+            if ($("#flowcheck").val() == "")
+            { errmsg += "請選擇呈核單流程角色\n"; }
+
+            if ($("#flowscount").val() == "") {
+                errmsg += "請輸入時數/數量/金額起\n";
+            }
+            else
+            {
+                if (isNaN($("#flowscount").val()) == true) {
+                    errmsg += "時數/數量/金額起請輸入數字\n";
+                }
+            }
+            
+            if ($("#flowecount").val() == "")
+            {
+                errmsg += "請輸入時數/數量/金額迄\n";
+            }
+            else
+            {
+                if (isNaN($("#flowecount").val()) == true) {
+                    errmsg += "時數/數量/金額迄請輸入數字\n";
+                }
+            }
+            
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+
+    });
+    
+    function choosebid(i)//挑選角色
+    {
+        url = "choosebid/?tmp1=flowcheck&tmp2=roletitle&fname=billflow"; window.open(url, 'edm', 'scrollbars=yes,width=600,height=500')
+    }
+
+    function clearup() {
+        tmp = document.billflow.flowcheck.value;
+        tmp1 = document.billflow.roletitle.value;
+        if (tmp != '') {
+            startvalue = tmp.lastIndexOf(",");
+            tmpvalue = tmp.substring(0, startvalue);
+            document.billflow.flowcheck.value = tmpvalue;
+
+            startvalue1 = tmp1.lastIndexOf("→");
+            tmpvalue1 = tmp1.substring(0, startvalue1);
+            document.billflow.roletitle.value = tmpvalue1;
+        }
+    }
+
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Add", "billflow", FormMethod.Post, new { @name = "billflow", @id = "billflow" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qbillid" name="qbillid" value="@ViewBag.qbillid">
+                <input type="hidden" id="qcomclass" name="qcomclass" value="@ViewBag.qcomclass">
+                <input type="hidden" id="comid" name="comid" value="@Session["comid"].ToString()">
+                <input type="hidden" id="jumpday" name="jumpday" value="0">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料新增</td>
+                    </tr>
+                    <tr>
+                        <td align="right">狀態</td>
+                        <td align="left">
+                            <input type="radio" name="ifuse" value="1" checked/> 使用中
+                            <input type="radio" name="ifuse" value="0" /> 停用
+                        </td>
+                    </tr>           
+                    <tr>
+                        <td align="right"> 呈核單類別</td>
+                        <td align="left">
+                           @Html.Raw(dbobj.get_selectobj1(comconn, "select docid,doctitle from docgroup order by doctype ,docid", "billid onchange=javascript:datachange();", "", "1","billid"))
+                        </td>
+                    </tr>
+                    <script>
+                        function datachange() {
+                            if($("#billid").val()=="P")
+                            {
+                                showtype.style.display = '';
+                                proty1.style.display = 'none';
+                                proty2.style.display = '';
+                            }
+                            else
+                            {
+                                showtype.style.display = 'none';
+                                proty2.style.display = 'none';
+                                proty1.style.display = '';
+                            }
+
+                        }
+
+                    </script>
+                    <tr id="showtype" style="display:none">
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 單據分類</td>
+                        <td align="left">
+                                @for(int i = 1;i<9;i++){
+                                <input type="checkbox" id="billtype" name="billtype" value="@i" />@dbobj.get_billname("P", @i.ToString())
+                                }
+                           
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 優先順序</td>
+                        <td align="left">
+                            <input type="text" maxlength="5" id="btop" name="btop" size=5 value="@Model.btop" /> <font color=#99000 style="font-size:9pt">請輸入數字</font>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 所屬公司</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select comid,comtitle from company", "comclass", "", "1"))
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width=23% align=right><img src="~/images/art.gif" border="0" /> 呈核單流程角色</td>
+                        <td>
+                            <input type=hidden name="flowcheck" size=15 id="flowcheck">
+                            <textarea name=roletitle cols=48 rows=5 id="Textarea2" readonly class=c12border></textarea><br>
+                            <input type="button" value="選擇角色" class=button onclick="javascript:return choosebid();" id=button1 name=button1>
+                            <input type=button value="清空呈核單流程角色" onclick="javascript:flowcheck.value='';roletitle.value='';" id="Button3" name=button2 class=button>
+                            <input type=button value="清空前一個" onclick="javascript:clearup();" class="button" id=button4 name=button4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 核准層級</td>
+                        <td align="left">
+                            <select name="flowlevel" id="flowlevel">
+                                @{
+                                    for (int i = 1; i <= 10; i++)
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                }
+                            </select>
+                            級，即審核通過</td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 時數/數量/金額</td>
+                        <td align="left">
+                            <input type=text size=8 maxlength=10 name=flowscount id="flowscount" value="@Model.flowscount"> ~ <input type=text size=8 maxlength=10 name=flowecount id="flowecount" value="@Model.flowecount"> <font color=#99000 style="font-size:9pt">請輸入數字</font>
+
+                        </td>
+                    </tr>
+                    <tr id="proty1" style="display:none">
+                        <td align="right"> 前往地點</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_checkboxobj(comconn, "select chkcode,chkitem from checkcode where chkclass = '90'", "addr", "1,2"))
+
+                        </td>
+                    </tr>
+                    <tr id="proty2" style="display:none">
+                        <td align="right"> 成本/部門</td>
+                        <td align="left">
+                            <input type="checkbox" name="addr" value="1" checked /> 成本
+                            <input type="checkbox" name="addr" value="2" checked /> 部門
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "billflow", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

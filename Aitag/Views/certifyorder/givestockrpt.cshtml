@@ -1,0 +1,258 @@
+﻿@using System.Data.SqlClient
+@{
+    Layout = "";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn3 = dbobj.get_conn("Aitag_DBContext");
+
+    string sqlstr = "select *  from  certifyorder where codno = " + Request["codno"] + "";
+    SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+    SqlDataReader dr = cmd.ExecuteReader();
+    dr.Read();
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+        body {
+            font-family: "標楷體", Arial, Helvetica, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        tr {
+            mso-yfti-irow: 0;
+            mso-yfti-firstrow: yes;
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        td {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        a {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        span {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+    <center>
+        <table border=0 width=60%>
+
+
+            <tr>
+                <td colspan=4 align=center>
+                    <font style=font-size:16pt>註冊證明標章使用證明書</font>
+                </td>
+            </tr>
+            <tr>
+                <td width=18%>申請代碼：</td>
+                <td>@dr["codno"]</td>
+                <td width=12%>申請日期：</td>
+                <td>
+                    @{string tmptoday = dbobj.get_date(DateTime.Now.ToString(), "1");}
+                    @tmptoday
+            </td>
+        </tr>
+        <tr>
+            <td width=18%>申請人：</td>
+            <td>
+                @{string applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select farmername from farmer where farmerno = '" + dr["farmerno"].ToString() + "'");}
+                @applicant
+            </td>
+            <td width=12%>農戶地址：</td>
+            <td>
+                @{string faddress = ""; faddress = dbobj.get_dbvalue(comconn1, "select faddr from farmer where farmerno = '" + dr["farmerno"].ToString() + "'");}
+                @faddress
+            </td>
+        </tr>
+
+        <tr>
+            <td>受委託廠商：</td>
+            <td colspan=3>
+                @{applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select farmername from farmer where farmerno = '" + dr["farmerno"].ToString() + "'");}
+                @applicant
+            </td>
+        </tr>
+
+        <tr>
+            <td>申請期別：</td>
+            <td colspan=3>@dr["certime"].ToString()</td>
+        </tr>
+
+        <tr>
+            <td>檢附文件：</td>
+            <td colspan=3>
+                @*&nbsp;□農地使用證明&nbsp;□容量重量證明&nbsp;□農藥殘毒檢驗單&nbsp;□身份證影本
+                <br />&nbsp;□田間栽培管理紀錄單&nbsp;□地磅單&nbsp;□食味值檢測單*@
+                @Html.Raw(dbobj.get_checkboxobj(comconn1, "select chkcode,chkitem from checkcode where chkclass='80'", "doccheck", dr["doccheck"].ToString()))
+            </td>
+        </tr>
+
+        <tr>
+            <td>申請註冊標章表列：</td>
+            <td colspan=3>（由委託商申請者，廠商可批次向本所申請標章，並填合計總表）</td>
+        </tr>
+
+
+
+
+
+        <table border=1 width=60%>
+            <tr>
+                <td align="center" width=10% colspan=2><b>農地座落</b></td>
+                <td align="center" rowspan=2 width=10%><b>種植面積</b></td>
+                <td align="center" rowspan=2 width=10%><b>容重量</b></td>
+                <td align="center" rowspan=2 width=10%><b>稻穀總產量</b></td>
+                <td align="center" width=20% colspan=2><b>碾製成品重量比</b></td>
+                <td align="center" width=20% colspan=2><b>申請數量</b></td>
+            </tr>
+            <tr>
+                <td align="center"><b>地段</b></td>
+                <td align="center"><b>地號</b></td>
+                <td align="center"><b>碾製成品</b></td>
+                <td align="center"><b>公斤</b></td>
+                <td align="center"><b>包裝</b></td>
+                <td align="center"><b>張數</b></td>
+            </tr>
+            @{
+                            string sqlstr1 = "select * from viewcertifycheckdet where farmerno = '" + dr["farmerno"] + "' and cstatus in ('05','06')";
+                            SqlCommand cmd1 = new SqlCommand(sqlstr1, comconn1);
+                            SqlDataReader dr1 = cmd1.ExecuteReader();
+                            double i = 0;
+                            double area = 0;
+                            double kg = 0;
+                            double yield = 0;
+                            double sheets = 0;
+                            while (dr1.Read())
+                            {
+                                i++;
+                                area = area + double.Parse(dr1["fwarea"].ToString());
+                                <tr>
+                                    <input type="hidden" name="ldno" value="@dr1["ldno"].ToString()" />
+                                    <input type="hidden" name="fwarea" value="@dr1["fwarea"].ToString()" />
+                                    <input type="hidden" name="cerdid" value="@dr1["cerdid"].ToString()" />
+                                    <td align="center">@dr1["ltitle"].ToString()</td>
+                                    <td align="center">@dr1["landno1"]@*-@dr1["landno2"]*@</td>
+                                    <td align="center">@dr1["fwarea"].ToString()</td>
+
+                                    @{
+                                        sqlstr1 = "select *  from  certifyorderdet where codno = '" + dr["codno"].ToString() + "' and cerdid = '" + dr1["cerdid"].ToString() + "'";
+                                        SqlCommand cmd2 = new SqlCommand(sqlstr1, comconn2);
+                                        SqlDataReader dr2 = cmd2.ExecuteReader();
+                                        if (dr2.HasRows)
+                                        { 
+                                            while (dr2.Read())
+                                            {
+                                        
+                                                yield = yield + double.Parse(dr2["produceval"].ToString());
+                                                kg = kg + double.Parse(dr2["prodheavy"].ToString());
+                                                sheets = sheets + double.Parse(dr2["opcount"].ToString());
+                                        
+                                                <td align="center">@dr2["heavyval"].ToString() </td>
+                                                <td align="center">@dr2["produceval"].ToString()</td>
+                                                <td align="center">@dr2["prodname"].ToString()</td>
+                                                <td align="center">@dr2["prodheavy"].ToString()</td>
+                                                <td align="center">
+                                                    @{string gbgid = ""; gbgid = dbobj.get_dbvalue(comconn3, "select bgtitle from bag where citemid = '" +dr["citemid"].ToString() + "'");}
+                                                    @gbgid
+                                                </td>
+                                                <td align="center">@dr2["opcount"].ToString()</td>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+                                            <td align="center"></td>
+
+                                        }
+                                        dr2.Close();
+                                        dr2.Dispose();
+                                    }
+                                    
+                                </tr>
+                                    
+                        }
+                        dr1.Close();
+                        dr1.Dispose();
+                        comconn.Close();
+                        comconn.Dispose();
+                        comconn1.Close();
+                        comconn1.Dispose();
+                        comconn2.Close();
+                        comconn2.Dispose();
+                        comconn3.Close();
+                        comconn3.Dispose();
+            }
+            <tr>
+                <td align="center">合計</td>
+                <td align="center">@i 筆</td>
+                <td align="center">@area</td>
+                <td align="center">&nbsp;</td>
+                <td align="center">@yield</td>
+                <td align="center">&nbsp;</td>
+                <td align="center">@kg</td>
+                <td align="center">&nbsp;</td>
+                <td align="center">@sheets</td>
+            </tr>
+        </table>
+        ____________________________________________________________________________________________________________
+        <br />
+        <table border=0 width=60%>
+            <tr>
+                <td colspan=10>
+                    ※下方請填寫
+                </td>
+            </tr>
+            <tr><td><br /></td></tr>
+            <tr>
+                <td colspan=10>
+                    申請人&nbsp;@applicant &nbsp;&nbsp;申請使用&nbsp;&nbsp; @applicant&nbsp;&nbsp;@sheets 張，經審核符合請准予核發證明標章。註冊證明標
+                    <br />章編號自&nbsp;&nbsp;&nbsp;&nbsp;號至&nbsp;&nbsp;&nbsp;&nbsp;號，計&nbsp;&nbsp;&nbsp;捲&nbsp;&nbsp;&nbsp;張(每捲&nbsp;&nbsp;張)
+
+                </td>
+            </tr>
+            <tr><td><br /></td></tr>
+            <tr><td><br /></td></tr>
+            <tr>
+                <td>檢查員：</td>
+                <td>&nbsp;</td>
+                <td>承辦人：</td>
+                <td>&nbsp;</td>
+                <td>課長：</td>
+                <td>&nbsp;</td>
+                <td>秘書：</td>
+                <td>&nbsp;</td>
+                <td>鄉長：</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+
+    </table>
+</center>
+</body>
+
+</html>

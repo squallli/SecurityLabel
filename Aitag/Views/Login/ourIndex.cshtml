@@ -1,0 +1,106 @@
+﻿@model iMedia.Models.Logoin
+@{   Layout = null;}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>聯廣集團營運管理系統</title>
+    <style type="text/css">
+<!--
+body {
+	margin-left: auto;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	letter-spacing: 1px;
+	background-color: #ffffff;
+}
+.hindtext
+{
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 0px;
+    border-width: 0px;
+    background-color: #F8F8F8;
+    border-left-color: #F8F8F8;
+    border-right-color: #F8F8F8;
+    border-top-color: #F8F8F8;
+    border-bottom-color: #F8F8F8;
+    font-family:"Arial","微軟正黑體","Georgia","Helvetica","sans-serif";
+}
+.field-validation-error {
+     FONT-SIZE:12px;
+    color:#990000;
+   font-family:"Arial","微軟正黑體","Georgia","Helvetica","sans-serif";
+}
+
+    .validation-summary-errors ul li {
+       font-family:"Arial","微軟正黑體","Georgia","Helvetica","sans-serif";
+	   font-size:15px;
+		height: 25px;
+		line-height: 25px;
+      color:#990000;
+    list-style: none;
+    width:100%;
+
+-->
+</style>
+
+</head>
+<body>
+    <div>
+        <table width="1003" height="585" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr valign="middle">
+    <td>
+            @using (Html.BeginForm()) {   
+                <center>@Html.ValidationSummary(true)</center>
+    <table border="0" cellspacing="0" cellpadding="0" align="center">
+      <tr>
+        <td width="700" height="520" align="center" valign="top" background="@Url.Content("~/images/loginbg.jpg")" >
+                    
+        <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="198" height="288" colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+              <td>帳號：</td>
+            <td height="29" align="left">
+                @Html.TextBoxFor(m => m.UserName, new { @class="hindtext"})
+             </td>
+          </tr>
+              <tr>
+            <td height="29" align="left"  colspan="2">
+                 @Html.ValidationMessageFor(m => m.UserName)        
+            </td>
+          </tr>
+          <tr>
+            <td>密碼：</td>
+            <td height="29" align="left">@Html.PasswordFor(m => m.Password, new {@class ="hindtext" })</td>
+          </tr>
+          <tr>
+            <td height="29" align="left"  colspan="2">
+                 @Html.ValidationMessageFor(m => m.Password)        
+            </td>
+          </tr>
+
+          <tr>
+            <td height="34" align="center" colspan="2">
+			<input type="image" src="@Url.Content("~/images/btn_login.png")" />
+                 
+			</td>
+          </tr>
+        </table>
+ 
+                  
+        </td>
+      </tr>
+
+    </table>
+            }
+                
+    </td>
+  </tr>
+</table>
+    </div>
+</body>
+</html>

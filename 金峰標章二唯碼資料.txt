@@ -1,0 +1,3 @@
+網域 + 格式 + 序號
+
+http://ttjfng.sbdt.com.tw:8080/certify/certifyformdo?barcode=AZ00001

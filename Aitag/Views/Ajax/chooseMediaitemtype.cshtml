@@ -1,0 +1,150 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.mediaitemtype>
+@using MvcPaging
+@using System.Data.SqlClient;
+@{
+    ViewBag.Title = "媒體選取畫面";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection erpconn = dbobj.get_conn("AitagBill_DBContext");
+
+    string cdelID = "";
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript">
+    var Mmino = $('#@ViewBag.no', opener.document).val();
+    var Mmititle = $('#@ViewBag.Mname', opener.document).val();
+
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/Ajax/chooseMediaitemtype";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+    function undoMmititle() {
+        $('#@ViewBag.no', opener.document).val($("#backMmino").val());
+        $('#@ViewBag.Mname', opener.document).val($("#backMmititle").val());
+        window.close();
+    }
+
+    function SetSelfopener(cdel) {
+        Mmino = $('#@ViewBag.no', opener.document).val();
+        Mmititle = $('#@ViewBag.Mname', opener.document).val();
+        var id = cdel.val();
+        var na = cdel.next().val();
+        if (Mmino.match("'" + id + "'") != null) {//有找到
+            if (cdel.prop("checked") != true) {//沒有勾
+                Mmino = Mmino.replace("#'" + id + "'", "");
+                Mmititle = Mmititle.replace("#" + na + "", "");
+            }
+        } else {
+            if (cdel.prop("checked") == true) {//有勾
+                Mmino += "#'" + id + "'";
+                Mmititle += "#" + na;
+            }
+        }
+        $('#@ViewBag.no', opener.document).val(Mmino);
+        $('#@ViewBag.Mname', opener.document).val(Mmititle);
+
+        //alert(cdel.prop("checked"));
+        //alert(id);
+    }
+
+    function loadsearch() {
+        /*關聯查詢*/
+    }
+
+
+    $(document).ready(function ($) {
+        if ("@ViewBag.sysflag" != "L") { $("#backMmino").val(Mmino); $("#backMmititle").val(Mmititle); }
+
+        loadsearch();
+    });
+
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("chooseMediaitemtype", "Ajax", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="sysflag" name="sysflag" value="L">
+                
+                <input type="hidden" id="backMmino" name="backMmino" value="@ViewBag.backMmino">@*換頁時保留復原值*@
+                <input type="hidden" id="backMmititle" name="backMmititle" value="@ViewBag.backMmititle">
+
+                <input type="hidden" id="no" name="no" value="@ViewBag.no">@*接收元素ID  (判斷點擊資料行)*@
+                <input type="hidden" id="Mname" name="Mname" value="@ViewBag.Mname">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            @*媒體類別：*@
+                            @*Html.Raw(dbobj.get_selectobj(erpconn, "select mcno , mctitle from mediaclass", "qmcno", ViewBag.qmcno, "1"))@**@
+                            @*<br>*@結帳類別名稱：<input type="text" name="qmititle" id="qmititle" value="@ViewBag.qmititle">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable" bgcolor="#ffffff">
+                    <tr>
+                        <th width="30"><input type=checkbox name="chkall" onclick="checkall();"></th>
+                        <th width="">結帳類別編號</th>
+                        <th width="">結帳類別名稱</th>
+                    </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        
+                        <tr>
+                            <td class="colstd" align="center">
+                                @{cdelID = "cdel" + item.mino;}
+                                <input type="checkbox" name="cdel" id="@cdelID" value="@item.mino" onclick="SetSelfopener($(this));">
+                                <input type="hidden" name="mititle" id="mititle" value="@item.mititle">
+                                <script>if (Mmino.match("'" + $("#@cdelID").val() + "'") != null) { $("#@cdelID").prop("checked", true); }
+                                </script>
+                            </td>
+                            <td class="colstd">
+                                @item.mino
+                            </td>
+                            <td class="colstd">
+                                @item.mititle
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+
+    <div align=center>
+        <input type=button value="確認" class=button onclick="window.close();" id=button2 name=button2>
+        <input type=button value="取消" class=button onclick="undoMmititle();" id=button3 name=button3>
+    </div>
+}

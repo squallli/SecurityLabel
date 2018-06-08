@@ -1,0 +1,281 @@
+﻿@using System.Data;
+@using System.Data.SqlClient;
+@{
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+   
+   // string empid =Session["empid"].ToString();
+
+    string qcomid = ViewBag.qcomid, qdptid = ViewBag.qdptid, qschowner = ViewBag.qschowner;
+    if (qcomid == null)
+    {
+        qcomid = Session["comid"].ToString();
+    }
+
+    if (qdptid == null)
+    {
+        qdptid = Session["dptid"].ToString();
+    }
+
+    if (qschowner == null)
+    {
+        qschowner = Session["empid"].ToString();
+    }
+}
+@*<script type="text/javascript">
+
+    function getlayer(tmpcontent,px,py)
+    {
+        overlayer.innerHTML = tmpcontent
+        overlayer.style.posLeft = px - 200
+        alert(py)
+        overlayer.style.posTop = py + document.body.scrollTop + 20
+
+    }
+
+    function closelayer()
+    {
+        overlayer.innerHTML = ''
+    }
+</script>*@
+    <table border=1 cellpadding=0 cellspacing=0 bordercolordark=fffffff bordercolorlight=336699 bgcolor=eff1ff width=100% class=c12 style='font-size:8pt;'>
+        <tr>
+            <td height=30><font color=red><b>星期日</b></font></td>
+            <td><b>星期一</b></td>
+            <td><b>星期二</b></td>
+            <td><b>星期三</b></td>
+            <td><b>星期四</b></td>
+            <td><b>星期五</b></td>
+            <td><font color=000099><b>星期六</b></font></td>
+        </tr>
+                @for (int i = 1; i <= ViewBag.daycount; i++)
+            {
+                string tmpdate1 = ViewBag.yy + "/" + ViewBag.mm + "/" + i;
+                tmpdate1 = System.Convert.ToDateTime(tmpdate1.ToString()).ToString("yyyy/MM/dd");
+                string Week = System.Convert.ToDateTime(tmpdate1.ToString()).DayOfWeek.ToString();
+                int tmp = 0;
+
+                     switch (Week)
+                    {
+                        case "Monday":
+                            tmp= 2;
+                            break;
+                        case "Tuesday":
+                            tmp= 3;
+                            break;
+                        case "Wednesday":
+                            tmp= 4;
+                            break;
+                        case "Thursday":
+                            tmp= 5;
+                            break;
+                        case "Friday":
+                            tmp= 6;
+                            break;
+                        case "Saturday":
+                            tmp= 7;
+                            break;
+                        case "Sunday":
+                            tmp= 1;
+                            break;
+                    }
+
+
+                 if(i==1)
+                     {
+                         @Html.Raw("<tr height=65>");
+                        for (int k = 1; k <= tmp - 1; k++)
+                        {@Html.Raw(" <td width=100>&nbsp;</td>");}
+                    }
+                    else
+                   {
+                     if (tmp == 1)
+                     { @Html.Raw("<tr height=65>"); }
+                    }
+
+                string fontcolor = "red";
+                string tmpholiday=dbobj.check_holiday(tmpdate1,Session["comid"].ToString());
+
+                if(tmpholiday=="1")
+                { fontcolor = "#000000"; }
+
+                string bordercolor = " border=0";
+
+                if (tmpdate1 == System.Convert.ToDateTime(DateTime.Now).ToString("yyyy/MM/dd"))
+                { bordercolor = " border=1 style='border:1px solid #FF0000'"; }
+
+                string ssql_2="";
+                ssql_2 = "SELECT schid , schtype , schtitle , schcontent , schchief , schloginer , schowner , schdate , schhour , schmin , schedate , schehour , schemin , stype FROM schedule where comid = '" + qcomid + "' and schdate = '" + tmpdate1+ "' and schtype not in('3','5')  and";
+
+                //主席及與會人員及擁有者
+                //if qschowner<>"" then
+                    //tmpemid = erpobj.get_dbvalue(conn,"employee","emid"," where empid = '" & qschowner & "'")
+
+                    //ssql_2 = ssql_2 & " (( schloginer='" & qschowner & "' or"
+                    //ssql_2 = ssql_2 & " schchief ='" & qschowner & "' or"
+                    //ssql_2 = ssql_2 & " schowner ='" & qschowner & "' or"
+                    //ssql_2 = ssql_2 & " masterid like '%," & tmpemid & ",%' or"
+                    //ssql_2 = ssql_2 & " subid like '%," & tmpemid & ",%' or"
+                    //ssql_2 = ssql_2 & " otherid like '%," & tmpemid & ",%') or (schtype = '2'))  and"
+               // else
+	                ssql_2 += " ( (schtype = '0') or (schtype = '1') or (schtype = '2') or (schtype = '4') )  and";
+                    // end if
+                                        
+                    //名稱查
+                    string qschtitle = Request["qschtitle"];
+
+                    if (!string.IsNullOrWhiteSpace(qschtitle))
+                    { ssql_2 += " (schtitle like N'%" + qschtitle + "%' or schcontent like N'%" + qschtitle + "%')   and"; }
+                 
+                     ssql_2 = ssql_2.Substring(0, ssql_2.Length - 5);
+
+
+                   //請假單及出差單
+                   //===========================================
+                    ssql_2 +=" Union ";
+                    ssql_2 +="SELECT schid , schtype1 as schtype , schtitle , hstatus as schcontent , '' as schchief , '' as schloginer , empid as schowner , sdate as schdate , substring(stime ,1,2) as schhour , substring(stime ,3,2) as  schmin , edate as schedate , substring(etime ,1,2) as  schehour , substring(etime ,3,2) as  schemin , '' as stype FROM viewempnewsch where sdate <= '" + tmpdate1 + "' and edate >= '" + tmpdate1 + "'  and";
+                    
+                    if (!string.IsNullOrWhiteSpace(qschowner)) {
+                        ssql_2 += " empid = '" + qschowner + "'  and";
+                    }     
+                    else{
+                        if (!string.IsNullOrWhiteSpace(qdptid))
+                        { ssql_2 += " empid in (select empid from employee where empworkcomp = '" + qcomid + "' and empworkdepid = '" + qdptid + "' and empstatus <> '4')  and"; }
+                        else
+                        { ssql_2 += " empid in (select empid from employee where empworkcomp = '" + qcomid + "' and empstatus <> '4')  and"; }
+                    }     
+                    //===========================================
+                    ssql_2 = ssql_2.Substring(0, ssql_2.Length - 5);
+
+                    ssql_2 += " order by schdate , schhour , schmin";
+
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = comconn;
+                cmd.CommandText = ssql_2;
+                SqlDataReader dr = cmd.ExecuteReader();
+
+
+                //開始組要呈現內容
+                string tmpimg1 = "";
+                string tmpimg2 = "";
+                string tmpimg3 = "";
+                string tmpimg4 = "";
+                string tmplink = "";
+                //string content1 = "111";
+                string schname = "";
+                string schid = "";
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        schid = dr["schid"].ToString();
+                        
+                        string memoschtitle = dr["schtitle"].ToString();
+                        if (dr["schowner"] != "" && dr["schowner"] != null)
+                        { schname = " (" + dbobj.get_name(comconn1, dr["schowner"].ToString()) + ")"; }
+                         else
+                         {schname ="";}
+        
+                        tmplink = "scheduleshow?schid=" + dr["schid"].ToString() + "&schtype=" + dr["schtype"].ToString();
+                        switch (dr["schtype"].ToString())
+                        {
+                            case "0": //只有備忘擁有者是自己的才會出現
+                                if (dr["schowner"].ToString() == qschowner)
+                                {
+                                    //tmpimg1 += "<tr><td><a style='text-decoration:none' onclick=gosubmitform('E','0','" + schid + "')><img src=../Images/memo.gif border=0 title='有個人備忘' align=absmiddle><font color=#ffffcc>" + memoschtitle + "</font></a></td></tr>";
+                                    tmpimg1 += "<tr><td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=gosubmitform('E','0','" + schid + "')><img src=../Images/memo.gif border=0 title='有個人備忘' align=absmiddle><font color=#ffffcc>" + memoschtitle + "</font></span></td><tr>";
+                                }
+                                break;
+                            case "1": //個人行程
+                                //tmpimg2 += "<tr><td><a style='text-decoration:none' onclick=gosubmitform('E','1','" + schid + "')><img src=../Images/memo.gif border=0 title='有個人行程' align=absmiddle><font color=#ffffcc>" + memoschtitle + schname + "</font></a></td></tr>";
+
+                                tmpimg2 += "<tr><td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=gosubmitform('E','1','" + schid + "')><img src=../Images/memo.gif border=0 title='有個人行程' align=absmiddle><font color=#ffffcc>" + memoschtitle + schname + "</font></span></td><tr>";
+                                
+                               
+                                break;
+                            case "2": //公司行程  
+                                tmpimg3 += "<tr>";
+                                if (dr["schowner"].ToString() == qschowner)
+                                {
+                                    tmpimg3 += "<td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=gosubmitform('E','2','" + schid + "')><img src=../Images/memo.gif border=0 title='有公司行程' align=absmiddle><font color=#ffffcc>" + memoschtitle + "</font></span></td>";
+                                }
+                                else
+                                { tmpimg3 += "<td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=javascript:window.event.cancelBubble=true;window.open('" + tmplink + "','jump1','scrollbars=1,resizable=1,width=450,height=340')><img src=../Images/memo.gif border=0 title='有公司行程' align=absmiddle><font color=#ffffcc>" + memoschtitle + "</font></span></td>"; }
+                               
+                                tmpimg3 += "</tr>";
+                                break;
+                            case "8": //請假                            
+                                tmpimg4 += "<tr><td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=javascript:window.event.cancelBubble=true;window.open('" + tmplink + "','jump1','scrollbars=1,resizable=1,width=450,height=340')><img src=../Images/daliyicon.gif border=0 title='有請假資料' align=absmiddle><font color=#ffffcc>" + memoschtitle + schname + "</font></span></td></tr>";
+                             break;
+                            case "9": //出差                                
+                             tmpimg4 += "<tr><td><span style='text-decoration:none;cursor:pointer' href='#overlayer' onclick=javascript:window.event.cancelBubble=true;window.open('" + tmplink + "','jump1','scrollbars=1,resizable=1,width=450,height=340')><img src=../Images/daliyicon.gif border=0 title='有出差資料' align=absmiddle><font color=#ffffcc>" + memoschtitle + schname + "</font></span></td></tr>";
+                            break;
+                        }
+                    }
+                }
+                dr.Close();
+
+                 if (!string.IsNullOrWhiteSpace(tmpimg1))
+                 { tmpimg1 = "<table cellpadding=0 cellspacing=0 bgcolor=#EE636F width='100%'>" + tmpimg1 + "</table>"; }
+
+
+                 if (!string.IsNullOrWhiteSpace(tmpimg2))
+                 { tmpimg2 = "<table cellpadding=0 cellspacing=0 bgcolor=#6495ED width='100%'>" + tmpimg2 + "</table>"; }
+
+
+                 if (!string.IsNullOrWhiteSpace(tmpimg3))
+                 { tmpimg3 = "<table cellpadding=0 cellspacing=0 bgcolor=#fa8300 width='100%'>" + tmpimg3 + "</table>"; }
+                 
+                 if (!string.IsNullOrWhiteSpace(tmpimg4))
+                 { tmpimg4 = "<table cellpadding=0 cellspacing=0 bgcolor=#228b22 width='100%'>" + tmpimg4 + "</table>"; }
+
+                    <TD width=120 valign=top style=cursor:hand title="點選本日">
+                        <table width="100%" height="100" valign=top @Html.Raw(bordercolor)>
+                            <tr>
+                                <td valign=top>
+                                    <table cellpadding=0 cellspacing=0 border=0  width="100%" height="100%" bordercolorlight="#cc3322" bordercolordark="#ffdddd">
+                                        <td valign=top>
+                                            <table cellpadding=0 cellspacing=0 border="0"  width="100%" height="100%">
+                                                <tr height="20">
+                                                    <td width=5 valign=top rowspan=2><font color="@fontcolor">@i</font></td>
+                                                    <td valign=top>
+                                                        @{
+                string day1 = dbobj.get_dbvalue(comconn1, "select wstitle from holidayschedule where comid = '" + Session["comid"] + "' and wsdate = '" + tmpdate1 + "'");
+                                                        }
+                                                        <font color="red">@day1</font>
+                                                        <!--img src="~/Images/add.gif" alt="新增" onclick="gosubmitform('A', '0','@tmpdate1')" style="cursor: pointer"-->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign=top width=118>@Html.Raw(tmpimg1)@Html.Raw(tmpimg2)@Html.Raw(tmpimg3)@Html.Raw(tmpimg4)</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                            </TD>
+                   if(i==ViewBag.daycount)
+                   {
+                       for (int k = 1; k <= 7-tmp; k++)
+                       { @Html.Raw(" <td  width=115>&nbsp;</td>"); }
+                   }
+                   else
+                   {
+                       if (tmp == 7)
+                       { @Html.Raw("</tr>"); }
+                   }
+
+
+            }
+
+    </table>
+@{
+    comconn.Close();
+    comconn.Dispose();
+    comconn1.Close();
+    comconn1.Dispose();
+}

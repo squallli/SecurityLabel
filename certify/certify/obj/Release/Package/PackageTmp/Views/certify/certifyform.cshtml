@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=11.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <title>AITag-認證輸入畫面</title>
+    <link href="/frontcss/style.css" rel="stylesheet" type="text/css">
+    <!--[if lt IE 9]>
+    <script src="/frontjs/html5.js"></script>
+    <script src="/frontjs/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <script>
+        function checkdata() {
+            if (form1.barcode.value == "") {
+                alert('條碼編號不可為空白');
+                return false;
+            }
+        }
+
+
+    </script>
+
+</head>
+
+<body>
+    <!--header-->
+    <div class="header">
+        <div class="container">
+            <div id="TOP"><img src="/frontimages/top.png" title="回到上面" /></div>
+            <div class="banner"><img src="/frontimages/banner2.jpg" alt="banner" border="0" /></div>
+            <div class="logo"><a href="index.html"><img src="/frontimages/logo.png" alt="LOGO" border="0" /></a></div>
+        </div>
+    </div>
+    <!--header-end-->
+    @*<div class="topmenu">
+        <ul>
+        <li><a href="Application.html">申請認證標章</a></li>
+        <li><a href="History.html">查詢歷史紀錄</a></li>
+        <li><a href="Certification.html">認證標章</a></li>
+        <li><a href="error.html">認證成功失敗</a></li>
+        <li><a href="login.html">登出</a></li>
+        </ul>
+        </div>*@
+
+    <!--article-->
+    @using (Html.BeginForm("certifyformdo", "certify", FormMethod.Post, new { @name = "form1", @id = "form1", @onsubmit = "return checkdata()" }))
+    {
+        @Html.ValidationSummary(true)
+        <div class="article">
+            <div class="container">
+                <div class="maintitle"><h1>認證碼輸入介面</h1></div>
+
+                <div class="loginbox">
+                    <input class="form_text" id="barcode" name="barcode" placeholder="條碼編號" size="22" type="text" /><br />
+                    <input class="form_text" id="serno" name="serno" placeholder="亂數碼" size="22" type="text" /><font color="red">(如只需Qrcode編號,則不必輸入)</font><br />
+                    <input name="Login" type="submit" id="Login" value="開始驗證" class="button2" />
+                </div>
+
+
+            </div>
+        </div>
+    }
+    <!--article-end-->
+    <!--footer-->
+    <div class="footer">
+        <div class="container">Copyright©2017 All rights reserved.</div>
+    </div>
+    <!--footer-end-->
+
+    <script type="text/javascript" src="/frontjs/jquery.min.js"></script>
+    <script type="text/javascript" src="/frontjs/top.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+﻿@using System.Data.SqlClient
+@using MvcPaging
+@{
+    ViewBag.Title = "maincontentview";
+    string mcid = Request["mcid"].ToString();
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    string sql = "update maincontent set mclick= mclick + 1 where mcid = " + mcid + " and comid= '" + Session["comid"].ToString() + "'";
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = comconn;
+    cmd.CommandText = sql;
+    cmd.ExecuteNonQuery();
+
+
+    sql = "select * from maincontent where mcid = " + mcid + " and comid='" + Session["comid"].ToString() + "'";
+    cmd.CommandText = sql;
+    SqlDataReader dr = cmd.ExecuteReader();
+    dr.Read();
+}
+@*readallman = trim(rs("readallman"))
+    <!--#include file=setprivtbcount.asp-->
+*@
+@*<script type="text/javascript">
+    function dfile(tvalue)
+    {
+        FormList.target = '_blank';
+        FormList.action = "/oa/cupfile?" + tvalue;
+        FormList.submit();
+        FormList.action = "/oa/maincontentview";
+        FormList.target = '';
+      
+    }
+</script>*@
+@using (Html.BeginForm("maincontentview", "oa", FormMethod.Post, new { @name = "FormList", @id = "FormList" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center">
+                <table cellpadding=4 cellspacing=0 class=c12 border=1 width=90% class="maintable" align=center>
+                    <tr>
+                        <td colspan=2 class="headfont">
+                                @{  string tmpname = "";
+                                  if (dr["mclassid"].ToString() != "0")
+                                  {
+                                      string tmpwhere = " where mclassid = " + dr["mclassid"].ToString();
+                                      tmpname = dbobj.get_dbvalue(comconn1, "select mclasstitle from  mainclass " + tmpwhere);
+                                      tmpname = tmpname + " ／ ";
+                                  }
+                                }
+                                @(tmpname + dr["mctitle"].ToString()).....<b>( @dbobj.get_date(dr["mdate"].ToString(), "1") )
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <table cellpadding=5 cellspacing=0 border=0 width=100% align=center style="line-height:180%">
+                                <tr>
+                                    <td>
+                                        <img src=/images/art.gif align=absmiddle> 標題：@dr["mctitle"].ToString()<br>
+                                        <img src=/images/art.gif align=absmiddle> 發表人：@dbobj.get_name(comconn1, dr["ownman"].ToString()) 
+                                        @if (dbobj.get_dbnull2(dr["mchttp"]) != "")
+                                        {
+                                           <input type="button" value="相關連結 + Link" class="abutton" onclick="window.open('@dr["mchttp"].ToString()');"/>  
+                                        }
+                                        <p>
+                                        @{
+                                            string mccontent = dr["mccontent"].ToString().Trim();
+                                            mccontent = mccontent.Replace("href=", " target=_blank href=");
+                                            @Html.Raw(mccontent);
+                                                            dr.Close();
+                                                            dr.Dispose();
+                                        }
+
+                                    </td>
+                                </tr>
+                                @{
+                                    //抓頭檔案
+
+                                    sql = "select * from contupload where mcid = " + mcid + " order by cupid";
+                                    cmd.CommandText = sql;
+                                    dr = cmd.ExecuteReader();
+                                    int tout = 0;
+                                }
+                                <tr><td><hr size=1></td></tr>
+                                <tr>
+                                    <td>
+                                        <table cellpadding=3 cellspacing=0 class=c12>
+                                            @while (true)
+                                            {
+                                                <tr>
+                                                    @for (int i = 1; i <= 3; i++)
+                                                    {
+                                                        if (!dr.Read()) { tout = 1; break; }
+                                                        @*<td><a href="/oa/cupfile?cupid=@dr["cupid"].ToString()" target="_Blank" class="abutton" title="@dr["cfilesize"].ToString()Bytes">@dr["cfilename"].ToString() (@dbobj.get_MB(dr["cfilesize"].ToString()) MBytes)</a></td>*@
+                                                         @*<td><input id="AA" type="button" value="@dr["cfilename"].ToString() (@dbobj.get_MB(dr["cfilesize"].ToString()) MBytes)" class="abutton" onclick="dfile('cupid=@dr["cupid"]');" /></td>*@
+                                                        decimal filesizestr = Math.Round((Convert.ToDecimal(dr["cfilesize"]) / 1000), 2);
+                                                        <td><input id="AA" type="button" value="@dr["cfilename"].ToString() (@filesizestr KBytes)" class="abutton" onclick="window.open('../downfile/@dr["cfiletitle"]')" /></td>
+                                                       
+                                                    }
+                                                </tr>
+                                                if (tout == 1) { break; }
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+               @{
+                dr.Close();
+                dr.Dispose();
+                comconn.Close();
+                comconn.Dispose();
+                comconn1.Close();
+                comconn1.Dispose();
+               }
+            </td>
+        </tr>
+        <tr><td align=center> <input type=button value="回總覽" class=button onclick="javascript: window.history.go(-1);" id=button4 name=button4></td></tr>
+    </table>
+}
+<table>
+    <tr><td>&nbsp;</td></tr>
+</table>

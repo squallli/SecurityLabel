@@ -1,0 +1,75 @@
+﻿@model Aitag.Models.sublevel1
+@using MvcPaging
+@{
+    ViewBag.Title = "privsublevel1";
+    Layout = "";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("privsublevel1", "sublevel1", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+
+    <input type="hidden" id="tmpsid" name="tmpsid" value="@Model.sid">
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <table align="center" border="1" cellpadding="10" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="center" bgcolor="#0084bc"><font color=ffffff>異動權限</font></td>
+                    </tr>
+                    
+                    <tr>
+                        <td align="right"> 閱讀權限</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_radioobj(comconn, "select chkcode,chkitem from checkcode where chkclass='15' order by chkcode", "subread", @Model.subread))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 新增權限</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_radioobj(comconn, "select chkcode,chkitem from checkcode where chkclass='15' and chkcode <> '1' order by chkcode", "subadd", @Model.subadd))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 修改權限</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_radioobj(comconn, "select chkcode,chkitem from checkcode where chkclass='15' order by chkcode", "submod", @Model.submod))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 刪除權限</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_radioobj(comconn, "select chkcode,chkitem from checkcode where chkclass='15' order by chkcode", "subdel", @Model.subdel))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input type="button" value="關閉視窗" class="abutton" onclick="javascript:window.close();">
+
+                        </td>
+                        
+                    </tr>
+                    
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

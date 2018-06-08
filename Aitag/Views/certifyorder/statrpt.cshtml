@@ -1,0 +1,229 @@
+﻿@using System.Data.SqlClient
+@{
+    Layout = "";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+    body {
+        font-family: "標楷體",  Arial, Helvetica, sans-serif;
+    }
+    table {
+      border-collapse:collapse;
+      padding:0 0 0 0;
+      }
+    tr {
+      mso-yfti-irow:0;mso-yfti-firstrow:yes;
+      border-collapse:collapse;
+      padding:0 0 0 0;
+      }
+    td {
+      border-collapse:collapse;
+      padding:0 0 0 0;
+      }
+    a {
+      border-collapse:collapse;
+      padding:0 0 0 0;
+    }
+    span {
+      border-collapse:collapse;
+      padding:0 0 0 0;
+    }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+    <center>
+        <table border=0 width=60%>
+           
+                  <tr >
+                     <td align="center" colspan=3><font size=5>註冊證明標章使用申請數量彙整表</font>
+                    </td>
+                  </tr>
+					<tr>
+                        <td width=140>申請日期：</td>
+						<td  colspan=3>
+                            @{string tmptoday = dbobj.get_date(DateTime.Now.ToString(), "1");}
+                            @tmptoday
+                        </td>
+					 </tr>
+					 <tr>
+						<td >受委託米廠：</td>
+						<td colspan=3> </td>
+					 </tr>
+					 <tr>
+                    <td>受託農民數： </td>
+                    <td colspan=3>
+                        @{string vnumber = dbobj.get_dbvalue(comconn1, "select count(farmerno) from  ( select DISTINCT(farmerno) from certifyorder where costatus <> '0' and comid = '" + Session["comid"] + "') as tmp");}
+                        @(vnumber)筆
+                    </td>
+					 </tr>
+					 <tr>
+						<td >農地地號總比數：</td>
+						<td>
+                            @*@{string vcount = dbobj.get_dbvalue(comconn1, "select DISTINCT(codno) from certifyorderdet where comid = '" + Session["comid"] + "'");}                         
+                            @(vcount)筆*@
+                            @{
+                                string sqlb = "select * from certifyorderdet where comid = '" + Session["comid"] + "'";
+                                SqlCommand cmd2 = new SqlCommand(sqlb, comconn1);
+                                SqlDataReader dr3 = cmd2.ExecuteReader();
+                                int i = 0;
+                                while (dr3.Read())
+                                {
+                                    i++;
+                                }
+                                dr3.Close();
+                                dr3.Dispose();
+                            }
+                            @(i)筆
+
+                        </td>
+						<td  colspan=2>彙整表代碼</td>
+					 </tr>
+					 <tr>
+						<td >種植面積總計：</td>
+						<td  >
+                            @{string area = dbobj.get_dbvalue(comconn1, "select SUM(fwarea) AS fwarea from certifyorderdet where comid = '" + Session["comid"] + "'");}                         
+                             @(area)公頃</td>
+					
+						<td  colspan=2 rowspan=3>&nbsp;</td>
+					 </tr>
+					  <tr>
+						<td>稻穀總產量：</td>
+						<td>
+                            @{string yield = dbobj.get_dbvalue(comconn1, "select SUM(produceval) AS produceval from certifyorderdet where comid = '" + Session["comid"] + "'");}                            
+                              @(yield)公斤
+                        </td>
+					 </tr>                  
+					@*<tr>
+						<td width=22%>申請認證白米總重量：</td>
+						<td  colspan=3>
+                            @{string gbgid = dbobj.get_dbvalue(comconn1, "select SUM(prodheavy) AS prodheavy1 from viewcertifyorderdet where prodname  = '白米' and comid = '" + Session["comid"] + "'");
+                                  if (gbgid == "")
+                                  {
+                                      gbgid = "0";
+                                  }                                 
+                              }
+                            @(gbgid)公斤
+                        </td>
+					 </tr>
+                    
+					<tr>
+						<td>申請認證糙米總重量：</td>
+						<td  colspan=3>
+                            @{gbgid = dbobj.get_dbvalue(comconn1, "select SUM(prodheavy) AS prodheavy1 from viewcertifyorderdet where prodname  = '糙米' and comid = '" + Session["comid"] + "'");
+                                  if (gbgid == "")
+                                  {
+                                      gbgid = "0";
+                                  }                              
+                              }
+                            @(gbgid)公斤
+                        </td>
+					 </tr>
+					<tr>
+						<td >申請認證一等米總重量：</td>
+						<td  colspan=3>
+                            @{gbgid = dbobj.get_dbvalue(comconn1, "select SUM(prodheavy) AS prodheavy1 from viewcertifyorderdet where prodname  = '一級米' and comid = '" + Session["comid"] + "'");
+                                if (gbgid == "")
+                                {
+                                    gbgid = "0";
+                                }
+                            }
+                            @(gbgid)公斤
+                        </td>
+					 </tr>*@
+                   
+					<tr>
+						<td  colspan=4><br><br>申請各類標章之編號及數量表</td>
+					 </tr>
+                  
+               
+					<table border=1 width=60%>
+						<tr>							
+							<td align="center" >種類</td>
+							<td align="center" >標題類別</td>
+							<td align="center" >地號</td>
+							@*<td align="center" >迄號</td>*@
+							<td align="center" >合計張數</td>
+							<td align="center" >合計公斤數</td>
+						</tr>
+
+                        @{                       
+                            string sqlstr = "select * from certifyorderdet where comid = '" + Session["comid"] + "'";
+                        SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+                        SqlDataReader dr = cmd.ExecuteReader();                        
+                        string bgid1;    
+                            while (dr.Read())
+                            {
+                                bgid1 = dbobj.get_dbvalue(comconn1, "select bgtitle from bag where bgid = '" + dr["bgid"].ToString() + "'");                            
+						    <tr>							
+							    <td>@dr["prodname"].ToString()</td>
+							    <td>@bgid1</td>
+							    <td>@dr["ldno"].ToString()</td>
+							    <td>@dr["opcount"].ToString()</td>
+							    <td>@dr["prodheavy"].ToString()</td>
+						    </tr>
+						    }                       
+                        }
+						<tr>							
+							<td>總計</td>							
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>
+                                @{string sheets = dbobj.get_dbvalue(comconn1, "select SUM(opcount) AS opcount from certifyorderdet");}
+                                @(sheets)張</td>
+							<td>
+                                @{string gbgid = dbobj.get_dbvalue(comconn1, "select SUM(prodheavy) AS prodheavy1 from certifyorderdet");
+                                    if (gbgid == "")
+                                    {
+                                        gbgid = "0";
+                                    }
+                                    dr.Close();
+                                    dr.Dispose();
+                                    comconn.Close();
+                                    comconn.Dispose();
+                                    comconn1.Close();
+                                    comconn1.Dispose();
+                                }
+                                @(gbgid)公斤
+                            </td>
+						</tr>						
+					</table>
+				
+					<table border=0 width=60%>
+						<br>
+						<tr>							
+							<td colspan=3 >米廠負責人：</td>
+						</tr>
+						<tr ><td colspan=3><br></td></tr>
+						<tr ><td colspan=3><br></td></tr>
+						<tr >
+							<td align="center" width=8% rowspan=3 >備註：</td>
+						</tr>
+						<tr >
+							<td  colspan=2>1.本表一式三份，經米廠負責人核章後，連同池上米註冊證明標章使用申請書及相關附件一併審。</td>		
+						</tr>
+						
+						<tr >
+							<td colspan=2>2.標章起訖編號由池上鄉公所填寫，經核准後一份交由廠商收存。</td>		
+						</tr>
+						
+						
+						
+					</table>
+			
+					
+        </table>
+    </center>
+</body>
+
+</html>

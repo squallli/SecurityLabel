@@ -1,0 +1,111 @@
+﻿@model Aitag.Models.progparam
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+           /* if ($("#systime").val() == "")
+            { errmsg = "請選擇類別代碼\n"; }
+            else
+            {
+                if (isNaN($("#systime").val()) == "")
+                { errmsg = "其他系統自動讀取Server時間請輸入數字\n"; }
+            }*/
+
+           
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "progparam", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @*Html.ValidationSummary(true)*@
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="comid" name="comid" value="@Model.comid">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">系統參數畫面</td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 後來使用者登入後踢掉前面使用者</td>
+                        <td align="left">
+                            <input type="radio" name="ifkickuser" value="y" @if (Model.ifkickuser == "y") { @("checked") }>是
+                            <input type="radio" name="ifkickuser" value="n" @if (Model.ifkickuser == "n") { @("checked") }>否
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 其他系統自動讀取Server時間</td>
+                        <td align="left">
+                            <input type="text" maxlength=9 class="c12border" id="systime" name="systime" value="@Model.systime" /> 秒 <font color=990000>  請輸入數字</font>
+                        </td>
+                    </tr>
+                                        
+                @*<tr>
+                    <td align=right>年假批次產生截止年份</td>
+                    <td>
+                        <select name="stopholidayyear">
+                            <option value="">請選擇</option>
+                            @{
+                                int year1 = System.DateTime.Now.Year + 1 ;
+                                for (int i = 2008; i <= year1; i++)
+                                {
+                                    <option value="@i" @if(Model.stopholidayyear==@i){ @("selected")}>@i</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 補休天數期限設定</td>
+                        <td align="left">
+                            <input type="text" maxlength=50 class="c12border" id="pgmail1" name="pgmail1" value="@Model.pgmail1" />
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 年假發放鎖定</td>
+                        <td align="left">
+                            <input type="radio" name="ifclose" value="y" @if (Model.ifclose == "y") { @("checked")   }>是
+                            <input type="radio" name="ifclose" value="n" @if (Model.ifclose == "n") { @("checked")   }>否
+                        </td>
+                    </tr>*@
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "progparam", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

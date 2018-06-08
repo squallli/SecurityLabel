@@ -1,0 +1,280 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.certifyorder>
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.target="";
+                FormList.action = "/certifyorder/List";
+                break;
+            case "A":
+                FormList.target="";
+                FormList.action = "/certifyorder/Add";
+                break;
+            case "E":
+                FormList.target="";
+                FormList.action = "/certifyorder/Edit?" + tmpkey;
+                break;
+            case "G":
+                FormList.target="";
+                FormList.action = "/certifyorder/givestock?" + tmpkey;
+                break;
+            case "R":
+                FormList.target="_blank";
+                FormList.action = "/certifyorder/givestockrpt?" + tmpkey;
+                break;
+            case "D":
+                FormList.target="";
+                FormList.action = "/certifyorder/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+        else {
+            var errmsg = "";
+            if ($("#qsadddate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qsadddate, "申請起日期") }
+
+            if ($("#qeadddate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qeadddate, "申請迄日期") }
+
+            if ($("#qscgivedate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qscgivedate, "標章核發起日期") }
+
+            if ($("#qecgivedate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qecgivedate, "標章核發迄日期") }
+
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("List", "certifyorder", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" })) 
+{
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr valign=top>
+        <td align="center" colspan="2">          
+            <input type="hidden" id="page" name="page" value="@ViewBag.page">
+            <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+            <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            狀態：
+                            @{string Selectstatus = "select chkcode,chkitem from checkcode where chkclass = '34' order by chkcode";
+                              Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qcostatus", ViewBag.qcostatus, "1");}@Html.Raw(Selectstatus)&nbsp;
+                            認證項目：
+                            @{Selectstatus = "select citemid,citemname from certifyitem where  comid = '" + Session["comid"] + "'  order by citemid";
+                              Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qcitemid", ViewBag.qcitemid, "1");}@Html.Raw(Selectstatus)&nbsp;
+                            標章使用編號：<input type="text" name="qcodno" id="qcodno" value="@ViewBag.qcodno">
+                            農戶：<input type="text" name="qfarmerno" id="qfarmerno" value="@ViewBag.qfarmerno" size="15">
+                            委託廠商：<input type="text" name="qvendno" id="qvendno" value="@ViewBag.qvendno" size="15"><br />
+                            <font color=cc3422>
+                                申請日期：
+                                <input type=text name="qsadddate" id="qsadddate" value="@ViewBag.qsadddate" size=12 maxlength=10 class=c12border>&nbsp;
+                                <img src="../images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                                <script type="text/javascript">
+                                    cal.manageFields("f_btn", "qsadddate", "%Y/%m/%d");
+                                </script> ~
+                           
+                                <input type=text name="qeadddate" id="qeadddate" value="@ViewBag.qeadddate" size=12 maxlength=10 class=c12border>&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn1", "qeadddate", "%Y/%m/%d");
+                            </script>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                             標章核發日期：
+                                <input type=text name="qscgivedate" id="qscgivedate" value="@ViewBag.qscgivedate" size=12 maxlength=10 class=c12border>&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn2" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn2", "qscgivedate", "%Y/%m/%d");
+                            </script> ~
+                            
+                                <input type=text name="qecgivedate" id="qecgivedate" value="@ViewBag.qecgivedate" size=12 maxlength=10 class=c12border>&nbsp;
+                                <img src="../images/show-calendar.gif" border=0 id="f_btn3" style='cursor: pointer'>
+                                <script type="text/javascript">
+                                    cal.manageFields("f_btn3", "qecgivedate", "%Y/%m/%d");
+                                </script>
+                             </font>
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>          
+        </td>
+    </tr>
+    <tr class="pagestyle">
+        <td align="left" class="buttontd">         
+            <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 0,'');}" />     
+            <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')"/>   
+        </td>
+        <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+    </tr> 
+    <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                    <!--th width="30">順序</th-->
+                    <th width="60">
+                        狀態
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('costatus', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('costatus', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="80" align="left">
+                        認證項目<br />標章項目
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('citemid', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('citemid', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="110">
+                        標章使用編號
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('codno', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('codno', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="80">
+                        農戶編號 
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('farmerno', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('farmerno', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                        <br />農戶姓名&nbsp;&nbsp;&nbsp;&nbsp;
+                    </th>
+                    <th>
+                        電話
+                    </th>
+                    <th width="80">
+                        委託廠商
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('vendno', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('vendno', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="40">
+                        期別
+                    </th>
+                    <th>
+                        申請日期
+                    </th>
+                    <th>
+                        標章<br />核發日期
+                    </th>
+                    <th>
+                        備註
+                    </th>
+                    <th width="40">修改</th>
+                    <th width="60">核發確認</th>
+                    <th width="50">列印</th>
+                </tr>
+           
+                @foreach (var item in Model)
+                {
+                    <tr style="font-size:9pt">
+                        <td class="colstd" align="center">
+                            <input type="checkbox" name="cdel" id="cdel" value="@item.codno">
+                        </td>
+                        <td class="colstd">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass = '34' and chkcode = '" + item.costatus + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + item.citemid + "'");}
+                            @dbtitle
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select cftitle from certifystamp where csid = '" + item.csid + "'");}
+                            @if (dbtitle != "") { @("/ " + dbtitle) }
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.codno
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.farmerno
+                            <br />
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + item.farmerno + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select ('電話:'+ISNULL(ftel, '')+'<br>手機:'+ ISNULL(fmob, '')) as tel1 from farmer where farmerno = '" + item.farmerno + "'");}
+                            @Html.Raw(dbtitle)
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.vendno
+                            <br />
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + item.vendno + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.certime
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.adddate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.cgivedate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.cocomment
+                        </td>
+                        <td class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'codno=@item.codno')" /> </td>
+                        <td class="colstd"><input id="ebut" type="button" value="核發確認" class="abutton" onclick="return submitform('G',@ViewBag.page, 'codno=@item.codno')" /> </td>
+                        <td class="colstd"><input id="abut5" type="button" value="證明書" class="abutton" onclick="return submitform('R',@ViewBag.page, 'codno=@item.codno')" /> </td>
+
+                    </tr>
+                }
+                @{
+                comconn.Close();
+                comconn.Dispose();
+               // comconn1.Close();
+               // comconn1.Dispose();
+                }
+            </table>
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+<tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+</table>
+}
+
+
+           
+
+
+
+          
+

@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>台北國際書展後台管理系統</title>
+<link rel="stylesheet" href="ie4.css"/>
+    @Styles.Render("~/Content/css")
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body >
+<div id="maim">
+<table width="100%" cellpadding="0" cellspacing="0"border="0">
+<tr>
+<td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+         <tr>
+            <td align="right">
+                <table cellpadding="0" width="100%" cellspacing="0" ="0">
+                  <tr >
+                    <td align="left" ><img src="@Url.Content("~/images/banner.jpg")" alt=""/></td>
+                    <td  align="left" >Hello,測試者<br/><a href='@Url.Action("Logout", "Account")'><font color='#000000'>登出</font></a> <font color="#FF8900">|</font> 
+                        <a href='#' target="_blank"><font color='#000000'>Website</font></a></td>
+                  </tr>
+                </table>
+           </td>
+          </tr>	
+         <tr align="left" ><td bgcolor="#5C574F" align="left" height="20">&nbsp;</td></tr>
+	    </table>
+</td>
+</tr>
+<tr><td align="center" valign="top">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+    <td  valign="top">
+    <table width="200" border='0' cellpadding='5' cellspacing='0' style='font-family:微軟正黑體'><tr><td class='lmenu01'>網站資料管理</td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Categorymain.aspx?sid=101&realsid=200' title='網站目錄資料維護'><font color='#000000'>網站目錄資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Webmaincontentmain.aspx?sid=101&realsid=205' title='網站內容資料維護'><font color='#000000'>網站內容資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Teamworkmain.aspx?sid=101&realsid=208' title='團隊及董事資料維護'><font color='#000000'>團隊及董事資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Indeximgmain.aspx?sid=101&realsid=210' title='首頁圖片資料維護'><font color='#000000'>首頁圖片資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Empplanmain.aspx?sid=101&realsid=214' title='菁英計畫資料維護'><font color='#000000'>菁英計畫資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Categoryclassmain.aspx?sid=101&realsid=215' title='財務報表&公告資料維護'><font color='#000000'>財務報表&公告資料維護</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Mailquestionmain.aspx?sid=101&realsid=219' title='聯絡我們管理作業'><font color='#000000'>聯絡我們管理作業</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Contemailedit.aspx?sid=101&realsid=222' title='聯絡我們信箱資料維護'><font color='#000000'>聯絡我們信箱資料維護</font></a></td></tr><tr><td class='lmenu01'>權限管理系統</td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Passwdedit.aspx?sid=104&realsid=211' title='個人密碼設定'><font color='#000000'>個人密碼設定</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Privrolemain.aspx?sid=104&realsid=212' title='權限角色管理作業'><font color='#000000'>權限角色管理作業</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Employeemain.aspx?sid=104&realsid=213' title='使用者管理作業'><font color='#000000'>使用者管理作業</font></a></td></tr><tr><td class='lmenu02'><span class='tfont'>■</span>&nbsp;<a href='Systemlogmain.aspx?sid=104&realsid=218' title='系統異動紀錄查詢'><font color='#000000'>系統異動紀錄查詢</font></a></td></tr><tr><td class='lmenu03'><a href='Checkcodemain.aspx?sid=104&realsid=220' title='共用代碼資料維護'><font color='#ffffff'>共用代碼資料維護</font></a></td></tr></table>
+    </td>
+    <td valign="top">
+         <p></p>&nbsp;
+        <table cellpadding="0" cellspacing="0" width="96%" bgcolor="#ffffff" align=center border=0>
+		<tr>
+		<td valign="top">
+			@RenderBody()
+		</td></tr>
+		</table>      
+
+    </td>
+      </tr>
+    </table>
+</td></tr>
+</table>
+</div>       
+</body>
+</html>
+@Scripts.Render("~/bundles/jquery")
+@RenderSection("scripts", required: false)

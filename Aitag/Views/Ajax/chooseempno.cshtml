@@ -1,0 +1,172 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.employee>
+@using MvcPaging
+@using System.Data.SqlClient;
+@{
+    ViewBag.Title = "職代人選取畫面";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/Ajax/chooseempno";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function SetSelfopener(empid, empname) {
+        $("form[name='@ViewBag.fname']", opener.document).find("input[name='@ViewBag.tmp1']").val(empid);
+        $("form[name='@ViewBag.fname']", opener.document).find("input[name='@ViewBag.tmp2']").val(empname);
+        window.close();
+    }
+
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("chooseempno", "Ajax", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+
+                <input type="hidden" id="fname" name="fname" value="@ViewBag.fname">
+                <input type="hidden" id="tempid" name="tempid" value="@ViewBag.tempid">
+                <input type="hidden" id="tmp1" name="tmp1" value="@ViewBag.tmp1">
+                <input type="hidden" id="tmp2" name="tmp2" value="@ViewBag.tmp2">
+                <!--input type="hidden" id="tmp3" name="tmp3" value="@ViewBag.tmp3"-->
+                <input type="hidden" id="tmpsdate" name="tmpsdate" value="@ViewBag.tmpsdate">
+                <input type="hidden" id="tmpedate" name="tmpedate" value="@ViewBag.tmpedate">
+                <input type="hidden" id="tmpstime" name="tmpstime" value="@ViewBag.tmpstime">
+                <input type="hidden" id="tmpetime" name="tmpetime" value="@ViewBag.tmpetime">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            @{string dpttitle = "SELECT dptid, dpttitle FROM Department where comid = '" + (string)Session["comid"] + "'"; dpttitle = dbobj.get_selectobj(comconn, dpttitle, "qempworkdepid", ViewBag.qempworkdepid, "1");}
+                            部門：@Html.Raw(dpttitle)
+                            姓名：<input type="text" name="qempname" id="qempname" value="@ViewBag.qempname">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width=""></th>
+                        <th width="">部門</th>
+                        <th width="">姓名</th>
+                    </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        Boolean ifhrepman = false;
+                        Boolean ifbrepman = false;
+                        //組sql  找是否有請假
+                        string tmpsdate1 = ViewBag.tmpsdate.Replace("/", "");
+                        string tmpedate1 = ViewBag.tmpedate.Replace("/", "");
+                        string alltime = tmpsdate1 + ViewBag.tmpstime;
+                        string alltime1 = tmpedate1 + ViewBag.tmpetime;
+                        string startdate = " REPLACE((REPLACE(CONVERT(char, hlogsdate, 111), '/', '') + hlogstime),' ','')";
+                        string enddate = " REPLACE((REPLACE(CONVERT(char, hlogedate, 111), '/', '') + hlogetime),' ','')";
+                        string sql = "select * from holidaylog where hlogstatus in ('0','1') and empid = '" + item.empid + "'  and ";
+                        sql += " ((" + startdate + " >= '" + alltime + "' and " + enddate + " <='" + alltime1 + "') or ";
+                        sql += " (" + startdate + " <= '" + alltime + "' and  " + enddate + " >='" + alltime + "') or ";
+                        sql += " (" + startdate + " <= '" + alltime1 + "' and  " + enddate + " >='" + alltime1 + "')) and comid='" + (string)Session["comid"] + "'";
+
+                        //組sql  找是否有出差
+                        string sql1 = "select * from battalog where blogstatus in ('0','1')"
+                        + " and empid = '" + item.empid + "' and comid='" + (string)Session["comid"] + "'"
+                        + " and ((blogsdate < '" + ViewBag.tmpsdate + "' and blogedate >'" + ViewBag.tmpsdate + "')"
+                        + " or (blogsdate='" + ViewBag.tmpedate + "')"
+                        + " or ( blogsdate > '" + ViewBag.tmpsdate + "' and blogedate < '" + ViewBag.tmpedate + "')"
+                        + " or ( blogsdate < '" + ViewBag.tmpedate + "' and blogedate >'" + ViewBag.tmpedate + "' )"
+                        + " or (blogedate ='" + ViewBag.tmpsdate + "'))";
+                        
+                        using (SqlConnection conn1 = dbobj.get_conn("Aitag_DBContext"))
+                        {
+                            string holidaylogHasRows = dbobj.get_dbvalue(conn1, sql);
+                            if(string.IsNullOrEmpty(holidaylogHasRows))
+                            {
+                                ifhrepman = true;
+                            }
+                            string battalogHasRows = dbobj.get_dbvalue(conn1, sql1);
+                            if (string.IsNullOrEmpty(battalogHasRows))
+                            {
+                                ifbrepman = true;
+                            }
+                            
+                        }
+                        <tr bgcolor="#ffffff">
+                            <td class="colstd" align="center">
+                                @if (ifhrepman && ifbrepman)
+                                {
+                                    @:<input type="radio" name="radio1" id="radio1" onclick="SetSelfopener('@item.empid', '@item.empname');">
+                                }
+                                else
+                                {
+                                    string Type = "";
+                                    if (!ifhrepman)
+                                    {
+                                        Type += "請假" + "。";
+                                    }
+                                    if (!ifbrepman)
+                                    {
+                                        Type += "出差" + "。";
+                                    }
+                                    Type = Type.Substring(0, Type.Length - 1);
+
+                                    @:<b><font color="#cc3322">@Type</font></b>
+                                    
+                                }
+                            </td>
+                            <td class="colstd">
+                                @{ dpttitle = "select dpttitle from Department where dptid='" + item.empworkdepid + "' and comid='" + (string)Session["comid"] + "'"; dpttitle = dbobj.get_dbvalue(comconn, dpttitle);}
+                                @dpttitle
+                            </td>
+                            <td class="colstd">
+                                @item.empname
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+
+            </td>
+        </tr>
+    </table>
+    <div align=center>
+        <input type=button value="關閉視窗" class=button onclick="window.close();" id=button2 name=button2>
+    </div>
+}
+
+
+
+
+
+
+
+

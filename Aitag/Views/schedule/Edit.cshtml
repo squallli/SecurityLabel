@@ -1,0 +1,195 @@
+﻿@model Aitag.Models.schedule
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    //System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string year1 = ViewBag.year1;
+    string month1 = ViewBag.month1;
+    
+    string Mflag = ViewBag.Mflag;
+    string qschdate = ViewBag.qschdate;
+    
+    string tmpadate = ViewBag.tmpadate;
+
+    string schtype = ViewBag.schtype;
+    string tmptitle = "";
+    switch (schtype)
+    {
+        case "0":
+            tmptitle = "個人備忘";
+            break;
+        case "1":
+            tmptitle = "個人行程";
+            break;
+        case "2":
+            tmptitle = "公司行程";
+            break;
+
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormEdit").submit(function (e) {
+            var errmsg = "";
+            if ($("#schtitle").val() == "")
+            { errmsg += "請輸入標題\n"; }
+
+            if ($("#schdate").val() == "")
+            { errmsg += "請輸入日期\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+        });
+    });
+
+
+</script>
+@using (Html.BeginForm("Delete", "schedule", FormMethod.Post, new { @name = "FormList", @id = "FormList" }))
+{
+              
+    <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+    <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+    <input type="hidden" id="tmptitle" name="tmptitle" value="@tmptitle.ToString()">
+    <input type="hidden" id="year1" name="year1" value="@year1.ToString()">
+    <input type="hidden" id="month1" name="month1" value="@month1.ToString()">
+    <input type="hidden" id="schtype" name="schtype" value="@schtype.ToString()"> 
+    <input type="hidden" id="qschdate" name="qschdate" value="@qschdate.ToString()">
+   <input type="hidden" id="Mflag" name="Mflag" value="@Mflag.ToString()">
+     <input type="hidden" id="schid" name="schid" value="@Model.schid">  
+}
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+             @using (Html.BeginForm("Edit", "schedule", FormMethod.Post, new { @name = "FormEdit", @id = "FormEdit", enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">              
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                 <input type="hidden" id="tmptitle" name="tmptitle" value="@tmptitle.ToString()">
+                <input type="hidden" id="year1" name="year1" value="@year1.ToString()">
+                 <input type="hidden" id="month1" name="month1" value="@month1.ToString()">
+                 <input type="hidden" id="schtype" name="schtype" value="@schtype.ToString()">
+                   <input type="hidden" id="qschdate" name="qschdate" value="@qschdate.ToString()">
+   <input type="hidden" id="Mflag" name="Mflag" value="@Mflag.ToString()">
+                 
+                 <input type="hidden" id="schid" name="schid" value="@Model.schid">                   
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">@Html.Raw(tmptitle)資料修改</td>
+                    </tr>
+                    <tr>
+                        <td align=right width=80>分類</td>
+                        <td>@tmptitle</td>
+                    </tr>
+                    <tr>
+                        <td align=right><img src="/images/art.gif"> 標題</td>
+                        <td><input type=text name="schtitle" id="schtitle" maxlength=200 size=60 class=c12border value="@Model.schtitle"></td>
+                    </tr>
+                    <tr><td align=right> 內容</td><td><textarea name=schcontent id=schcontent cols=60 rows=10 class=c12border >@Model.schcontent</textarea></td></tr>
+                    <tr>
+                        <td align=right><img src="/images/art.gif">日期</td>
+                        <td>
+                            <input type=text name="schdate" id="schdate" size=12 maxlength=10 class=c12border value="@dbobj.get_date(Model.schdate.ToString(), "1")">&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn", "schdate", "%Y/%m/%d");
+                            </script>
+                            <select name="schhour" id="schhour">
+                                @{
+                string tmpi = "";
+                for (int i = 0; i <= 23; i++)
+                {
+                    if (i <= 9)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi" @if (int.Parse(Model.schhour.ToString()) == int.Parse(tmpi))
+                                          { @("selected") ; }>@tmpi</option>}
+}
+                            </select>
+                            時
+                            <select name="schmin" id="schmin">
+                                @{
+                for (int i = 0; i <= 45; i += 15)
+                {
+                    if (i == 0)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi" @if (int.Parse(Model.schmin.ToString()) == int.Parse(tmpi))
+                                          { @("selected")  ; }>@tmpi</option>}
+}
+                            </select>
+                            分
+                            ~
+                            <select name="schehour" id="schehour">
+                                @{
+                for (int i = 0; i <= 23; i++)
+                {
+                    if (i <= 9)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi" @if (int.Parse(Model.schehour.ToString()) == int.Parse(tmpi))
+                                          { @("selected")  ; }>@tmpi</option>}
+}
+                            </select>
+
+                            時
+                            <select name="schemin" id="schemin">
+                                @{
+                for (int i = 0; i <= 45; i += 15)
+                {
+                    if (i == 0)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi" @if (int.Parse(Model.schemin.ToString()) == int.Parse(tmpi))
+                                          { @("selected")  ; }>@tmpi</option>}
+}
+                            </select>
+                            分
+                        </td>
+                    </tr>
+                    <tr><td align=right>地點</td><td><input type=text name="schplace" id="schplace" maxlength=100 size=50 class=c12border value="@Model.schplace"></td></tr>
+                    <tr><td align=right>附檔</td><td>
+                                                   @if (Model.sfile != "" && Model.sfile != null)
+                                                   {
+                                                       <a target="_blank" href="@Url.Content("~/Upload/" + Model.sfile)">檔案</a>
+                                                   }<br />
+                        <input id="sfile1" name="sfile1" type="file" size=50 /> 
+                        </td></tr>
+                     
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                           
+                            @if (Model.schowner.ToString() == Session["empid"].ToString())
+{
+    <input id="abut" type="button" value="刪除" class="abutton" onclick="javascript: if (confirm('確定刪除勾選資料??') == 1) { FormList.submit(); }" />
+}
+                            @Html.ActionLink("回上頁", "List", "schedule", new { year1 = @year1, month1 = @month1, Mflag = @Mflag, qschdate = @qschdate }, new { @class = "abutton" })                            
+                        </td>
+                    </tr>
+                </table>
+               
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

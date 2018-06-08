@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=11.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <title>Aitag-login</title>
+    <link href="/frontcss/style.css" rel="stylesheet" type="text/css">
+    <!--[if lt IE 9]>
+    <script src="js/html5.js"></script>
+    <script src="js/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <script language=javascript>
+        function checkdata() {
+       
+        var errmsg = "";
+        if (document.form1.user_login.value == "") {
+            errmsg = "請輸入帳號\n";
+        }
+        if (document.form1.user_password.value == "") {
+            errmsg = errmsg + "請輸入密碼";
+        }
+        if (errmsg != "") {
+            alert(errmsg);
+            return false;
+        }
+    }
+    </script>
+
+</head>
+
+<body>
+    <!--login-->
+@using (Html.BeginForm("logindo", "html", FormMethod.Post, new { @name = "form1", @id = "form1", @onsubmit = "return checkdata()" }))
+    {
+    <center>@Html.ValidationSummary(true)</center>
+    <div class="login">
+        <div class="container">
+            <div class="imgbox"><img src="/frontimages/loginimg.png" width="253" height="253"></div>
+            <div class="loginbox">
+                <div class="logo"><img src="/frontimages/logo.png" alt="LOGO" width="300" border="0" /><span> 廠商申請</span></div>
+                <input class="form_text" id="user_login" name="user_login" placeholder="Username" value="" size="22" type="text" />
+                <input class="form_text" id="user_password" name="user_password" placeholder="Password" value="" size="22" type="password" />
+                <input name="Login" type="submit" id="Login" value="Login" class="button2" />
+            </div>
+
+
+        </div>
+    </div>
+    <!--header-end-->
+}
+
+
+</body>
+</html>

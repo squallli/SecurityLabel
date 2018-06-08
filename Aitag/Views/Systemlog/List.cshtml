@@ -1,0 +1,228 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.systemlog>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   // string maxcomid = System.Configuration.ConfigurationManager.AppSettings["maxcomid"].ToString();
+    string maxcomid = "" ;
+    //public string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string aaa5 = "true";
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/systemlog/List";
+                break;
+            case "A":
+                FormList.action = "/systemlog/Add";
+                break;
+            case "E":
+                FormList.action = "/systemlog/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/systemlog/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function systemlogquerydel() {
+        if (confirm('確定刪除全部查詢資料??') == 1) {
+            FormList.action = "/systemlog/Delete";
+            FormList.target = '';
+            FormList.submit();
+            FormList.action = "/systemlog/List";
+            FormList.target = '';
+        }
+    }
+    function csvsystemlogout() {
+        FormList.target = '_blank';
+        FormList.action = "/systemlog/csvsystemlogout";
+        FormList.submit();
+        FormList.action = "/systemlog/List";
+        FormList.target = '';
+    }
+
+    function sortform(tmp1, tmp2) {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+        @Html.Raw(ViewBag.SetOrder_ch)
+    $(document).ready(function () {
+        SetOrder_ch();
+    });
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("List", "systemlog", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td><!--公司：下拉-->
+@{
+    //if (maxcomid == (string)(Session["maxcomid"]))
+    if (true)
+    {
+        string selectsql = "select comid,comtitle from Company order by comid";
+        string selectHTML = dbobj.get_selectobj(comconn, selectsql, "qcomid", ViewBag.qcomid, "1");
+        <font color=cc3322>使用單位：</font>@Html.Raw(selectHTML)
+    }
+}
+                            <br>異動狀態：<select name=qsflag class=c12>
+                                            <option value="">請選擇</option>
+                                            <option value="A">新增</option>
+                                            <option value="E">修改</option>
+                                            <option value="D">刪除</option>
+                                            <option value="L">登入</option>
+                                        </select>&nbsp;
+                        <script>$("select[name='qsflag']").val('@ViewBag.qsflag');</script>
+                        帳號：<input type=text name=qslaccount size=10 class=c12border value="@ViewBag.qslaccount">&nbsp;
+                        全文字：<input type=text name=qsltext size=10 class=c12border value="@ViewBag.qsltext">&nbsp;
+                        異動時間：
+                        <input type=text name=qsodate1 id="qsodate1" size=12 class=c12border value="@ViewBag.qsodate1">&nbsp;<img src="/images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                        <script>cal.manageFields("f_btn", "qsodate1", "%Y/%m/%d");</script>~至&nbsp;
+                        <input type=text name=qsodate2 id="qsodate2" size=12 class=c12border value="@ViewBag.qsodate2">&nbsp;<img src="/images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                        <script>cal.manageFields("f_btn1", "qsodate2", "%Y/%m/%d");</script>
+
+                            <br><input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        <input id="Submit2" type="submit" value="條件刪除" class="abutton" onclick="systemlogquerydel();" />
+                        <input id="Submit3" type="submit" value="匯出紀錄" class="abutton" onclick="csvsystemlogout();"/>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            @*<td align="left" class="buttontd">
+                <input id="dbut" type="button" value="刪除" class="abutton" onclick="return submitform('D',@ViewBag.page, 0,'')" />
+                <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />
+            </td>*@
+            <td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="8%">異動狀態<a href="#" name="order1"></a></th>
+                        <th width="9%">使用者帳號<a href="#" name="order2"></a></th>
+                        <th width="10%">使用功能<a href="#" name="order3"></a></th>
+                        <th >內容</th>
+                        <th width="16%">登入IP<a href="#" name="order4"></a></th>
+                        <th width="18%">異動時間</th>
+                    </tr>
+                 
+@*
+    異動狀態 sflag
+    使用者帳號 slaccount
+    使用功能 sname
+    內容 slevent
+    登入IP sfromip
+    異動時間 sodate
+*@
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr style="cursor:pointer" onclick ="javascript: window.open('/systemlog/systemlogshow?slid=@item.slid', 'jump1', 'scrollbars=1,resizable=1,width=450,height=340');">
+                                                <td class="colstd">
+                                                    @{
+                                            string sflag = "";
+                                            switch (dbobj.get_dbnull(item.sflag))
+                                            {
+                                                case "A":
+                                                    sflag = "新增";
+                                                    break;
+                                                case "E":
+                                                    sflag = "修改";
+                                                    break;
+                                                case "D":
+                                                    sflag = "刪除";
+                                                    break;
+                                                case "L":
+                                                    sflag = "登入";
+                                                    break;
+                                                default:
+                                                    sflag = "";
+                                                    break;
+                                            }
+
+                                                    }
+                                                    @sflag
+                                                </td>
+                                                <td class="colstd">
+                                                    @item.slaccount
+                                                    @{
+                                            string empname = dbobj.get_dbvalue(comconn, "select empname from employee where empid='" + dbobj.get_dbnull(item.slaccount) + "'");
+                                                    }
+                                                    <br>(@empname)
+                                                </td>
+                                                <td class="colstd">
+                                                    @item.sname
+                                                </td>
+                                                <td class="colstd">
+                                                    <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:450px;">
+                                                        @{
+                                            if (maxcomid == (string)(Session["maxcomid"]))
+                                            {
+                                                string comtitle = dbobj.get_dbvalue(comconn, "select comtitle from company where comid='" + dbobj.get_dbnull(item.comid) + "'");
+                                                <font color=red>
+                                                    @comtitle
+                                                </font>
+                                                            <br>
+                                            }
+                                            string Slevent = dbobj.get_dbnull(item.slevent);
+                                            if (Slevent.Length >= 50)
+                                            {
+                                                Slevent = dbobj.get_canceltag(Slevent, 50);
+                                            }
+                                                        }
+                                                        @Html.Raw(Slevent)
+                                                    </div>
+                                                </td>
+                                                <td class="colstd">
+                                                    @item.sfromip
+                                                </td>
+                                                <td class="colstd">
+                                                    @item.sodate
+                                                </td>
+</tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+                @if (Model.TotalItemCount < 1)
+                {
+                    @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

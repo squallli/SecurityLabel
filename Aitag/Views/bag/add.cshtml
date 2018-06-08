@@ -1,0 +1,107 @@
+﻿@model Aitag.Models.bag
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+
+            if ($("#citemid").val() == "")
+            { errmsg = "請選擇認證項目\n"; }
+
+            if ($("#bgcode").val() == "")
+            { errmsg += "請選擇包裝代碼\n"; }
+
+            if ($("#bgtitle").val() == "")
+            { errmsg += "請輸入包裝名稱\n"; }
+
+            if ($("#bgkg").val() == "")
+            { errmsg += "請輸入包裝袋重量\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "bag", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qbgtitle" name="qbgtitle" value="@ViewBag.qbgtitle">
+                <input type="hidden" id="qbgcode" name="qbgcode" value="@ViewBag.qbgcode">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 認證項目</td>
+        <td align="left">
+           @{string Selectstatus = "select citemid,citemname from certifyitem where comid = '" + Session["comid"] + "'  order by citemid";
+           Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "citemid", "" , "1");}
+            @Html.Raw(Selectstatus)&nbsp;
+            @Html.ValidationMessageFor(m => m.citemid)
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 包裝代碼</td>
+        <td align="left">
+            <input type=text name="bgcode" id="bgcode" maxlength=20 size=10 class=c12border>
+            @Html.ValidationMessageFor(m => m.bgcode)
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 包裝名稱</td>
+        <td align="left">
+            <input type=text name="bgtitle" id="bgtitle" maxlength=80 size=40 class=c12border>            
+            @Html.ValidationMessageFor(m => m.bgtitle)
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 包裝袋重量(KG)</td>
+        <td align="left">
+            <input type=text name="bgkg" id="bgkg" maxlength=80 size=40 class=c12border>
+            @Html.ValidationMessageFor(m => m.bgkg)
+        </td>
+    </tr>
+    <tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            @Html.ActionLink("回上頁", "List", "bag", new { }, new { @class = "abutton" })
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

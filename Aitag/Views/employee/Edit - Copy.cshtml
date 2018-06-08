@@ -1,0 +1,450 @@
+﻿@model Aitag.Models.employee
+@using System.Data.SqlClient;
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+
+    string NOWempworkcomp = "";
+    //NOWempworkcomp = Request["empworkcomp"].Trim();
+    if (NOWempworkcomp == "")
+    {
+        NOWempworkcomp = (string)Session["comid"];
+    }
+
+
+}
+<script type="text/javascript">
+    function submitform(tmpgo, tmpkey) {
+        //組織角色 新刪修
+        switch (tmpgo) {
+            //case "L":
+            //    FormEdit.action = "/employee/List";
+            //    break;
+            case "A":
+                FormEdit.action = "/employee/emproleadd";
+                break;
+            case "M":
+                FormEdit.action = "/employee/emprolemod?" + tmpkey;
+                break;
+            case "D":
+                FormEdit.action = "/employee/emproledel?" + tmpkey;
+                break;
+        }
+        if (tmpgo != "LQ")
+        { FormEdit.submit(); }
+
+    }
+
+    function loadsearch() {
+        @*地區 縣市*@
+        $('#empworkcomp').load("@weblink/Ajax/ComDepartmentSelect?Code=empworkcomp:@Model.empworkcomp,condition:");
+        $('#empworkdepid').load("@weblink/Ajax/ComDepartmentSelect?Code=empworkdepid:@Model.empworkdepid,empworkcomp:@Model.empworkcomp");
+
+        $("#empworkcomp").change(function () {
+            var tmpval = $("#empworkcomp").val();
+            if (tmpval != "") {
+                $('#empworkdepid').load("@weblink/Ajax/ComDepartmentSelect?Code=empworkdepid:,empworkcomp:" + tmpval);
+            }
+        });
+    }
+
+
+
+    $(document).ready(function () {
+        $("#FormEdit").submit(function (e) {
+            var errmsg = "";
+            if ($("select[name='empworkcomp']").val() == "")
+            { errmsg += "請選擇所屬公司\n"; }
+
+            var usedate = $("input[name='usedate']").val();
+            if (usedate != "")
+            { errmsg = errmsg + check_date(document.FormEdit.usedate, "啟用日"); }
+            else
+            { errmsg += "請輸入啟用日\n"; }
+
+            if ($("input[name='empid']").val() == "")
+            { errmsg += "請輸入帳號\n"; }
+            else
+            {
+                //if (checkID($("input[name='empid']").val()) == false)
+                //{ errmsg += "帳號請輸入英文或數字\n" }
+            }
+            if ($("input[name='emppasswd']").val() == "")
+            { errmsg += "請輸入登入密碼\n" }
+            else
+            {
+                //if (checkPWD($("input[name='emppasswd']").val()) == false)
+                //{ errmsg += "密碼請輸入英文或數字\n" }
+            }
+
+            if ($("input[name='empname']").val() == "")
+            { errmsg += "請輸入姓名\n" }
+
+            if ($("input[name='inboxsize']").val() == "") { errmsg += "請輸入信箱大小\n" } else {
+                if (isNaN($("input[name='inboxsize']").val()) == true) { errmsg += "信箱大小請輸入數字\n" }
+            }
+            if ($("input[name='logincount']").val() != "") {
+                if (isNaN($("input[name='logincount']").val()) == true) { errmsg += "密碼錯誤次數請輸入數字\n" }
+            }
+
+            var empbirth = $("input[name='empbirth']").val();
+            if (empbirth != "")
+            { /*errmsg += check_date(empbirth);*/ }
+
+
+            if ($("input[name='enemail']").val() != "") {
+
+                if (checkmail($("input[name='enemail']").val()) == null) {
+                    errmsg += "電子郵件格式錯誤!!\n";
+                }
+            }
+            var jobdate = $("input[name='jobdate']").val();
+            if (jobdate != "")
+            { errmsg = errmsg + check_date(document.FormEdit.jobdate, "到職日期"); }
+            else
+            { errmsg += "請輸入到職日期\n"; }
+
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+
+        loadsearch();
+        SetempbirthSelect();
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "employee", FormMethod.Post, new { @name = "FormEdit", @id = "FormEdit" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+
+    <input type="hidden" id="emid" name="emid" value="@Model.emid">
+
+                <input type="hidden" id="qempworkcomp" name="qempworkcomp" value="@ViewBag.qempworkcomp">
+                <input type="hidden" id="qempworkdepid" name="qempworkdepid" value="@ViewBag.qempworkdepid">
+                <input type="hidden" id="qempstatus" name="qempstatus" value="@ViewBag.qempstatus">
+                <input type="hidden" id="qempno" name="qempno" value="@ViewBag.qempno">
+                <input type="hidden" id="qempid" name="qempid" value="@ViewBag.qempid">
+                <input type="hidden" id="qempname" name="qempname" value="@ViewBag.qempname">
+
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">資料修改</td>
+                    </tr>
+                    <tr>
+                        <td align="right" width="15%"><img src="~/images/art.gif" border="0" /> 可觀看公司</td>
+                        <td align="left" colspan="3">
+                            @Html.Raw(dbobj.get_checkboxobj(comconn, "select ('#'+comid+'#') as comid , comtitle from company order by comid", "comcon", @Model.comcon))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" width="15%"><img src="~/images/art.gif" border="0" /> 所屬公司</td>
+                        <td align="left" width="35%">
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select comid , comtitle from company", "empworkcomp",Model.empworkcomp,"1"))
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select dptid , dpttitle from department where comid = '" + Model.empworkcomp + "'", "empworkdepid", Model.empworkdepid, "1"))                           
+                           <script>
+                               $("#empworkcomp").change(function (e) {
+                                   //alert($(this).val())
+                                   $("#empworkdepid").load("/ajax/getdpt?comid=" + $(this).val());
+                               });
+                           </script>
+                            &nbsp;
+                        </td>
+                        <td align="right" width="15%"> 申請人</td>
+                        <td align="left" width="35%">
+                            @{string ifapply = "select chkcode,chkitem from checkcode where chkclass='03' order by chkcode"; ifapply = dbobj.get_radioobj(comconn, ifapply, "ifapply", Model.ifapply);}
+                            @Html.Raw(ifapply)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 帳號狀態</td>
+                        <td align="left">
+@{
+string[] ifuse = { "", "" };
+switch (Model.ifuse)
+{
+    case "y":
+        ifuse[0] = "checked";
+        break;
+    case "n":
+        ifuse[1] = "checked";
+        break;
+    default:
+        break;
+}
+}
+                            <input type=radio name="ifuse" value="y" @ifuse[0]>使用
+                            <input type=radio name="ifuse" value="n" @ifuse[1]>停用
+                        </td>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 啟用日</td>
+                        <td align="left">
+                            <input type=text name=usedate id=usedate size=12 class=c12border value="@Convert.ToDateTime(Model.usedate).ToString("yyyy/MM/dd")"><img src="/images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn", "usedate", "%Y/%m/%d");
+                            </script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 權限角色</td>
+                        <td align="left">
+                            @{string msid = "select msid,mstitle from privrole where comid='" + NOWempworkcomp + "'"; msid = dbobj.get_selectobj(comconn, msid, "msid", Model.msid, "1");}
+                            @Html.Raw(msid)
+                        </td>
+                        <td align="right"> 權限是否同步</td>
+                        <td align="left">
+                            @{string eifpriv = "select chkcode,chkitem from checkcode where chkclass='03' order by chkcode"; eifpriv = dbobj.get_radioobj(comconn, eifpriv, "eifpriv", Model.eifpriv);}
+                            @Html.Raw(eifpriv)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 身份類別</td>
+                        <td align="left">
+                            @{string emptype = "select chkcode,chkitem from checkcode where chkclass = '11' order by chkcode"; emptype = dbobj.get_selectobj(comconn, emptype, "emptype", Model.emptype, "other");}
+                            @Html.Raw(emptype)
+                        </td>
+                        <td align="right"> 在職狀況</td>
+                        <td align="left">
+                            @{string empstatus = "select chkcode,chkitem from checkcode where chkclass = '12' order by chkcode"; empstatus = dbobj.get_selectobj(comconn, empstatus, "empstatus", Model.empstatus, "other");}
+                            @Html.Raw(empstatus)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 年假身份別</td>
+                        <td align="left">
+                            @{string yhid = "select yhid,yhtitle from yearholiday"; yhid = dbobj.get_selectobj(comconn, yhid, "yhid", Model.yhid, "1");}
+                            @Html.Raw(yhid)
+                        </td>
+                        <td align="right"> 門禁卡號</td>
+                        <td align="left">
+                            <input type=text name="cardno" maxlength=20 size=25 value="@Model.cardno" class=c12border>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 帳號</td>
+                        <td align="left">
+                            <input type=text name="empid" maxlength=20 size=25 class=c12border value="@Model.empid">
+                            <br><font color=#990000>請使用英文或數字或『_.-』符號
+                        </td>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 登入密碼</td>
+                        <td align="left">
+                            <input type=text name="emppasswd" maxlength=20 size=25 class=c12border value="@Model.emppasswd">
+                            <br><font color=#990000>請使用英文或數字</font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 姓名</td>
+                        <td align="left">
+                            <input type=text name="empname" maxlength=50 size=25 class=c12border value="@Model.empname">
+                        </td>
+                        <td align="right"> 英文名</td>
+                        <td align="left">
+                            <input type=text name="empenname" maxlength=50 size=25 class=c12border value="@Model.empenname">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 考勤判斷</td>
+                        <td align="left" colspan=3>
+@{
+    string[] ifholdata = { "", "", "" };
+    switch (Model.ifholdata)
+{
+    case "m":
+        ifholdata[1] = "checked";
+        break;
+    case "n":
+        ifholdata[2] = "checked";
+        break;
+    default:
+        ifholdata[0] = "checked";
+        break;
+}
+}
+                            <input type=radio name=ifholdata value="y" @ifholdata[0]> 完全判斷
+                            <input type=radio name=ifholdata value="m" @ifholdata[1]> 判斷假勤，不判斷刷卡
+                            <input type=radio name=ifholdata value="n" @ifholdata[2]> 均不判斷
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 員工編號</td>
+                        @{string cifwebmail = ""; cifwebmail = dbobj.get_dbvalue(comconn, "select cifwebmail from company where comid='" + (string)Session["comid"] + "' ");}
+                        @switch (cifwebmail)
+                        {
+                            case "y":
+                                @:<td align="left"><input type="text" class="c12border" id="empno" name="empno" maxlength=20 size=25 value="@Model.empno" /></td>
+                                @:<td align="right"><img src="~/images/art.gif" border="0" /> 信箱大小</td>
+                                @:<td align="left"><input type="text" class="c12border" id="inboxsize" name="inboxsize" maxlength=9 size=10 value="@Model.inboxsize" /></td>
+                                  break;
+                            default:
+                            @:<td align="left" colspan=3>
+                                @:<input type="text" class="c12border" id="empno" name="empno" maxlength=20 size=25 value="@Model.empno" />
+                                @:<input type="hidden" class="c12border" id="inboxsize" name="inboxsize" value="0" />
+                            @:</td>
+                                  break;
+                        }
+
+                    </tr>
+                    <tr>
+                        <td align="right"> 密碼錯誤次數</td>
+                        <td align="left">
+                            <input type=text name="logincount" maxlength=9 size=10 class=c12border value="@Model.logincount">
+                            <br><font color=#990000>當密碼錯誤3次以上，此帳號即不能登入
+                        </td>
+                        <td align="right"> 登入IP</td>
+                        <td align="left">
+                            <input type=text name="efromip" maxlength=50 size=25 class=c12border value="@Model.efromip">
+                            <br><font color=#990000>當有輸入IP時，此帳號即只能以此IP登入</font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 出生日期</td>
+                        <td align="left">
+                                                        @{
+                        string datetime1 = "";
+                        if (Model.empbirth == null)
+                        {
+                            datetime1 = "1900/1/1";
+                        }
+                        else
+                        {
+                            datetime1 = Convert.ToDateTime(Model.empbirth).ToString("yyyy/MM/dd");
+                        }
+                                                        }
+                            <input type="hidden" id="empbirth" name="empbirth" value="@datetime1">
+                            @Html.Raw(ViewBag.BirthSelect)
+                        </td>
+                        <td align="right"> 性別</td>
+                        <td align="left">
+                            @{string empsex = "select chkcode,chkitem from checkcode where chkclass='01' order by chkcode"; empsex = dbobj.get_radioobj(comconn, empsex, "empsex", Model.empsex);}
+                            @Html.Raw(empsex)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 戶籍地址</td>
+                        <td align="left" colspan=3>
+                            <input type=text name="eaddress" maxlength=100 size=90 class=c12border value="@Model.eaddress">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 聯絡住址</td>
+                        <td align="left" colspan=3>
+                            <input type=text name="enaddress" maxlength=100 size=90 class=c12border value="@Model.enaddress">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 電話</td>
+                        <td align="left">
+                            <input type=text name="entel" maxlength=20 size=25 class=c12border value="@Model.entel">
+                        </td>
+                        <td align="right"> 手機</td>
+                        <td align="left">
+                            <input type=text name="enmob" maxlength=30 size=25 class=c12border value="@Model.enmob">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 電子郵件</td>
+                        <td align="left">
+                            <input type=text name="enemail" maxlength=100 size=50 class=c12border value="@Model.enemail">
+                        </td>
+                        <td align="right"> 到職日期</td>
+                        <td align="left">
+                            <input type=text name=jobdate id='jobdate' size=12 class=c12border value="@Convert.ToDateTime(Model.jobdate).ToString("yyyy/MM/dd")">
+                            <img src="/images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn1", "jobdate", "%Y/%m/%d");
+                            </script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 備註</td>
+                        <td align="left" colspan=3>
+                            <textarea name="empcomment" rows=5 cols=100 class=c12border> @Html.Raw(Model.empcomment)</textarea>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" colspan="4" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "employee", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+    <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+        <tr>
+            <td align="left" colspan="5" class="footerfont">
+                <input id="abut" type="button" value="新增組織角色" class="abutton" onclick="submitform('A');" />
+            </td>
+        </tr>
+        <tr>
+            <td class="headfont" align="left"> 組織角色</td>
+            <td class="headfont" align="left"> 	異動人</td>
+            <td class="headfont" align="left"> 異動時間</td>
+            <td class="headfont" colspan="2" align="left"> 維謢</td>
+        <tr>
+            @{
+                              string sql = "select *, (select roletitle from roleplay where rid = emprole.rid) as roletitle from emprole where empid='" + Model.empid + "' order by rid";
+                              using (SqlCommand cmd = new SqlCommand(sql, comconn))
+                              {
+                                  SqlDataReader dr = cmd.ExecuteReader();
+                                  if (dr.HasRows)
+                                  {
+                                      while (dr.Read())
+                                      {
+
+
+                                    <tr>
+                                        <td align="left"> @dr["roletitle"]</td>
+                                        <td align="left"> @dr["bmodid"]</td>
+                                        <td align="left"> @dr["bmoddate"]</td>
+                                        <td width="10" class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('M', 'erid=@dr["erid"]')" /> </td>
+                                        <td width="10" class="colstd"><input id="ebut" type="button" value="刪除" class="abutton" onclick="return submitform('D', 'erid=@dr["erid"]')" /> </td>
+                                    </tr>
+                                      }
+                                  }
+                                  else
+                                  {
+                                  }
+                                  dr.Close();
+                              }
+            }
+
+
+        </table>
+        <br />
+
+                              comconn.Close();
+                              comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+<script>
+    //function SelectPreset(e) { if ("" != e && "undefined" != typeof e) { e += " ", e = e.split(" ")[0]; var t = e.split("/")[0], a = e.split("/")[1], n = e.split("/")[2]; $("select[name='byear']").val(t), $("select[name='bmonth']").val(a), Setbday("bday"), $("select[name='bday']").val(n) } else $("select[name='byear']")[0].selectedIndex = 0, $("select[name='bmonth']")[0].selectedIndex = 0, Setbday("bday"), $("select[name='bday']")[0].selectedIndex = 0 }
+    //function SetbirthDay(e) { var t = $("select[name='byear']").find(":selected").val(), a = $("select[name='bmonth']").find(":selected").val(), n = $("select[name='bday']").find(":selected").val(); $("input[name='" + e + "']").val(t + "/" + a + "/" + n) }
+    //function Setbday(e) { var t = 0, a = $("select[name='byear']").find(":selected").val(), n = 1 + parseInt($("select[name='bmonth']").find(":selected").val()); 13 == n && (a = parseInt(a) + 1, n = 1); var l = new Date(a + "/" + n + "/1"), d = l.getTime() - 864e5, t = new Date(d).getDate(); 0 == t && (t = 31), $("select[name='" + e + "'] option").remove(), optionAdd("bday", "", "--"); for (var c = 1; t >= c; c++) optionAdd(e, c, c) }
+    //function optionAdd(e, t, a) { $("select[name='" + e + "']").append($("<option></option>").attr("value", t).text(a)) }
+    //function SetempbirthSelect() { $("select[name='byear']").change(function () { Setbday("bday"), SetbirthDay("empbirth") }), $("select[name='bmonth']").change(function () { Setbday("bday"), SetbirthDay("empbirth") }), $("select[name='bday']").change(function () { SetbirthDay("empbirth") }) }
+</script>

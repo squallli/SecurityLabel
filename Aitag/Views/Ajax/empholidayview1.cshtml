@@ -1,0 +1,136 @@
+﻿@model List<Aitag.Models.emphdlog>
+@using MvcPaging
+@using System.Data.SqlClient;
+@{
+    ViewBag.Title = "目前可休年假查詢畫面";
+    Layout = "";
+    
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@if (Model.Count == 0)
+{
+    @:目前沒有資料
+}
+else
+{
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    
+    
+    <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" bgcolor="#ffffff">
+        <tr>
+            <td colspan=6 class="headfont" align="left">
+                觀看畫面
+            </td>
+        </tr>
+        <tr>
+            <td align=right width=16%>
+                年度
+            </td>
+            <td colspan=2>@Model[0].slyear</td>
+            <td align=right>
+                員工
+            </td>
+            <td colspan=2>@Model[0].empname</td>
+        </tr>
+        <tr>
+            <td align=right>
+                部門
+            </td>
+            <td colspan=2>
+                @{string dpttitle = "select dpttitle from Department where dptid='" + Model[0].dptid + "' and comid='" + (string)Session["comid"] + "'"; dpttitle = dbobj.get_dbvalue(comconn, dpttitle);}
+                @dpttitle
+            </td>
+            <td align=right>
+                到職日
+            </td>
+            <td colspan=2>
+                @{string jobdate = "select jobdate from employee where empid = '" + (string)Session["empid"] + "'"; jobdate = dbobj.get_dbvalue(comconn, jobdate);}
+                @Convert.ToDateTime(jobdate).ToString("yyyy/MM/dd")
+            </td>
+        </tr>
+        <tr>
+            <td align=right> 本年有效日期</td>
+            <td colspan=5>@Convert.ToDateTime(Model[0].effectiveday).ToString("yyyy/MM/dd")</td>
+        </tr>
+        <tr>
+            <td colspan=6 class="headfont" align="left">
+                本年休假資料
+            </td>
+        </tr>
+        <tr>
+            <td class="headfont" align="left">假別</td>
+            <td class="headfont" align="left">可休時數</td>
+            <td class="headfont" align="left">已休時數</td>
+            <td colspan=3 class="headfont" align="left">未休時數</td>
+        </tr>
+        @if (Model.Count < 1)
+        {
+            @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @{string hdaytitle = "select hdaytitle from holidaycode where hdayid='" + item.hdayid + "'"; hdaytitle = dbobj.get_dbvalue(comconn, hdaytitle);}
+                        @hdaytitle
+                    </td>
+                    <td>@Double.Parse(item.allhour.ToString()).ToString("###0")</td>
+                    <td>@Double.Parse(item.usehour.ToString()).ToString("###0")</td>
+                    <td colspan=3>
+                        @{string remainder = (item.allhour - item.usehour).ToString();}
+                        @Double.Parse(remainder).ToString("###0")
+                    </td>
+                </tr>
+            }
+        }
+
+        <tr>
+            <td class="headfont" colspan="6" align="left">
+                補休狀況 ( 補休尚餘 @ViewBag.countall 小時 )
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="6" align="left">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="99%">
+                    @foreach (Aitag.Models.resthourlog v in ViewBag.tmprs)
+                    {
+
+                        <tr>
+                            <td>補休期限</td>
+                            <td>@dbobj.get_dbDate(v.rsdeaddate, "yyyy/MM/dd")</td>
+                            <td>補休時數</td>
+                            <td>@v.resthour</td>
+                            <td>已休補休</td>
+                            <td>@v.usehour</td>
+                        </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+
+
+
+
+
+
+
+
+
+        <tr>
+            <td colspan=6 align="center" class="footerfont">
+                <input type=button value="關閉視窗" onclick="javascript:window.close();" class=button>
+            </td>
+        </tr>
+    </table>
+    
+    comconn.Close();
+    comconn.Dispose();
+}

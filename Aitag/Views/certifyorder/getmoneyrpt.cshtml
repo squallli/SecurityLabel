@@ -1,0 +1,134 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.certifyorder>
+@using MvcPaging
+@using System.Data.SqlClient
+@Html.Raw("<style>")
+@Html.Raw("td{mso-number-format: \\@}")
+@Html.Raw("</style>")
+@{
+    ViewBag.Title = "List";
+    Layout = "";
+
+    HttpContext.Current.Response.Clear();
+    HttpContext.Current.Response.Charset = "";
+    HttpContext.Current.Response.ContentType = "application/vnd.ms-csv";
+    string strFileName = "getmoneyrpt" + ".xls";
+    HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + strFileName);
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+     <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="60">
+                        狀態
+                       
+                    </th>
+                    <th width="80" align="left">
+                        認證項目/標章項目
+                    </th>
+                    <th width="110">
+                        標章使用編號
+                    </th>
+                    <th width="80">
+                        農戶編號/農戶姓名
+                    </th>
+                    <th>
+                        電話
+                    </th>
+                    <th width="80">
+                        廠商編號/委託廠商
+                    </th>
+                    <th width="40">
+                        期別
+                    </th>
+                    <th>
+                        申請日期
+                    </th>
+                    <th>
+                        標章<br />核發日期
+                    </th>
+                    <th>
+                        備註
+                    </th>
+                    <th>
+                        標章費用
+                    </th>
+                </tr>
+           
+                @foreach (var item in Model)
+                {
+                    <tr style="font-size:9pt">
+                        <td class="colstd">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass = '34' and chkcode = '" + item.costatus + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + item.citemid + "'");}
+                            @dbtitle
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select cftitle from certifystamp where csid = '" + item.csid + "'");}
+                            @if (dbtitle != "") { @("/ " + dbtitle) }
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.codno
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.farmerno
+                            /
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + item.farmerno + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select ('電話:'+ftel+' / 手機:'+fmob) as tel1 from farmer where farmerno = '" + item.farmerno + "'");}
+                            @Html.Raw(dbtitle)
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.farmerno
+                            /
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + item.vendno + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.certime
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.adddate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.cgivedate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.cocomment
+                        </td>
+                        <td class="colstd" style="font-size:9pt" align="right">
+                            @item.allmoney
+                        </td>
+                       
+                   </tr>
+                }
+                @{
+                comconn.Close();
+                comconn.Dispose();
+               // comconn1.Close();
+               // comconn1.Dispose();
+                }
+            </table>
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+</table>
+
+
+           
+
+
+
+          
+

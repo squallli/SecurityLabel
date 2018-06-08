@@ -1,0 +1,174 @@
+﻿@using certify.Models
+@model certificationViewModel
+
+@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=11.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <title>AITag-認證成功畫面</title>
+    @Styles.Render("../frontcss/style.css")
+    @Scripts.Render("../Scripts/jquery.min.js")
+
+   
+    <script>
+        var barcode = "@ViewBag.barcode"
+        $(window).load(function () {
+            jQuery.support.cors = true;
+            $.ajax({
+                url: '../api/csfa?barcode=@ViewBag.barcode',
+                type: 'GET',
+                dataType: "json",
+                cache: false,
+
+                success: function (msg) {
+
+                    $('#tagImg').attr('src', 'data:image/png;base64,' + msg.base64);
+                },
+
+                error: function (xhr, ajaxOpt, err) {
+                    alert('error');
+                }
+            });
+
+        });
+    </script>
+    <style type="text/css">
+        ul {
+            list-style: none;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!--header-->
+    <div class="header">
+        <div class="container">
+            <div id="TOP"><img src="../frontimages/top.png" title="回到上面" /></div>
+            <div class="banner"><img src="../frontimages/banner2.jpg" alt="banner" border="0" /></div>
+            <div class="logo"><a href="index.html"><img src="/frontimages/logo.png" alt="LOGO" border="0" /></a></div>
+        </div>
+    </div>
+   
+    <div class="article">
+        <div class="container">
+           
+            <div class="maintitle"><h1>標章認證</h1></div>
+            <div>
+                   <table width="100%" border="0" cellspacing="0" cellpadding="0" class=" table01">
+                    <tr align="left">
+                        <td width="8%"><img id="tagImg1" src="~/Images/Aitag.png" alt="防偽" border="0" /></td>
+                        <td><strong><font style="FONT-SIZE: 25px; color: #228B22; ">南迴小米註冊證明標章</font></strong></td>
+                    </tr>
+                    <tr align="left">
+                        <td colspan="2">           
+                            <font style="FONT-SIZE: 12pt; color: #228B22; ">認明南迴小米認證標章，讓您吃的安心吃的健康<br></font>
+                            <font style="FONT-SIZE: 8pt; color: #228B22; ">金峰鄉公所為您把關在地優質南迴小米！</font>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="Certificationbox">
+                <div class="box01">
+                    您所查詢的驗證號碼：<br> @ViewBag.barcode <br>左列第<span id="no1"> @ViewBag.position </span>位數字 ，為變色變體字
+                </div>
+                        <div class="img"><img id="tagImg" src="~/Images/accent.png" alt="標章認證" border="0"/><br><br>
+                            <div class="box02">查詢次數 @Html.Raw(Model.lookNumber.lookno)次<br>
+                            最後查詢時間為 @Html.Raw(Model.lookNumber.bmoddate)</div>
+                        </div>
+                        
+                        <div class="info">
+                            <h2>資訊：</h2>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                              
+                                    <tr>
+                                        <td><strong>產地資訊</strong></td>
+                                        <td>
+                                            @foreach (viewcertifycheckdet v in Model.viewCertifycheckdet)
+                                            {
+                                                <span><strong>地段號：</strong>@Html.Raw(v.ltitle)-@Html.Raw(v.landno1)</span><br>
+                                            }
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>申請人</strong></td>
+                                        <td>
+                                            @ViewBag.applicant
+                                          
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>受委託廠商</strong></td>
+                                        <td>
+                                            @ViewBag.vendor
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>農戶地址</strong></td>
+                                        <td>
+                                            @ViewBag.faddr
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>申請註冊標章</strong></td>
+                                        <td>@Html.Raw(Model.certifYorder.certime)</td>
+                                    </tr>
+                                  
+                            </table>
+                        </div>
+                    </div>
+           
+            <div style="margin-top:20px">
+                <strong>
+                    <font style="FONT-SIZE: 15pt; color: #A73710; ">
+                        南迴小米的四大保證<br>&nbsp;
+                    </font>
+                </strong>
+                
+                <ul>
+                    <li>
+                        一、產地保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        為避免不肖業者以「假冒」方式仿冒南迴小米欺騙消費者，於106年10月13日推出的產地認證標章。這是本標章第一項的保證 : 產自金峰鄉。
+                    </li><br>
+                   
+                    <li>
+                        二、產量控管保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一包經過金鋒鄉公所認證的南迴小米皆「以流水編號控管數量」，從編號可控管認證數量與產量相符，也可以查驗稻米原料來源。
+                    </li><br>
+                    
+                    <li>
+                        三、品質保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一包經過金峰鄉公所認證的南迴小米皆符合CNS國家稻米標章及食味值規範(65分以上)，所以保證每一包通過認證的南迴小米都有優良的品質。
+                    </li><br>
+                    
+                    <li>
+                        四、安全保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一塊生產南迴小米的農地在收割前，即要由金峰鄉公所派員抽樣檢驗農藥殘留，通過安全標準者才核發安全證明，農民才可以收割入倉。
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--article-end-->
+    <!--footer-->
+    <div class="footer">
+        <div class="container">Copyright©2017 All rights reserved.<br>驗證系統版權所有©安品數據股份有限公司</div>
+    </div>
+    <!--footer-end-->
+    @Scripts.Render("~/frontjs/jquery.min.js")
+    @Scripts.Render("~/frontjs/top.js")
+ 
+</body>
+</html>

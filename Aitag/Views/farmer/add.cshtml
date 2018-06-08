@@ -1,0 +1,159 @@
+﻿@model Aitag.Models.farmer
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext"); 
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            ////if ($("#vcode").val() == "")
+            //{ errmsg = "請選擇村落\n"; }
+
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入農戶編號\n"; }
+
+            if ($("#farmername").val() == "")
+            { errmsg += "請輸入農戶姓名\n"; }
+
+            if ($("#fmpassword").val() == "")
+            { errmsg += "請輸入前台申請密碼\n"; }
+
+            if ($("#ftel").val() == "" && $("#fmob").val() == "")
+            { errmsg += "聯絡電話與手機請則一輸入\n"; }
+
+            if ($("#faddr").val() == "")
+            { errmsg += "請輸入地址\n"; }
+          
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "farmer", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qfarmername" name="qfarmername" value="@ViewBag.qfarmername">
+                <input type="hidden" id="qfarmerno" name="qfarmerno" value="@ViewBag.qfarmerno">
+                <input type="hidden" id="ftype" name="ftype" value="@Request["ftype"]">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="4" align="left">資料新增</td>
+    </tr>
+    @if (Request["ftype"] == "1") { 
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 農戶編號</td>
+        <td align="left">
+            <input type=text name="farmerno" id="farmerno" maxlength=20 size=30 class=c12border>
+        </td>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 農戶姓名</td>
+        <td align="left">
+            <input type=text name="farmername" id="farmername" maxlength=50 size=30 class=c12border>            
+        </td>        
+    </tr>
+    }
+    else
+    {
+        <tr>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 廠商編號</td>
+            <td align="left">
+                <input type=text name="farmerno" id="farmerno" maxlength=20 size=30 class=c12border>
+            </td>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 廠商姓名</td>
+            <td align="left">
+                <input type=text name="farmername" id="farmername" maxlength=50 size=30 class=c12border>
+            </td>
+        </tr>
+    }
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 前台申請密碼</td>
+        <td align="left">
+            <input type=text name="fmpassword" id="fmpassword" maxlength=50 size=30 class=c12border>
+        </td>
+        <td align="right"> 村落</td>
+        <td align="left">
+            @{string vcode = "select vcode,vtitle from village  order by vcode"; vcode = dbobj.get_selectobj(comconn, vcode, "vcode", "", "1");}
+            @Html.Raw(vcode)
+        </td>
+
+    </tr>
+    <tr>
+        <td align="right"> 聯絡電話</td>
+        <td align="left">
+            <input type=text name="ftel" id="ftel" maxlength=50 size=40 class=c12border>
+        </td>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 手機</td>
+        <td align="left">
+            <input type=text name="fmob" id="fmob" maxlength=50 size=40 class=c12border>
+        </td>
+    </tr>
+    @if (Request["ftype"] == "2") 
+    {        
+        <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 倉庫總量</td>
+        <td align="left" colspan="3">
+            <input type=text name="venwarehouse" id="venwarehouse" maxlength=8 size=11 class=c12border> 公斤
+        </td>
+    </tr>
+    }
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 地址</td>
+        <td align="left" colspan="3">
+            <input type=text name="faddr" id="faddr" maxlength=200 size=100 class=c12border>
+        </td>
+    </tr>
+    @if (Request["ftype"] == "2")
+    {
+        <tr>
+            <td align=right>電子郵件</td>
+            <td align="left" colspan="3"> <input type=text name="venmail" id="venmail" maxlength=100 size=100 class=c12border></td>
+        </tr>
+    }
+    <tr>
+        <td align="right"> 備註</td>
+        <td align="left" colspan="3">
+            <textarea id="fcomment" name="fcomment" cols="80" rows="7"></textarea>
+        </td>
+    </tr>
+    <tr >
+        <td align="center" colspan="4" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            @Html.ActionLink("回上頁", "List", "farmer", new { }, new { @class = "abutton" })
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

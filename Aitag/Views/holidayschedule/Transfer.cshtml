@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = null;
+}
+<link rel="stylesheet" type="text/css" href="/css/erpcss.css" />
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#upfile").val() == "")
+            { errmsg = "請挑選檔案\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+<table width="100%" border="0" cellspacing="0" cellpadding="5" style="font-size:10pt">
+    @using (Html.BeginForm("Transfer", "holidayschedule", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd", enctype = "multipart/form-data" }))
+    {
+        <input type="hidden" id="sysflag" name="sysflag" value="A">
+        <input type=hidden name="sid" value="@Request["sid"].ToString()">
+        <input type=hidden name="realsid" value="@Request["realsid"].ToString()">
+
+        <tr>
+            <td bgcolor=#0084bc style="color:#ffffff" colspan=4>
+                假日資料轉入作業 (<a href="~/upload/holiday.csv" style="color:#ffffff" target=_blank>格式下載</a>)<br>
+                依照本格式下載後進行資料輸入，請注意是否所提供的格式相同<br>
+            </td>
+        </tr>
+        <tr bgcolor=#ffffff>
+            <td align=right><font color=red size=1>※</font> 外部檔案上傳轉檔：</td>
+            <td colspan=3>
+                <input type=file name="upfile" id="upfile">
+            </td>
+        </tr>
+        <tr bgcolor=dddddd>
+            <td colspan=4 align=center><input type="submit" value="確定轉入" class=button id=submit1 name=submit1 style="cursor: pointer;"></td>
+        </tr>
+    }
+
+</table>
+
+
+
+    <script>
+        @Html.Raw(ViewBag.AddModelError)
+
+        @Html.Raw(ViewBag.AddModel)
+
+
+
+    </script>
+
+
+
+

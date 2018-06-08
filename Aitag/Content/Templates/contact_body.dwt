@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>台北書展官網</title>
+<!-- TemplateEndEditable -->
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<table border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="134" align="center"><table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="920" height="134" bgcolor="#D0D8BF"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td height="54">&nbsp;</td>
+          </tr>
+          <tr>
+            <td><table width="810" border="0" align="center" cellpadding="0" cellspacing="0">
+              <tr>
+                <td rowspan="2"><img src="../images/logo.png" width="291" height="52" /></td>
+                <td height="31" align="right" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="26"><a href="#"><img src="../images/icon_ch.png" width="22" height="22" border="0" /></a></td>
+                    <td><a href="#"><img src="../images/icon_en.png" width="22" height="22" border="0" /></a></td>
+                    <td>&nbsp;</td>
+                    <td width="140" height="22" bgcolor="#ffffff"><input name="textfield" type="text" class="search_broder" id="textfield" value="檢索" size="19" /></td>
+                    <td><img src="../images/icon_search.png" width="23" height="22" /></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td align="right"><table border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="483" height="33" background="../images/menu.png"><table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="25" class="menu">&nbsp;</td>
+                        <td width="85" class="menu"><a href="#" class="menu">最新消息</a></td>
+                        <td width="102" class="menu"><a href="#" class="menu">基金會介紹</a></td>
+                        <td width="93" class="menu"><a href="#" class="menu">書展介紹</a></td>
+                        <td width="94" class="menu"><a href="#" class="menu">參展專區</a></td>
+                        <td width="63" class="menu"><a href="#" class="menu">聯絡我們</a></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                </table></td>
+              </tr>
+            </table></td>
+          </tr>
+          <tr>
+            <td height="12">&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center"><table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="../images/space.png" width="1300" height="3" /></td>
+      </tr>
+      <tr>
+        <td height="265" background="../images/ad.jpg"><table border="0" align="right" cellpadding="0" cellspacing="0">
+          <tr>
+            <td><img src="../images/ad_logo.png" width="234" height="152" /></td>
+            <td width="97">&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td><img src="../images/ad_broder.jpg" width="1300" height="16" /></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center"><table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="920" height="420" align="center" valign="top" background="../images/main_bg2.png"><!-- TemplateBeginEditable name="EditRegion3" -->EditRegion3<!-- TemplateEndEditable --></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center"><table width="920" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="18"><img src="../images/space.png" width="1" height="9" /></td>
+      </tr>
+      <tr>
+        <td align="center" valign="middle"><table border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner1.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+            <td><img src="../images/space.png" width="2" height="1" /></td>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner2.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+            <td><img src="../images/space.png" width="2" height="1" /></td>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner3.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+            <td><img src="../images/space.png" width="2" height="1" /></td>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner4.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+            <td><img src="../images/space.png" width="2" height="1" /></td>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner5.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+            <td><img src="../images/space.png" width="2" height="1" /></td>
+            <td><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="banner_broder"><a href="#"><img src="../images/banner6.jpg" width="142" height="65" border="0" /></a></td>
+              </tr>
+            </table></td>
+          </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="18"><img src="../images/space.png" width="1" height="9" /></td>
+      </tr>
+      <tr>
+        <td height="143" align="left" valign="top" background="../images/fooermenu_bg.jpg"><table width="100%" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="65" height="22">&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td width="60" rowspan="2" align="right"><img src="../images/line.gif" width="1" height="66" /></td>
+            <td width="230">&nbsp;</td>
+            <td width="65">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><span class="footer_menu">最新消息</span></td>
+              </tr>
+              <tr>
+                <td align="left"><span class="footer_menu2"><a href="#">本會訊息</a></span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">書展新聞</a></td>
+              </tr>
+            </table></td>
+            <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><span class="footer_menu">基金會介紹</span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">基金會介紹</a></span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">大事記</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">章程</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">董監事</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">財務報表</a></td>
+              </tr>
+            </table></td>
+            <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><span class="footer_menu">書展介紹</span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">特色</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">主題館</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">展覽書區</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">書展資訊</a></td>
+              </tr>
+            </table></td>
+            <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><span class="footer_menu">參展專區</span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">參展辦法</a></span></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">展覽管理辦法</a></td>
+              </tr>
+              <tr>
+                <td align="left" class="footer_menu2"><a href="#" class="footer_menu2">表格下載</a></td>
+              </tr>
+            </table></td>
+            <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><span class="footer_menu">聯絡我們</span></td>
+              </tr>
+              <tr>
+                <td align="left"><span class="footer_menu2"><a href="#">意見信箱</a></span></td>
+              </tr>
+            </table></td>
+            <td align="right" valign="top"><span class="footer_menu">財團法人台北書展基金會</span><br />
+              <span class="footer_menu3">110台北市信義區基隆路一段180號10樓<br />
+                Tel +886-2-2767-1268<br />
+                Fax +886-2-2767-2808</span><br /></td>
+            <td>&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+     <td><img src="../images/space.png" width="1" height="9" /></td>
+  </tr>
+  <tr>
+    <td align="center"><table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="920" height="67" bgcolor="#D0D8BF"><table border="0" align="left" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="82" align="left">&nbsp;</td>
+            <td align="left"><img src="../images/footer_logo.png" width="152" height="30" /></td>
+            <td width="622" align="right" class="footer_w1">Copyright © all rights reserved by TBFF<br />
+              <span class="footer_w2">財團法人台北書展基金會 版權所有</span></td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,588 @@
+﻿@using MvcPaging
+@using System.Data.SqlClient
+@{
+   //v;
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_mainLayout.cshtml";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+
+    //string listsql = "";
+
+    //listsql = " select rid from emprole where empid = '" + Session["empid"].ToString().Trim() + "' order by rid";
+    //SqlDataReader dr = dbobj.dbselect(comconn, listsql);
+
+    //SqlDataReader dr1 ;
+     
+    //string[] allcount = new string[30];
+}
+<table cellpadding="10" cellspacing="0" width="100%">
+<tr>
+    <td valign="top">
+        @{
+
+            string tmptoday = dbobj.get_date(DateTime.Now.ToString(), "1");
+            string listsql = "";
+
+            listsql = " select * from empfunction where empid = '" + (string)Session["empid"] + "' and funposition = 'm' order by funorder";
+            SqlDataReader dr = dbobj.dbselect(comconn, listsql);
+
+            while (dr.Read())
+            {
+
+                string funname = "";
+                funname = dbobj.get_dbvalue(comconn1, "select chkitem from checkcode where chkclass='08' and chkcode='" + dr["funid"].ToString() + "'");
+                listsql = "SELECT schid as id,  schtitle as tmptitle FROM schedule where 1<>1 ";
+                string gotoloaction = "", morelocation = "";
+                switch (dr["funid"].ToString())
+                {
+                    case "00": //個人備忘
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('0') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                        gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=0&schid";
+                        morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=0";
+                        break;
+                    case "01": //個人行程
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('1') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                        gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=1&schid";
+                        morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=1";
+                        break;
+                    case "02": //縣府行程
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('2') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                        gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2&schid";
+                        morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2";
+                        break;
+                    case "04": //會議召集
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin,schchief, schehour, schemin FROM schedule where schtype in ('4') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                        gotoloaction = "../common/meetdetail?schid";
+                        morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2";
+                        break;
+                    case "05": //檔案系統
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,cfilesize,sid,mcfiletype,cfilename,cupid FROM viewmaincontent where mctype = '4' and mcparentid=0 order by cfilename , mctitle";
+                        gotoloaction = "../schedule/roomschedule?sid=37&realsid=38";
+                        morelocation = "../oa/filesystem?sid=494&realsid=532";
+                        break;
+                    case "06": //佈告欄
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where mctype = '0' and sid not in (572,573,590,591,592,593,594,598,610)  and comid='" + Session["comid"].ToString() + "'order by mdate desc";
+                        gotoloaction = "";
+                        morelocation = "../oa/maincontent?sid=435&realsid=444";
+                        break;
+                    case "07": //網路回報
+                        //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM replymsg order by rdate desc";
+                        //gotoloaction = "";
+                        //morelocation = "../replymsg/List?sid=571&realsid=574";
+                        //break;
+                    case "08": //問卷調查
+                        listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM pollactive where pasdate <='" + tmptoday + "' and paedate >='" + tmptoday + "' order by pasdate desc";
+                        gotoloaction = "";
+                        morelocation = "../pollwrite/list?sid=606&realsid=584";
+                        break;
+                    case "09": //首長信箱捉自己要寫的單
+                        //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM Mailquestion where rolestampid  = '''" + (string)Session["rid"] + "''' and QStype='0' and Mqstatus in ('3') order by Mqdate desc";
+                        //gotoloaction = "";
+                        //morelocation = "../Mailquestion/list?sid=530&realsid=532";
+                        //break;
+                    case "10": //1999民意捉自己要寫的單
+                        //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM Mailquestion where rolestampid  = '''" + (string)Session["rid"] + "''' and QStype='1' and Mqstatus in ('3') order by Mqdate desc";
+                        //gotoloaction = "";
+                        //morelocation = "../q1999/list?sid=531&realsid=537";
+                        //break;
+                    case "11": //馬祖日報
+                        //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where sid in (590,591,592,593,594,598) order by mdate desc";
+                        //gotoloaction = "";
+                        //morelocation = "../oa/maincontent?sid=589&realsid=590";
+                        //break;
+                    case "12": //RSS 訂閱
+                        //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where mctype = '0' and sid in (610) and ownman = '" + Session["empid"].ToString() + "' order by mdate desc";
+                        //gotoloaction = "";
+                        //morelocation = "../rsslink/list?sid=56&realsid=607";
+                        break;
+
+                }
+
+                SqlDataReader dr1 = dbobj.dbselect(comconn2, listsql);
+                if (dr1.HasRows)
+                {
+                    <table width="97%" border="0" cellspacing="0" cellpadding="5">
+                        <tr>
+                            <td align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td width="25"><img src="~/images/title_01.gif" width="25" height="37" /></td>
+                                        <td align="left" valign="middle" background="~/images/title_03.gif">
+                                            <table width="90%" border="0" cellpadding="3" cellspacing="0" class="title">
+                                                <tr>
+                                                    <td valign="middle" style="font-size:12pt">
+                                                        @switch (dr["funid"].ToString())
+                                                        {
+                                                            case "00": //個人備忘
+                                                                <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "01": //個人備忘
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "02": //個人備忘
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "04": //會議召集
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "05": //檔案系統
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "06": //佈告欄
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "07": //網路回報
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "08": //問卷調查
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "09": //首長信箱
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "10": //1999民意
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "11": //馬祖日報
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                            case "12": //RSS訂閱
+                                                            <a href="@(morelocation)">@funname</a>
+                                                                break;
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="109" background="~/images/title_04.gif">&nbsp;</td>
+                                    </tr>
+                                </table>
+                                @{
+                                    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+                                        <tr>
+                                            @switch (dr["funid"].ToString())
+                                            {
+                                                case "00": //個人備忘
+                                                    <td class="title_Name"><font size="2">標題</font></td>
+                                                    <td class="title_Name" width=250><font size="2">日期</font></td>
+                                                    break;
+                                                case "01": //個人備忘
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">日期</font></td>
+                                                    break;
+                                                case "02": //個人備忘
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">日期</font></td>
+                                                    break;
+                                                case "04": //會議召集
+                                                <td class="title_Name"><font size="2">會議名稱</font></td>
+                                                <td class="title_Name" width=120><font size="2">會議主席</font></td>
+                                                <td class="title_Name" width=250><font size="2">會議起迄時間</font></td>
+                                                    break;
+                                                case "05": //檔案系統
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=120><font size="2">發表人</font></td>
+                                                <td class="title_Name" width=250><font size="2">建立日期</font></td>
+                                                    break;
+                                                case "06": //佈告欄
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">發布時間</font></td>
+                                                    break;
+                                                case "07": //網路回報
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=120><font size="2">回報人</font></td>
+                                                <td class="title_Name" width=250><font size="2">回報時間</font></td>
+                                                    break;
+                                                case "08": //問卷調查
+                                                <td class="title_Name"><font size="2">問卷標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">問卷起迄日</font></td>
+                                                    break;
+                                                case "09": //首長信箱
+                                                <td class="title_Name" width=100><font size="2">申請單號</font></td>
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=100><font size="2">姓名</font></td>
+                                                <td class="title_Name" width=250><font size="2">提出日期</font></td>
+                                                    break;
+                                                case "10": //1999民意
+
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=100><font size="2">姓名</font></td>
+                                                <td class="title_Name" width=250><font size="2">提出日期</font></td>
+                                                    break;
+                                                case "11": //馬祖日報
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">發布時間</font></td>
+                                                    break;
+                                                case "12": //RSS訂閱
+                                                <td class="title_Name"><font size="2">標題</font></td>
+                                                <td class="title_Name" width=250><font size="2">發布時間</font></td>
+                                                    break;
+                                            }
+                                        </tr>
+                                        @while (dr1.Read())
+                                        {
+                                            string tmpsid = "";
+
+                                            <tr>
+
+                                                @switch (dr["funid"].ToString())
+                                                {
+                                                    case "00": //個人備忘
+                                                        <td class="title_Con"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                                        <td class="title_Con"><b>@dbobj.get_date(@dr1["tdate"].ToString(), "1")：@dr1["thour"].ToString()：@dr1["tmin"].ToString()</b></td>
+                                                        break;
+                                                    case "01": //個人備忘
+                                                    <td class="title_Con"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                                    <td class="title_Con"><b>@dbobj.get_date(@dr1["tdate"].ToString(), "1")：@dr1["thour"].ToString()：@dr1["tmin"].ToString()</b></td>
+                                                        break;
+                                                    case "02": //個人備忘
+                                                    <td class="title_Con"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                                    <td class="title_Con"><b>@dbobj.get_date(@dr1["tdate"].ToString(), "1")：@dr1["thour"].ToString()：@dr1["tmin"].ToString()</b></td>
+                                                        break;
+                                                    case "04": //會議召集
+                                                    <td class="title_Con"><a href="#" onclick="window.open('@(gotoloaction)=@dr1["id"].ToString()', 'jump1', 'scrollbars = 1, resizable = 1, width = 450, height = 340');">@dr1["tmptitle"].ToString()</a></td>
+                                                    <td class="title_Con"><a href="#" onclick="window.open('@(gotoloaction)=@dr1["id"].ToString()', 'jump1', 'scrollbars = 1, resizable = 1, width = 450, height = 340');">@dbobj.get_name(comconn1, @dr1["schchief"].ToString())</a></td>
+                                                    <td class="title_Con"><b>@dbobj.get_date(@dr1["tdate"].ToString(), "1") @dr1["thour"].ToString()：@dr1["tmin"].ToString()~@dr1["schehour"].ToString()：@dr1["schemin"].ToString()</b></td>
+                                                        break;
+                                                    case "05": //檔案系統
+                                                        tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                                        if (dr1["mcfiletype"].ToString() == "0")
+                                                        {
+                                                        <td class="title_Con"><img src=/images/folclose1.gif border=0 align=absmiddle><a href="/oa/filesystem?qmcparentid=@(dr1["mcid"].ToString())&mcid=@(dr1["mcid"].ToString())&sid=@tmpsid&realsid=@(dr1["sid"].ToString())">@dr1["mctitle"].ToString()</a></td>}
+                                                        else
+                                                        {
+                                                        <td class="title_Con"><img src=/images/d.gif border=0 align=absmiddle> <a href="/oa/cupfile?cupid=@(dr1["cupid"].ToString())" target="_blank">@dr1["cfilename"].ToString()【@dbobj.get_MB(dr1["cfilesize"].ToString()) MBytes】</a></td>}
+                                                        <td class="title_Con"><b>@dbobj.get_name(comconn1, @dr1["ownman"].ToString())</b></td>
+                                                        <td class="title_Con"><b>@dr1["mdate"].ToString()</b></td>
+                                                        break;
+                                                    case "06": //佈告欄
+                                                        tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                                        <td class="title_Con"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>
+                                                        <td class="title_Con"><b>@dr1["mdate"].ToString()</b></td>
+                                                        break;
+                                                    case "07": //網路回報
+                                                    @*<td class="title_Con"><a href="../replymsg/Edit?sid=571&realsid=574&rid=@dr1["rid"].ToString()">@dr1["rtitle"].ToString()</a></td>
+                                                    <td class="title_Con"><b>@dbobj.get_name(comconn1, @dr1["empid"].ToString())</b></td>
+                                                    <td class="title_Con"><b>@dr1["rdate"].ToString()</b></td>
+                                                        break;*@
+                                                    case "08": //問卷調查
+                                                        tmpsid = dbobj.get_dbvalue(comconn1, "select aid from pollanser where sid='" + (string)Session["empid"] + "' and paid=" + dr1["paid"].ToString());
+                                                        <td class="title_Con">
+                                                            @if (tmpsid == "")
+                                                            {<a href="../pollwrite/add?sid=514&realsid=584&paid=@dr1["paid"].ToString()">@dr1["paname"].ToString()</a>}
+                                                            else
+                                                            { @dr1["paname"].ToString()@("【已填寫】");
+                                                            }
+                                                        </td>
+                                                        <td class="title_Con"><b>@dbobj.get_date(@dr1["pasdate"].ToString(), "1")~@dbobj.get_date(@dr1["paedate"].ToString(), "1")</b></td>
+                                                            break;
+                                                    case "09": //首長信箱
+                                                    @*<td class="title_Con"><a href="../MailquestionApp/Edit?sid=530&realsid=534&Mqid=@dr1["Mqid"].ToString()">@dr1["Ano"].ToString()</a></td>
+                                                    <td class="title_Con"><a href="../MailquestionApp/Edit?sid=530&realsid=534&Mqid=@dr1["Mqid"].ToString()">@dr1["maintitle"].ToString()</a></td>
+                                                    <td class="title_Con"><b>@dr1["Mqname"].ToString()</b></td>
+                                                    <td class="title_Con"><b>@dr1["Mqdate"].ToString()</b></td>
+                                                            break;*@
+                                                    case "10": //1999民意
+
+                                                    @*<td class="title_Con"><a href="../q1999App/Edit?sid=531&realsid=539&Mqid=@dr1["Mqid"].ToString()">@dr1["maintitle"].ToString()</a></td>
+                                                    <td class="title_Con"><b>@dr1["Mqname"].ToString()</b></td>
+                                                    <td class="title_Con"><b>@dr1["Mqdate"].ToString()</b></td>
+                                                            break;*@
+                                                    case "11": //馬祖日報
+                                                            @*tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                                            <td class="title_Con"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>
+                                                            <td class="title_Con"><b>@dr1["mdate"].ToString()</b></td>
+                                                            break;*@
+                                                    case "12": //RSS訂閱
+                                                            @*tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                                            <td class="title_Con"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>
+                                                            <td class="title_Con"><b>@dr1["mdate"].ToString()</b></td>
+                                                            break;*@
+                                                            break;
+                                                }
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                }
+
+                dr1.Close();
+                dr1.Dispose();
+            }
+            dr.Close();
+
+        }
+      
+    </td>
+<td width="175">
+    @*<form name="Formhead3" method="post" action="/oa/searchList?sid=493&realsid=600">
+        <table width="175" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><img src="~/images/search_img_01.gif" width="175" /></td>
+            </tr>
+            <tr>
+                <td height="128" align="center" valign="top" background="~/images/search_img_02.gif">
+
+                    <table width="150" border="0" cellspacing="0" cellpadding="5">
+                        <tr>
+                            <td align="left"><font color="#FFFFFF" size="2">關鍵字搜尋</font></td>
+                        </tr>
+                        <tr>
+                            <td><input name="qkeyword" type="text" id="qkeyword" size="20" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td align="right"><input type="button" name="Submit1" value="搜尋" onclick="searchform(qkeyword.value);" /></td>
+                        </tr>
+                    </table>
+
+                    <script>
+                                function searchform(str) {
+                                    if (str != "") {
+                                        Formhead3.target = "";
+                                        Formhead3.submit();
+                                    }
+                                    else { alert("請輸入關鍵字!!"); }
+                                }
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </form>*@
+
+
+
+    @{
+        //右側
+
+        listsql = " select * from empfunction where empid = '" + (string)Session["empid"] + "' and funposition = 'r' order by funorder";
+        dr = dbobj.dbselect(comconn, listsql);
+
+        while (dr.Read())
+        {
+
+            string funname = "";
+            funname = dbobj.get_dbvalue(comconn1, "select chkitem from checkcode where chkclass='08' and chkcode='" + dr["funid"].ToString() + "'");
+            listsql = "SELECT schid as id,  schtitle as tmptitle FROM schedule where 1<>1 ";
+            string gotoloaction = "", morelocation = "";
+            switch (dr["funid"].ToString())
+            {
+                case "00": //個人備忘
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('0') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                    gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=0&schid";
+                    morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=0";
+                    break;
+                case "01": //個人行程
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('1') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                    gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=1&schid";
+                    morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=1";
+                    break;
+                case "02": //縣府行程
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin FROM schedule where schowner = '" + (string)Session["empid"] + "' and schtype in ('2') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                    gotoloaction = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2&schid";
+                    morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2";
+                    break;
+                case "04": //會議召集
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") schid as id,  schtitle as tmptitle,schdate as tdate ,schhour as thour, schmin as tmin,schchief, schehour, schemin FROM schedule where schtype in ('4') and schdate >=' " + tmptoday + "' order by schdate desc,schhour desc, schmin desc";
+                    gotoloaction = "../common/meetdetail?schid";
+                    morelocation = "../schedule/Edit?sid=53&realsid=54&Mflag=M&schtype=2";
+                    break;
+                case "05": //檔案系統
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,cfilesize,sid,mcfiletype,cfilename,cupid FROM viewmaincontent where mctype = '4' and mcparentid=0 order by cfilename , mctitle";
+                    gotoloaction = "";
+                    morelocation = "../oa/filesystem?sid=494&realsid=532";
+                    break;
+                case "06": //佈告欄
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where mctype = '0' and sid not in (572,573)order by mdate desc";
+                    gotoloaction = "";
+                    morelocation = "../oa/maincontent?sid=435&realsid=444";
+                    break;
+                case "07": //網路回報
+                    //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM replymsg order by rdate desc";
+                    //gotoloaction = "";
+                    //morelocation = "../replymsg/List?sid=571&realsid=574";
+                    //break;
+                case "08": //問卷調查
+                    listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM pollactive where pasdate <='" + tmptoday + "' and paedate >='" + tmptoday + "' order by pasdate desc";
+                    gotoloaction = "";
+                    morelocation = "../pollwrite/list?sid=606&realsid=584";
+                    break;
+                case "09": //首長信箱捉自己要寫的單
+                    //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM Mailquestion where rolestampid  = '''" + (string)Session["rid"] + "''' and QStype='0' and Mqstatus in ('3') order by Mqdate desc";
+                    //gotoloaction = "";
+                    //morelocation = "../Mailquestion/list?sid=530&realsid=532";
+                    //break;
+                case "10": //1999民意捉自己要寫的單
+                    //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") * FROM Mailquestion where rolestampid  = '''" + (string)Session["rid"] + "''' and QStype='1' and Mqstatus in ('3') order by Mqdate desc";
+                    //gotoloaction = "";
+                    //morelocation = "../q1999/list?sid=531&realsid=537";
+                    //break;
+                case "11": //馬祖日報
+                    //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where sid in (590,591,592,593,594,598) order by mdate desc";
+                    //gotoloaction = "";
+                    //morelocation = "../oa/maincontent?sid=589&realsid=590";
+                    //break;
+                case "12": //RSS 訂閱
+                    //listsql = "SELECT top(" + dr["funrowcount"].ToString() + ") mcid,ownman,mdate,mctitle,sid FROM maincontent where mctype = '0' and sid in (610) and ownman = '" + Session["empid"].ToString() + "' order by mdate desc";
+                    //gotoloaction = "";
+                    //morelocation = "../rsslink/list?sid=56&realsid=607";
+                    break;
+            }
+
+            SqlDataReader dr1 = dbobj.dbselect(comconn2, listsql);
+            if (dr1.HasRows)
+            {
+                <table width="175" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="20" background="~/images/title_03.gif"><img src="~/images/title_01.gif" width="25" height="37" /></td>
+                        <td width="155" align="left" valign="middle" background="~/images/title_03.gif">
+                            <table width="100%" border="0" cellpadding="5" cellspacing="0" class="title">
+                                <tr>
+                                    <td valign="middle" style="font-size:12pt">
+                                        <b>
+                                            @switch (dr["funid"].ToString())
+                                            {
+                                                case "00": //個人備忘
+                                                    <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "01": //個人備忘
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "02": //個人備忘
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "04": //會議召集
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "05": //檔案系統
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "06": //佈告欄
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "07": //網路回報
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "08": //問卷調查
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "09": //首長信箱
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "10": //1999民意
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "11": //馬祖日報
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                                case "12": //RSS訂閱
+                                                <a href="@(morelocation)">@funname</a>
+                                                    break;
+                                            }
+                                        </b>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    @{
+                while (dr1.Read())
+                {
+                    string tmpsid = "";
+
+                    <tr>
+
+                        @switch (dr["funid"].ToString())
+                        {
+                            case "00": //個人備忘
+                                <td class="title_Con" colspan="2"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                break;
+                            case "01": //個人備忘
+                            <td class="title_Con" colspan="2"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                break;
+                            case "02": //個人備忘
+                            <td class="title_Con" colspan="2"><a href="@(gotoloaction)=@dr1["id"].ToString()">@dr1["tmptitle"].ToString()</a></td>
+                                break;
+                            case "04": //會議召集
+                            <td class="title_Con" colspan="2"><a href="#" onclick="window.open('@(gotoloaction)=@dr1["id"].ToString()', 'jump1', 'scrollbars = 1, resizable = 1, width = 450, height = 340');">@dr1["tmptitle"].ToString()</a>@Html.Raw("<br>")<b>@dbobj.get_date(@dr1["tdate"].ToString(), "1")@Html.Raw("&nbsp;")@dr1["thour"].ToString():@dr1["tmin"].ToString()~@dr1["schehour"].ToString():@dr1["schemin"].ToString()</b></td>
+                                break;
+                            case "05": //檔案系統
+                                tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                if (dr1["mcfiletype"].ToString() == "0")
+                                {
+                                    <td class="title_Con" colspan="2"><img src=/images/folclose1.gif border=0 align=absmiddle><a href="/oa/filesystem?qmcparentid=@(dr1["mcid"].ToString())&mcid=@(dr1["mcid"].ToString())&sid=@tmpsid&realsid=@(dr1["sid"].ToString())">@dr1["mctitle"].ToString()</a></td>}
+                                else
+                                {
+                                    <td class="title_Con" colspan="2"><img src=/images/d.gif border=0 align=absmiddle> <a href="/oa/cupfile?cupid=@(dr1["cupid"].ToString())" target="_blank">@dr1["cfilename"].ToString()【@dbobj.get_MB(dr1["cfilesize"].ToString()) MBytes】</a></td>}
+                                break;
+                            case "06": //佈告欄
+                                tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                <td class="title_Con" colspan="2"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>
+                                break;
+                            case "07": //網路回報
+                            @*<td class="title_Con" colspan="2"><a href="../replymsg/Edit?sid=571&realsid=574&rid=@dr1["rid"].ToString()">@dr1["rtitle"].ToString()</a></td>
+                                break;*@
+                            case "08": //問卷調查
+                                tmpsid = dbobj.get_dbvalue(comconn1, "select aid from pollanser where sid='" + (string)Session["empid"] + "' and paid=" + dr1["paid"].ToString());
+                                <td class="title_Con" colspan="2">
+                                    @if (tmpsid == "")
+                                    {<a href="../pollwrite/add?sid=514&realsid=584&paid=@dr1["paid"].ToString()">@dr1["paname"].ToString()</a>}
+                                    else
+                                    { @dr1["paname"].ToString()@("【已填寫】");
+                                    }
+                                </td>
+                                    break;
+                            case "09": //首長信箱
+                            @*<td class="title_Con" colspan="2"><a href="../MailquestionApp/Edit?sid=530&realsid=534&Mqid=@dr1["Mqid"].ToString()">@dr1["Ano"].ToString()</a></td>
+                                    break;*@
+                            case "10": //1999民意
+
+                            @*<td class="title_Con" colspan="2"><a href="../q1999App/Edit?sid=531&realsid=539&Mqid=@dr1["Mqid"].ToString()">@dr1["maintitle"].ToString()</a></td>
+                                    break;*@
+                            case "11": //馬報
+                                    @*tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                    <td class="title_Con" colspan="2"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>
+                                    break;*@
+                            case "12": //RSS
+                                    @*tmpsid = dbobj.get_dbvalue(comconn1, "select uplink from sublevel1 where sid=" + dr1["sid"].ToString());
+                                    <td class="title_Con" colspan="2"><a href="../oa/maincontentview?sid=@tmpsid&realsid=@dr1["sid"].ToString()&mcid=@dr1["mcid"].ToString()">@dr1["mctitle"].ToString()</a></td>*@
+                                    break;
+                        }
+                    </tr>
+                }
+
+                    }
+
+                </table>
+            }
+
+            dr1.Close();
+            dr1.Dispose();
+        }
+        dr.Close();
+        dr.Dispose();
+    }
+</td>
+</tr>
+
+   
+</table>
+
+@{
+    comconn.Close();
+    comconn.Dispose();
+    comconn1.Close();
+    comconn1.Dispose();
+    comconn2.Close();
+    comconn2.Dispose();
+
+}
+

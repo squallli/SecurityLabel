@@ -1,0 +1,79 @@
+﻿@model Aitag.Models.emprole
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");  
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("select[name='rid']").val() == "")
+            { errmsg = errmsg + "請選擇組織角色\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("emprolemod", "Employee", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+    <input type="hidden" id="sysflag" name="sysflag" value="M">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+    <input type="hidden" id="erid" name="erid" value="@ViewBag.erid">
+    <input type="hidden" id="emid" name="emid" value="@ViewBag.emid">
+                <input type="hidden" id="qempworkcomp" name="qempworkcomp" value="@ViewBag.qempworkcomp">
+                <input type="hidden" id="qempworkdepid" name="qempworkdepid" value="@ViewBag.qempworkdepid">
+                <input type="hidden" id="qempstatus" name="qempstatus" value="@ViewBag.qempstatus">
+                <input type="hidden" id="qempno" name="qempno" value="@ViewBag.qempno">
+                <input type="hidden" id="qempid" name="qempid" value="@ViewBag.qempid">
+                <input type="hidden" id="qempname" name="qempname" value="@ViewBag.qempname">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 組織角色</td>
+        <td align="left">
+            @{string rid = "select rid , roletitle from roleplay where ifrtype='n' order by rid "; rid = dbobj.get_selectobj(comconn, rid, "rid", Model.rid, "1");}
+            @Html.Raw(rid)
+        </td>
+    </tr>
+    <tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            <input type=button value="回上頁" class=abutton onclick="javascript:window.history.go(-1);" id=submit1 name=submit1>
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

@@ -1,0 +1,195 @@
+﻿@using System.Data.SqlClient
+@{
+    Layout = "~/views/shared/_frontLayout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn3 = dbobj.get_conn("Aitag_DBContext");
+
+    string farmerno = Session["farmerno"].ToString();
+
+    //string sqlstr = "select *  from  certifyorder where farmerno = '" + farmerno + "' ";
+    //SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+    //SqlDataReader dr = cmd.ExecuteReader();
+    //string codno1 = "";
+    //while (dr.Read())
+    //{
+    //string codno = dr["codno"].ToString();
+    //codno1 = codno1 +"," +codno;   
+    //}
+    
+    //codno1 = codno1.Substring(1, codno1.Length - 1);
+    //dr.Close();
+}
+<!--article-->
+<div class="article">
+ <div class="container">
+ <div class="maintitle"><h1>查詢歷史紀錄</h1></div>
+ 
+<!--table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabobx">
+  <tr>
+    <td >地段</td>
+    <td>地號</td>
+    <td>種植面積</td>
+    <td>容重量</td>
+    <td>稻穀總產量</td>
+    <td>碾製成品</td>
+    <td>公斤</td>
+    <td>包裝(公斤)</td>
+    <td>張數</td>
+  </tr>
+  <tr>
+    <td>興富</td>
+    <td>0001-0001</td>
+    <td>0.560000</td>
+    <td>1.00</td>
+    <td>2.00</td>
+    <td>2</td>
+    <td>3.00</td>
+    <td>1.3</td>
+    <td>150</td>
+  </tr>
+  <tr>
+    <td>興富</td>
+    <td>0561-0151</td>
+    <td>0.880000</td>
+    <td>2.00</td>
+    <td>5.00</td>
+    <td>2</td>
+    <td>23.00</td>
+    <td>1.3</td>
+    <td>150</td>
+  </tr>
+  <tr>
+    <td>錦富</td>
+    <td>0123-0234</td>
+    <td>0.560000</td>
+    <td>3.00</td>
+    <td>4.00</td>
+    <td>4</td>
+    <td>2.00</td>
+    <td>1.3</td>
+    <td>150</td>
+  </tr>
+  <tr>
+    <td>錦富</td>
+    <td>0055-0982</td>
+    <td>0.560000</td>
+    <td>4.00</td>
+    <td>5.00</td>
+    <td>2</td>
+    <td>3.00</td>
+    <td>1.3</td>
+    <td>150</td>
+  </tr>
+</table-->
+   
+ <div class="member1">
+     <div class="tabA">
+     <h5 class="title">
+     <span>地段</span>
+     <span>地號</span>
+     <span>種植面積</span>
+     <span>容重量</span>
+     <span>稻穀總產量</span>
+     <span>碾製成品</span>
+     <span>公斤</span>
+     <span>包裝</span>
+     <span>張數</span>
+     <span>處理狀態</span>
+     </h5>
+
+         @{
+             string Sessionftype1 = "";
+             if (Session["ftype"].ToString() == "1")
+             {
+                 Sessionftype1 = "farmerno";
+             }
+             if (Session["ftype"].ToString() == "2")
+             {
+                 Sessionftype1 = "vendno";
+             }
+             
+            string sqlstr = "select *  from  certifyorder where " + Sessionftype1 + " = '" + farmerno + "' ";
+            SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+
+                string sqlstr1 = "select * from viewcertifycheckdet where farmerno = '" + dr["farmerno"].ToString() + "' and cstatus in ('05','06')";
+            SqlCommand cmd1 = new SqlCommand(sqlstr1, comconn1);
+            SqlDataReader dr1 = cmd1.ExecuteReader();
+
+            while (dr1.Read())
+            {
+
+
+
+                sqlstr1 = "select *  from  certifyorderdet where codno = '" + dr["codno"].ToString() + "'and cerdid = '" + dr1["cerdid"].ToString() + "'";
+                    SqlCommand cmd2 = new SqlCommand(sqlstr1, comconn2);
+                    SqlDataReader dr2 = cmd2.ExecuteReader();
+                    while (dr2.Read())
+                    {
+                        <h5>
+                            
+                             
+                            <input type="hidden" name="ldno" value="@dr1["ldno"].ToString()" />
+                            <input type="hidden" name="fwarea" value="@dr1["fwarea"].ToString()" />
+                            <input type="hidden" name="cerdid" value="@dr1["cerdid"].ToString()" />
+                            <span><strong>地段：</strong>@dr1["ltitle"].ToString()</span>
+                            <span><strong>地號：</strong>@dr1["landno1"]@*-@dr1["landno2"]*@</span>
+                            <span><strong>種植面積：</strong>@dr1["fwarea"].ToString()</span>
+                           
+                            
+                            <span><strong>容重量：</strong>@dr2["heavyval"].ToString() </span>
+                            <span><strong>稻穀總產量：</strong>@dr2["produceval"].ToString()</span>
+                            <span><strong>碾製成品：</strong>@dr2["prodname"].ToString()</span>
+                            <span><strong>公斤：</strong>@dr2["prodheavy"].ToString()</span>
+                            <span>
+                                <strong>包裝：</strong>
+                                @{string gbgid = ""; gbgid = dbobj.get_dbvalue(comconn3, "select bgtitle from bag where citemid = '" + dr["citemid"].ToString() + "' and bgid = '" + dr2["bgid"].ToString() + "'");}
+                                @gbgid
+                            </span>
+                            <span><strong>張數：</strong>@dr2["opcount"].ToString()</span>
+                            <span><strong>處理狀態：</strong>
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn3, "select chkitem from checkcode where chkclass = '34' and chkcode = '" + dr["costatus"].ToString() + "'");}
+                              @dbtitle
+                            </span>
+                        </h5>
+                    }
+
+                    dr2.Close();
+                    dr2.Dispose();
+                    
+                   }
+
+            dr1.Close();
+            dr1.Dispose();  
+                    
+                    
+                    
+
+            }
+            dr.Close();
+            dr.Dispose();
+            comconn.Close();
+            comconn.Dispose();
+            comconn1.Close();
+            comconn1.Dispose();
+            comconn2.Close();
+            comconn2.Dispose();
+            comconn3.Close();
+            comconn3.Dispose();
+        }
+
+     </div>       
+       
+    </div>  
+   
+   
+   
+ </div>
+</div>
+<!--article-end-->

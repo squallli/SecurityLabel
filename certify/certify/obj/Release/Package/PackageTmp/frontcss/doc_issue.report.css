@@ -1,0 +1,19 @@
+﻿.search_title {
+    background-color: #FFFFFF;
+    font-weight: bold;
+    height: 16px;
+    padding: 0px 10px 0px 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: 80px;
+}
+
+.search_table {
+    border: 0px solid black;
+    padding: 0px 10px 0px 10px;
+    width: 100%;
+}
+
+.search_table select {
+    width: 20%;
+}

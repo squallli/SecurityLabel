@@ -1,0 +1,110 @@
+﻿@model NDOERP.Models.Logoin
+@{   Layout = null;}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>A-Cloud Recognition Service</title>
+    <style type="text/css">
+<!--
+body{ background-color:#fff;}
+.hindtext1
+{
+    font-size: 14px;
+	letter-spacing: 0px;
+    border-width: 0px;
+    background-color: #F8F8F8;
+    border-left-color: #ffffff;
+    border-right-color: #ffffff;
+    border-top-color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.input{
+	border:1px solid #d6d6d6;
+	color:#999999;
+	height: 20px;
+	margin-bottom:10px;
+	outline:0;
+	padding-left:5px;
+	text-align:left;
+	width: 150px; 
+}
+#LoginBox{
+	background: url('/images/NDOERP_loginBG.png') no-repeat center;
+	height:380px;
+	margin:150px auto 0 auto;
+	width:360px;
+}
+.LoginCont{
+	height: 190px;
+	width:222px;
+	margin:0 auto 0 auto;
+	padding:150px 0 10px 0;
+}
+.idBox,.pwBox{
+	display: block;
+	margin:5px 0px;
+	padding:0px;
+	/*width: 220px;*/
+    line-height: 20pt;
+    vertical-align: top;
+}
+.hindtext {
+    	margin:0px 0 10px 0;
+        vertical-align: top;
+        }
+.LoginBtn{
+	background: url('/images/NDOERP_loginBtn.png') no-repeat center;
+	height:30px;
+	margin: 20px auto;
+	width:73px;
+}
+.copyR
+{
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    font-weight:bolder;
+    color: #666666;
+    text-align:center;
+}
+-->
+</style>
+
+</head>
+<body>
+  
+   @using (Html.BeginForm()) {   
+   <center>@Html.ValidationSummary(true)</center>
+     
+	<div class="Container">
+		<div id="LoginBox">
+            <div class="LoginCont">
+                <table border="0" cellspacing="0" cellpadding="0" align="center">
+                    <tr>
+                        <td width="445" height="410" align="center" valign="top" background="~/images/loginbg.jpg">
+                            <span class="idBox">
+                                <span style="width: 50px; display: inline-block; ">帳號 :</span>
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "hindtext input" })@Html.ValidationMessageFor(m => m.UserName)
+                            </span>
+                            <span class="pwBox">
+                                <span style="width: 50px; display: inline-block; ">密碼 :</span>
+                                @Html.PasswordFor(m => m.Password, new { @class = "hindtext input" })@Html.ValidationMessageFor(m => m.Password)
+                            </span>
+                            <div class="LoginBtn">
+                                <input type="image" src="@Url.Content("~/images/btn-login.jpg")" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+			<div class="copyR">Copyright &#9400; 2014 all rights reserved by Avision</div>
+		</div>
+	</div>
+            }
+</body>
+</html>
+                
+    

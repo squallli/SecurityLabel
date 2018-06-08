@@ -1,0 +1,202 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.certifystamp>
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+  //  System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/certifystamp/rpt";
+                break;
+            case "A":
+                FormList.action = "/certifystamp/Add";
+                break;
+            case "E":
+                FormList.action = "/certifystamp/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/certifystamp/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+        else {
+            var errmsg = "";
+            if ($("#qsdate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qsdate, "統計起日") }
+
+            if ($("#qedate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qedate, "統計迄日") }
+
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+    }
+
+    function sortform(tmp1, tmp2) {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("rpt", "certifystamp", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            認證項目：
+                            @{string Selectstatus = "select citemid,citemname from certifyitem where  comid = '" + Session["comid"] + "'  order by citemid";
+                            Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qcitemid", ViewBag.qcitemid, "1");}@Html.Raw(Selectstatus)&nbsp;
+                            字軌：<input type="text" name="qownman" id="qownman" value="@ViewBag.qownman">
+                            <font color=cc3322>
+                                統計起迄日：
+                                <input type=text name="qsdate" id="qsdate" value="@ViewBag.qsdate" size=12 maxlength=10 class=c12border>&nbsp;
+                                <img src="../images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                                <script type="text/javascript">
+                                    cal.manageFields("f_btn", "qsdate", "%Y/%m/%d");
+                                </script> ~
+                            </font>
+                            <input type=text name="qedate" id="qedate" value="@ViewBag.qedate" size=12 maxlength=10 class=c12border>&nbsp;
+                            <img src="../images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn1", "qedate", "%Y/%m/%d");
+                            </script>
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                            <input id="Submit1" type="submit" value="匯出" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left" class="buttontd">
+                @*<input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 0,'');}" />
+                <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />*@
+            </td>
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        @*<th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>*@
+                        <!--th width="30">順序</th-->
+                        <th width="10%">
+                            認證項目
+                            @if (@ViewBag.orderdata1 == "asc")
+                            {<a href="#" onclick="sortform('citemid', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                            else
+                            {<a href="#" onclick="sortform('citemid', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                        </th>
+                        <th width="10%">
+                            字軌
+                            @if (@ViewBag.orderdata1 == "asc")
+                            {<a href="#" onclick="sortform('wtrack', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                            else
+                            {<a href="#" onclick="sortform('wtrack', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                        </th>
+                        <th width="12%">
+                            起始號碼
+                        </th>
+                        <th width="12%">
+                            結束號碼
+                        </th>
+                        <th width="12%">
+                            期初數量
+                        </th>
+                        <th width="12%">
+                            使用數量
+                        </th>
+                        <th width="12%">
+                            作廢數量
+                        </th>
+                        <th width="12%">
+                            期末數量
+                        </th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @*<td class="colstd" align="center">
+                                <input type="checkbox" name="cdel" id="cdel" value="@item.csid">
+                            </td>*@
+                            <td class="colstd">
+                                @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + item.citemid + "'");}
+                                @dbtitle
+                            </td>
+                            <td class="colstd">
+                                @item.wtrack
+                            </td>
+                            <td class="colstd">
+                                @item.sno
+                            </td>
+                            <td class="colstd">
+                                @item.eno
+                            </td>
+                            <td class="colstd">
+                                @item.cscount
+                            </td>
+                            <td class="colstd">
+                                @item.cscount
+                            </td>
+                            <td class="colstd">
+                                @item.cscount
+                            </td>
+                            <td class="colstd">
+                                @item.cscount
+                            </td>
+                           
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                  //  comconn1.Close();
+                  //  comconn1.Dispose();
+                    }
+                </table>
+                @if (Model.TotalItemCount < 1)
+                {
+                    @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

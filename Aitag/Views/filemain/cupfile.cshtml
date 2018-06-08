@@ -1,0 +1,29 @@
+﻿@using MvcPaging
+@using System.Data.SqlClient
+@{
+    string cupid = Request["cupid"].ToString();
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("AitagBill_DBContext");
+    string sql = "select * from erpbilldoc where cupid = '" + cupid + "'";
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = comconn;
+    cmd.CommandText = sql;
+    SqlDataReader dr = cmd.ExecuteReader();
+    string url1 = "";
+    if (dr.Read())
+    {
+        try { 
+        System.IO.File.Copy(Server.MapPath("/upload/" + dr["cupfile"].ToString()), Server.MapPath("/downfile/" + dr["cfilename"].ToString()));
+        }
+        catch(Exception e)
+        {;}
+            url1 = "/downfile/" + dr["cfilename"].ToString();
+    }
+    dr.Close();
+    dr.Dispose();
+    comconn.Close();
+    comconn.Dispose();
+}
+<script>
+    location.href = '@url1'
+</script>

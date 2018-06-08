@@ -1,0 +1,162 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.holidaylog>
+@using MvcPaging
+@using System.Data.SqlClient;
+@{
+    ViewBag.Title = "請假單選取畫面";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="~/js/date/js/jscal2.js"></script>
+<script type="text/javascript" src="~/js/date/js/lang/en.js"></script>
+<link rel="stylesheet" type="text/css" href="~/js/date/css/jscal2.css" />
+<link rel="stylesheet" type="text/css" href="~/js/date/css/steel/steel.css" />
+<script type="text/javascript">
+    //<![CDATA[
+    var cal = Calendar.setup({
+        onSelect: function (cal) { cal.hide() },
+        showTime: 0
+    });
+    //]]>
+</script>
+
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/Ajax/chooseholidaylog";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function SetSelfopener(text) {
+        var col = JSON.parse(text);
+        $("form[name='FormAdd']", opener.document).find("input[name='hsno']").val(col.hsno);
+        $("form[name='FormAdd']", opener.document).find("input[name='hdayid']").val(col.hdayid);
+        $("form[name='FormAdd']", opener.document).find("input[name='hdaytitle']").val(col.hdaytitle);
+        $("form[name='FormAdd']", opener.document).find("input[name='hlogsdate']").val(col.hlogsdate);
+        $("form[name='FormAdd']", opener.document).find("input[name='hlogstime']").val(col.hlogstime);
+        $("form[name='FormAdd']", opener.document).find("input[name='hlogedate']").val(col.hlogedate);
+        $("form[name='FormAdd']", opener.document).find("input[name='hlogetime']").val(col.hlogetime);
+        $("form[name='FormAdd']", opener.document).find("input[name='hloghour']").val(col.hloghour);
+        window.close();
+    }
+
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("chooseholidaylog", "Ajax", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            
+                            請假單號：<input type="text" name="qhsno" id="qhsno" value="@ViewBag.qhsno">
+                            <br>
+                            日期起訖：
+                            <input type=text name=qhlogsdate id="qhlogsdate" size=12 class=c12border value="@ViewBag.qhlogsdate"> <img src="/images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script>cal.manageFields("f_btn1", "qhlogsdate", "%Y/%m/%d");</script>
+                            <input type=text name=qhlogedate id="qhlogedate" size=12 class=c12border value="@ViewBag.qhlogedate"> <img src="/images/show-calendar.gif" border=0 id="f_btn2" style='cursor: pointer'>
+                            <script>cal.manageFields("f_btn2", "qhlogedate", "%Y/%m/%d");</script>
+
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable" bgcolor="#ffffff">
+                    <tr>
+                        <th width=""></th>
+                        <th width="">請假單號</th>
+                        <th width="60">假別</th>
+                        <th width="">起迄時間</th>
+                        <th width="60">請假時數</th>
+                    </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        string hlogsdate = dbobj.get_dbDate(item.hlogsdate, "yyyy/MM/dd");
+                        string hlogedate = dbobj.get_dbDate(item.hlogedate, "yyyy/MM/dd");
+                        string hdaytitle = "select hdaytitle from holidaycode where hdayid = '" + item.hdayid + "'"; hdaytitle = dbobj.get_dbvalue(comconn, hdaytitle);
+                        string SEDate = "自{0} ({1})<br>至{2} ({3})";
+                        SEDate = string.Format(SEDate, hlogsdate, item.hlogstime, hlogedate, item.hlogetime);
+
+                        string Strcol = @"'{{""hsno"":""{0}"","
+                            + @" ""hdayid"":""{1}"","
+                            + @" ""hdaytitle"":""{2}"","
+                            + @" ""hlogsdate"":""{3}"","
+                            + @" ""hlogstime"":""{4}"","
+                            + @" ""hlogedate"":""{5}"","
+                            + @" ""hlogetime"":""{6}"","
+                            + @" ""hloghour"":""{7}""}}'";
+                        Strcol = string.Format(Strcol, item.hsno.ToString()
+                            , item.hdayid.ToString()
+                            , hdaytitle
+                            , hlogsdate
+                            , item.hlogstime.ToString()
+                            , hlogedate
+                            , item.hlogetime.ToString()
+                            , item.hloghour.Value.ToString("#,##0.##")
+                            );
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type="radio" name="radio1" id="radio1" onclick="SetSelfopener(@Strcol);">
+                            </td>
+                            <td class="colstd">
+                                @item.hsno
+                            </td>
+                            <td class="colstd">
+                                @hdaytitle
+                            </td>
+                            <td class="colstd">
+                                @Html.Raw(SEDate)
+                            </td>
+                            <td class="colstd">
+                                @item.hloghour.Value.ToString("#,##0.##")
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+
+            </td>
+        </tr>
+    </table>
+    <div align=center>
+        <input type=button value="關閉視窗" class=button onclick="window.close();" id=button2 name=button2>
+    </div>
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,668 @@
+﻿@using System.Data;
+@using System.Data.SqlClient;
+@{
+    if (Session["tempid"] == null)
+    {
+        Response.Write("<script>alert('帳號密碼已過期，即將登出系統');location.href='/login';</script>");
+        Response.End();
+    }
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    SqlConnection tmpconn = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection tmpconn1 = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection tmpconn2 = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString() + "/";
+    string desid = "";
+    if (!string.IsNullOrWhiteSpace((string)Session["sid"]))
+    { desid = Session["sid"].ToString(); }
+
+    String empid = Session["tempid"].ToString();
+    String empname = Session["tempname"].ToString();
+
+    String titleStr = "AITag安品數據-智慧物聯雲標籤服務管理系統";
+    String logoutStr = "登出";
+    String webPath = "../";
+    String sqlstr = "";
+    String mtid = "";
+    //string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"];//新版的用法
+    mtid = Session["mtid"].ToString();
+    if (mtid == null)
+    {
+        mtid = dbobj.get_dbvalue(tmpconn, "select mtid from sublevel1 where sid = '" + Session["realsid"] + "'");
+    }
+    if ((Session["realsid"] == null))
+    { ViewBag.funtitle = ""; }
+    else
+    { //ViewBag.funtitle = dbobj.get_menuname("Aitag_DBContext", Session["realsid"].ToString(), Session["sid"].ToString());
+        ViewBag.funtitle = dbobj.get_menuname("Aitag_DBContext", Session["realsid"].ToString(), "1");
+    }
+
+    if ((Session["tempid"] == null))
+    {
+        titleStr = "AITag安品數據-智慧物聯雲標籤服務管理系統";
+        logoutStr = "登出";
+        webPath = "../login";
+    }
+
+    string weekname = "";
+
+    DayOfWeek aDw = DateTime.Today.DayOfWeek;
+    switch (aDw.ToString())
+    {
+        case "Monday":
+            weekname = "星期一";
+            break;
+        case "Tuesday":
+            weekname = "星期二";
+            break;
+        case "Wednesday":
+            weekname = "星期三";
+            break;
+        case "Thursday":
+            weekname = "星期四";
+            break;
+        case "Friday":
+            weekname = "星期五";
+            break;
+        case "Saturday":
+            weekname = "星期六";
+            break;
+        case "Sunday":
+            weekname = "星期日";
+            break;
+        default: weekname = "";
+            break;
+    }
+
+    string weektime = "";
+    weektime = System.DateTime.Now.ToString("HH:mm:ss");
+    string rid = Session["rid"].ToString();
+}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>@titleStr</title>
+    <link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/leftmenu.css" />
+    @Scripts.Render("~/bundles/jquery")
+    <script type="text/javascript" src="~/js/date/js/jscal2.js"></script>
+    <script type="text/javascript" src="~/js/date/js/lang/en.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/js/date/css/jscal2.css" />
+    <link rel="stylesheet" type="text/css" href="~/js/date/css/steel/steel.css" />
+    <script src="~/Scripts/jquery.min.js"></script>
+    <script src="~/Scripts/jquery.colorbox.js"></script>
+    <script src="~/Scripts/jquery.ui/jquery.ui.core.min.js"></script>
+    <script src="~/Scripts/jquery.ui/jquery.ui.widget.min.js"></script>
+    <script src="~/Scripts/jquery.ui/jquery.ui.datepicker_v2.min.js"></script>
+    <link rel="stylesheet" href="/js/editor/themes/default/default.css" />
+    <link rel="stylesheet" href="/js/editor/plugins/code/prettify.css" />
+    <script language="JavaScript" src="/js/editor/kindeditor-min.js"></script>
+    <script language="JavaScript" src="/js/editor/lang/zh_TW.js"></script>
+    <script language="JavaScript" src="/js/editor/plugins/code/prettify.js"></script>
+    <script type="text/javascript" src="~/js/checkdata.js"></script>
+    <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script type="text/JavaScript">
+<!--
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+//-->
+    </script>
+    <script type="text/javascript">
+        function checkallbox() {
+            for (i = 0; i < document.forms[0].length; i++) {
+                if (document.forms[0].elements[i].type == "checkbox") {
+                    if (document.forms[0].chkall.checked == true)
+                        document.forms[0].elements[i].checked = true
+                    else
+                        document.forms[0].elements[i].checked = false
+                }
+            }
+        }
+        function checkallbox1() {
+            for (i = 0; i < document.forms[1].length; i++) {
+                if (document.forms[1].elements[i].type == "checkbox") {
+                    if (document.forms[1].chkall.checked == true)
+                        document.forms[1].elements[i].checked = true
+                    else
+                        document.forms[1].elements[i].checked = false
+                }
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+        //<![CDATA[
+        var cal = Calendar.setup({
+            onSelect: function (cal) { cal.hide() },
+            fdow: 0,
+            showTime: 0
+        });
+        //]]>
+
+        function chkdel() {
+            if (confirm('確定刪除此筆資料??') == 1)
+            { return true; }
+            else
+            { return false; }
+
+        }
+
+    </script>
+    <script type="text/JavaScript">
+<!--
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+//-->
+    </script>
+    <script>
+        /*單層共用ajax , ajax_drop(obj1, tmpsql, vald, showd, rowno)
+        string : obj1 , <div>的名稱
+        string tmpsql : sql語法,包含where條件
+        string vald : 數值欄位
+        string showd : 呈現欄位
+        string rowno : 多筆時的第幾行
+        */
+        var nowrow = 0;
+        var arr1;
+
+        function ajax_drop(obj1, tmpsql, vald, showd, rowno) {
+
+            var sqldata1 = tmpsql;
+            //alert(tmpsql)
+
+            if (!(event.keyCode == 38 || event.keyCode == 40 || event.keyCode == 32)) {
+                nowrow = 0;
+            }
+
+            if (nowrow == 0) {
+                nowrow = 1;
+                $("#" + obj1).css("display", "");
+                $("#" + obj1).load("/ajax/ajaxdropbox", { sqldata: sqldata1, ajaxdiv: obj1, valname: vald, showname: showd });
+                if (event.keyCode == 40) {
+                    {  //往上到0,再往下會遇到這樣 , 所以先清空
+                        $("#idarray" + nowrow).css("background", "#ffffff");
+                        nowrow = 0;
+                    }
+                }
+            }
+
+            if (event.keyCode == 38) {
+
+                $("#idarray" + vald + nowrow).css("background", "#ffffff");
+                if (nowrow > 0)
+                { nowrow--; }
+
+                if (nowrow == 0) {
+                    $("#" + obj1).css("display", "none");
+                }
+
+            }
+            else if (event.keyCode == 40) {
+                $("#idarray" + vald + nowrow).css("background", "#ffffff");
+                nowrow++;
+
+                if (typeof $("#idarray" + vald + nowrow).val() == "undefined") {
+                    nowrow--;
+                }
+
+            }
+            else if (event.keyCode == 32) {
+                if ($("#idarray" + vald + nowrow) != null) {
+                    //alert($("#idarray" + nowrow));
+                    allval = $("#idarray" + vald + nowrow).attr("name");
+                    if (allval != null) {
+                        arr1 = allval.split(',');
+                        $("#" + vald).val(arr1[0]);
+                        $("#" + showd).val(arr1[1]);
+
+                    }
+                    $("#" + obj1).css("display", "none");
+                }
+            }
+
+            if (typeof $("#idarray" + vald + nowrow).val() != "undefined") {
+
+                $("#idarray" + vald + nowrow).css("background", "#ddeeff");
+
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <!--上方start-->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="left" class="topbg"><img src="~/upload/@Session["logopic"]" width="980" height="98" /></td>
+                    </tr>
+                    @{
+                        string murl = "";
+
+                        murl = dbobj.get_dbvalue(tmpconn, "select location from sublevel1 where sid = '" + Session["realsid"] + "'");
+                        if (murl == "")
+                        {
+                            murl = "/main";
+                        }
+                        else
+                        {
+                            murl += "?realsid=" + Session["realsid"].ToString();
+                        }
+
+                    }
+                    <tr>
+                        <td class="menubg">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <td width="200" align="left"><img src="~/images/menuleftimg.jpg" border="0" /></td>
+                                <td align="center "><img src="~/images/top_02_line.gif" border="0" /></td>
+                                <td align="center"><a href="@murl" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image41', '', '/images/btn_01_O.gif', 1)"><img src="~/images/btn_01.gif" name="Image41" border="0" id="Image41" /></a></td>
+                                <td align="center"><img src="~/images/top_02_line.gif" border="0" /></td>
+                                <td align="center"><a href="/main" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image42', '', '/images/btn_02_O.gif', 1)"><img src="~/images/btn_02.gif" name="Image42" border="0" id="Image42" /></a></td>
+                                <td align="center"><img src="~/images/top_02_line.gif" border="0" /></td>
+                                @*<td align="center"><a href="/schedule/list?sid=53&realsid=54" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image43', '', '/images/btn_03_O.gif', 1)"><img src="~/images/btn_03.gif" name="Image43" border="0" id="Image43" /></a></td>
+                                <td align="center"><img src="~/images/top_02_line.gif" border="0" /></td>*@
+                                <!--<td align="center"><a href="../oa/daliyreport.asp?sid=60&realsid=64" target='_top' onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image48', '', '/images/btn_07_O.gif', 1)"><img src="~/images/btn_07.gif" name="Image48" border="0" id="Image48" /></a></td>
+                                 <td align="center"><img src="~/images/top_02_line.gif" border="0" /></td>
+                                 -->
+                                <td align="center"><a href="/login/logout" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image44', '', '/images/btn_04_O.gif', 1)"><img src="~/images/btn_04.gif" name="Image44" border="0" id="Image44" /></a></td>
+                                <td align="center"><img src="~/images/top_02_line.gif" /></td>
+                                <td align="center">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td align="right" class="user_info_name" style="margin-right:10px;" width="300">
+                                                歡迎光臨&nbsp;&nbsp;@empname (@empid) @weekname&nbsp;<font id=gotime>@weektime</font>
+                                            </td>
+                                            <td align="left" width="50">&nbsp;</td>
+                                            <td width="250" valign="bottom">
+                                                <table cellpadding=0 cellspacing=0 border=0 border=0 width="250">
+                                                    <tr>
+                                                        @*<td style=height:6px>
+                                                               <font color=white style="font-size:8pt">組織角色</font>
+                                                               @Html.Raw(dbobj.get_selectobj(tmpconn, "SELECT emprole.rid AS rid, roleplay.roletitle AS roletitle FROM  roleplay INNER JOIN  emprole ON roleplay.rid = emprole.rid where emprole.empid = '" + empid + "' order by emprole.rid", "comidrid style=font-size:9pt", rid, "1"))
+                                                            </td>*@
+                                                        <td>
+                                                            <font color=white style="font-size:8pt">使用單位</font>
+                                                            @Html.Raw(dbobj.get_selectobj(tmpconn, "select comid,comtitle from Company where comid in (" + Session["comcon"] + ") order by comid", "comid  style=font-size:9pt", Session["comid"].ToString(), "1"))
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </table>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" height="25">
+                                <tr>
+                                    <td width="221" background="~/images/top_03.gif" height="25">&nbsp;</td>
+                                    <td align="center" background="~/images/top_04.gif">
+                                        <table width="100%" height="25" border="0" cellpadding="0" cellspacing="0" class="sub_set">
+                                            <tr>
+
+                                                @{
+                                                    string strurl = Request.ServerVariables["server_name"];
+                                                    string gourl = "";
+                                                    sqlstr = "select * from menutab order by mtid";
+                                                    SqlCommand cmd = new SqlCommand();
+                                                    cmd.Connection = tmpconn;
+                                                    cmd.CommandText = sqlstr;
+                                                    SqlDataReader dr = cmd.ExecuteReader();
+                                                    SqlDataReader tmprs;
+                                                    string tmpdata = "";
+                                                    string tmpdata1 = "</td>";
+                                                    while (dr.Read())
+                                                    {
+                                                        if (mtid == dr["mtid"].ToString())
+                                                        {
+                                                            tmpdata = "<td height=18  style='background-color:#fde9a3; border-top:2px solid #fbb838; border-right:2px solid #c67e0c; border-radius:5px 5px 0px 0px;' align='center'>";
+                                                        }
+                                                        else
+                                                        {
+                                                            tmpdata = "<td height=18 align='center'>";
+                                                        }
+
+                                                        string sql = "SELECT sublevel1.* FROM privtb LEFT OUTER JOIN sublevel1 ON privtb.sid = sublevel1.sid where sublevel1.mtid = '" + dr["mtid"].ToString() + "' and privtb.bid='" + Session["empid"] + "' and privtb.chk='1' order by sublevel1.lid , sublevel1.corder , sublevel1.sid";
+                                                        tmprs = dbobj.dbselect(tmpconn1, sql);
+                                                        if (tmprs.Read())
+                                                        {
+                                                            string location = tmprs["location"].ToString().Trim();
+                                                            string p1 = tmprs["uplink"].ToString().Trim();
+                                                            string p2 = tmprs["sid"].ToString().Trim();
+                                                            if (location.IndexOf('#') >= 0)
+                                                            {
+                                                                sql = "SELECT sublevel1.location,sublevel1.sid FROM privtb LEFT OUTER JOIN sublevel1 ON privtb.sid = sublevel1.sid where sublevel1.uplink = '" + tmprs["sid"].ToString() + "' and sublevel1.lid='3' and privtb.bid='" + Session["empid"].ToString() + "' and privtb.chk='1' order by sublevel1.corder , sublevel1.sid";
+                                                                tmprs.Close();
+                                                                tmprs.Dispose();
+                                                                tmprs = dbobj.dbselect(tmpconn1, sql);
+
+                                                                if (tmprs.Read())
+                                                                {
+                                                                    location = tmprs["location"].ToString().Trim();
+                                                                    p1 = p2;
+                                                                    p2 = tmprs["sid"].ToString().Trim();
+                                                                }
+                                                                tmprs.Close();
+                                                                tmprs.Dispose();
+                                                            }
+                                                            else
+                                                            {
+                                                                tmprs.Close();
+                                                                tmprs.Dispose();
+                                                            }
+
+                                                            if (location.IndexOf('?') >= 0)
+                                                            {
+                                                                gourl = @"location.href='" + location + "';";
+                                                            }
+                                                            else
+                                                            {
+                                                                gourl = @"location.href='" + location + "?sid=" + p1 + "&realsid=" + p2 + "';";
+                                                            }
+
+                                                            if (location.IndexOf('#') >= 0)
+                                                            {
+                                                                gourl = "";
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            tmprs.Close();
+                                                            tmprs.Dispose();
+                                                            gourl = "";
+                                                        }
+
+                                                        if (gourl != "")
+                                                        {
+                                                            @Html.Raw(tmpdata)
+                                                            <a href="#" onclick="@gourl"><img src="~/images/icon02.gif" width="7" height="7" border="0" /> @dr["mttitle"].ToString()</a>@Html.Raw(tmpdata1)
+                                                        }
+                                                    }
+                                                    dr.Close();
+                                                    dr.Dispose();
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="52" height="25" background="~/images/top_05.gif">&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <!--上方end-->
+            </td>
+        </tr>
+        <tr>
+            <td align="top">
+                <!--中間start-->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="minabg">
+                    <tr><td colspan="3" height="10">&nbsp;</td></tr>
+                    <tr>
+                        <td width="201" valign="top">
+                            <table width="201" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><img src="~/images/menu_01.gif" width="201" /></td>
+                                </tr>
+                                <tr>
+                                    <td height="350" align="center" valign="top" background="~/images/menu_02.gif">
+                                        <!-- LEFT DIV START -->
+                                        @{
+                                            string tmphtml = "";
+                                            string comflag = "0";
+
+                                            String tempid = Session["tempid"].ToString();
+
+                                            tmphtml = dbobj.dbmenu(tmpconn, tmpconn1, tmpconn2, (string[])Session["privtb"], desid, "y", comflag, tempid, mtid);
+
+                                            tmpconn.Close();
+                                            tmpconn.Dispose();
+                                            tmpconn1.Close();
+                                            tmpconn1.Dispose();
+                                            tmpconn2.Close();
+                                            tmpconn2.Dispose();
+
+                                        }
+                                        @Html.Raw(tmphtml)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><img src="~/images/menu_03.gif" width="201" height="25" /></td>
+                                </tr>
+                            </table>
+
+                        </td>
+                        <td valign="top" class="minabg">
+
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td width="12" valign="top"><img src="~/images/mainbody_01.gif" width="12" height="350" /></td>
+                                    <td align="center" valign="top" bgcolor="#FFFFFF">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            @if (Session["realsid"] != null)
+                                            {
+                                                <tr>
+                                                    <td width="25"><img src="~/images/title_01.gif" width="25" height="37" /></td>
+                                                    <td align="left" valign="middle" background="~/images/title_03.gif">
+                                                        <table width="90%" border="0" cellpadding="3" cellspacing="0" class='tlink'>
+                                                            <tr>
+                                                                <td valign="bottom">首頁個人化提醒</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td width="109" background="~/images/title_04.gif">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td colspan="3">@RenderBody()</td>
+                                            </tr>
+                                        </table>
+
+                                        @Html.Partial("_ParameterHidden")
+                                    </td>
+                                    <td width="16" valign="top"><img src="~/images/mainbody_02.gif" width="16" height="350" /></td>
+                                </tr>
+                            </table>
+
+                        </td>
+                        <!--
+                        <td width="180" align="center" valign="top">
+
+                        </td>
+                        -->
+                    </tr>
+                </table>
+                <!--中間end-->
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!--下方ST-->
+                <table width="100%" border="0" cellpadding="20" cellspacing="0" class="copyright">
+                    <tr>
+                        <td align="center" bgcolor="#0076a8">
+                            Copyright © 2016 AiTag E.I.P. All Rights Reserved.
+                            本網站所有著作權均屬本站所有，非經允許，不得任意轉載，網站最佳解析度1024 X 768
+                        </td>
+                    </tr>
+                </table>
+                <!--下方end-->
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+@{dbobj = null;}
+@RenderSection("scripts", required: false)
+<script>
+    //網頁離開屏蔽的做法,插這裡才可,須找原因
+    function showblock() {
+        $.blockUI({ message: '<table width=100% cellpadding=5 style="background:#FFFFFF;width:350px;height:60px;border:solid 2px #C0C0C0;filter:progid:DXImageTransform.Microsoft.Glow(color=#999999,strength=5)"><tr><td align=center style=font-size:16px;font-weight:bold;color:#882244;><img src=/images/process.gif align=absmiddle width=32 height=32>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;資料處理中，請稍候...</td></tr><tr><td align=center style=font-size:12px;font-weight:;color:#333333;>(請勿關閉視窗或離開本網頁)</td></tr></table>' });
+    }
+
+    function closeblock() {
+        $.unblockUI();
+    }
+
+    $(window).load(function () {
+        ;//
+    }).ready(function () {
+        ;//
+    }).bind("pageshow", function () {
+        closeblock();
+    }).bind("pagehide", function () {
+        showblock();
+    });
+
+    $('a').click(function () {
+        if ("blank" != $(this).attr("target") && "_blank" != $(this).attr("target")) {
+            showblock();
+        }
+    });
+
+    $('#abut').click(function () {
+        showblock();
+    });
+
+    $('#ebut').click(function () {
+        showblock();
+    });
+
+    $('#ebut1').click(function () {
+        showblock();
+    });
+
+    $('#dbut').click(function () {
+        showblock();
+    });
+
+    //$('submit').click(function () {
+    //    showblock();
+    //});
+
+    //$("#FormList").submit(function (e) {
+    //    showblock();
+    //});
+</script>
+<script>
+    $(document).ready(function () {
+        //Examples of how to assign the Colorbox event to elements
+        //$(".iframe").colorbox({ iframe: true, width: "50%", height: "60%" });
+        //$(".kabutton").colorbox({ iframe: true, width: "85%", height: "80%" });
+        $(".menuTitle").click(function () {
+            $(this).next("div").slideToggle("slow")
+            .siblings(".menuContent:visible").slideUp("slow");
+            $(this).toggleClass("activeTitle");
+            $(this).siblings(".activeTitle").removeClass("activeTitle");
+        });
+        /*$(".date_picker").datepicker({
+            showOn: 'button',
+            changeMonth: true,
+            changeYear: true,
+            buttonImage: "/Images/show-calendar.gif",
+            buttonImageOnly: true,
+            dateFormat: 'yy/mm/dd',
+            yearRange: "2000:2020"
+        });*/
+
+        //$("#selpage").change(function () {
+        //    var Tmppage = $("#selpage").val();
+        //    $("#page").val(Tmppage);
+        //    $("form:first").submit();
+        //});
+        $("#comidrid").change(function () {
+            window.location.href = "../common/newlogin?funcode=&comidrid=" + $("#comidrid").val() + "&comid=" + $("#comid").val();
+        });
+
+        $("#comid").change(function () {
+            window.location.href = "../common/newlogin?funcode=&comidrid=" + $("#comidrid").val() + "&comid=" + $("#comid").val();
+        });
+
+
+    });
+</script>
+
+@{    string tmpstatus = "";
+    if (!string.IsNullOrWhiteSpace(ViewBag.passmodstatus))
+    { tmpstatus = ViewBag.passmodstatus; }
+}
+@{ if (tmpstatus == "R")
+ {
+    <style type="text/css">
+        .ro {
+            background-color: #cccccc;
+            color: #444444;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+            $('input').addClass("ro").attr("disabled", true);
+            $('select').addClass("ro").attr("disabled", true);
+            $('radio').addClass("ro").attr("disabled", true);
+            $('checkbox').addClass("ro").attr("disabled", true);
+            $('#edit1').removeClass("ro").attr("disabled", false);
+            $('#del1').removeClass("ro").attr("disabled", false);
+            $('#pre1').removeClass("ro").attr("disabled", false);
+            $('#next1').removeClass("ro").attr("disabled", false);
+        });
+    </script>
+
+ }
+}

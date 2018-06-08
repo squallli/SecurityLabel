@@ -1,0 +1,137 @@
+﻿@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "";
+    HttpContext.Current.Response.Clear();
+    HttpContext.Current.Response.Charset = "";
+    HttpContext.Current.Response.ContentType = "application/vnd.ms-csv";
+    string strFileName = "Stamplist" + ".xls";
+    HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + strFileName);
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+
+    string qbarcode = Request["qbarcode"].ToString();
+    string qcodno = Request["qcodno"].ToString();
+    string qcsstatus = Request["qcsstatus"].ToString();
+    string qcitemid = Request["qcitemid"].ToString();
+    string qcsid = Request["qcsid"].ToString();
+    string qsdate = Request["qsdate"].ToString();
+    string qedate = Request["qedate"].ToString();
+
+    string sqlstr = "select csck.*,cst.citemid from certifystampstock as csck left join certifystamp as cst on csck.csid=cst.csid   where";
+    if (qbarcode != "")
+    { sqlstr += " barcode like '%" + qbarcode + "%'  and"; }
+    if (qcodno != "")
+    { sqlstr += " codno  like '%" + qcodno + "%'  and"; }
+    if (qcsstatus != "")
+    { sqlstr += " csstatus = '" + qcsstatus + "'  and"; }
+    if (qcitemid != "")
+    { sqlstr += " cst.citemid = '" + qcitemid + "'  and"; }
+    if (qcsid != "")
+    { sqlstr += " cst.csid = '" + qcsid + "'  and"; }
+    if (qsdate != "")
+    { sqlstr += " csck.csdate >= '" + qsdate + "'  and"; }
+    if (qedate != "")
+    { sqlstr += " csck.csdate <= '" + qedate + "'  and"; }
+
+    sqlstr = sqlstr.Substring(0, sqlstr.Length - 5);
+    sqlstr += " order by " + "csck.barcode" + " " + "desc" + " ";
+    SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+    SqlDataReader dr = cmd.ExecuteReader();
+    
+}
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+       
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <td colspan="6" align="center" style="font-size:15pt;">標章發行紀錄表</td>
+                    </tr>
+                    <tr>
+                        <th width="80">
+                            狀態               
+                        </th>
+                        <th width="90">
+                            認證項目名稱
+                        </th>
+                        <th width="80">
+                            標章申請表編號
+                        </th>
+                        <th>
+                            標章號碼
+                        </th>
+                        <th>
+                            異動日期
+                        </th>
+                        <th>
+                            異動人
+                        </th>
+                        
+                    </tr>
+                   @{
+                   if (dr.HasRows)
+                   {   
+                    while (dr.Read())
+                    {
+                       <tr style="font-size:9pt">
+                          
+                                <td class="colstd" style="font-size:9pt">
+                                    @if (dr["csstatus"].ToString() == "D")
+                                    { @Html.Raw("作廢");
+                                    }
+                                    else if (dr["csstatus"].ToString() == "0")
+                                    { @Html.Raw("已印製");
+                                    }
+                                    else if (dr["csstatus"].ToString() == "1")
+                                    { @Html.Raw("已核發");
+                                    }
+                                </td>
+                                <td class="colstd" style="font-size:9pt">
+                                    @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn1, "select (certifyitem.citemname + ' / ' + certifystamp.cftitle) as Expr1 from certifystamp inner join certifyitem on certifystamp.citemid = certifyitem.citemid where csid = '" + dr["csid"].ToString() + "'");}
+                                    @dbtitle
+                                </td>
+                                <td class="colstd" style="font-size:9pt">
+                                    @dr["codno"].ToString()
+                                </td>
+                                <td class="colstd" style="font-size:9pt">
+                                    @dr["barcode"].ToString()
+                                </td>
+                                <td class="colstd" style="font-size:9pt">
+                                    @dbobj.get_date(dr["csdate"].ToString(), "1")
+                                </td>
+                                <td class="colstd" style="font-size:9pt">
+                                    @dr["bmodid"].ToString()
+                                </td>
+                       </tr>
+                    } 
+                   
+                   }
+                    else
+                   { 
+                     <tr>
+                         <td class="colstd" style="font-size:9pt" colspan="6">查詢無資料!!</td>
+                    </tr>
+                   }
+                   comconn.Close();
+                   comconn.Dispose();
+                   comconn1.Close();
+                   comconn1.Dispose();
+                   }
+                </table>
+               
+            </td>
+        </tr>
+        
+    </table>
+
+
+
+
+
+
+
+
+

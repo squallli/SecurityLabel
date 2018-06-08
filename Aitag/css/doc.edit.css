@@ -1,0 +1,199 @@
+﻿/*init*/
+.short_text {
+    width: 10%;
+}
+
+.medium_text {
+    width: 50%;
+}
+
+.long_text {
+    width: 90%;
+}
+
+.long_textarea {
+    width: 90%;
+}
+
+.radio_div {
+    float: left;
+    padding: 1px 3px 1px 3px;
+}
+
+.checkbox_div {
+    float: left;
+    padding: 1px 3px 1px 3px;
+}
+
+.error_message {
+    color: navy;
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+}
+/*filedrop*/
+.fd-zone {
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    width: 15em;
+}
+
+.fd-file {
+    cursor: pointer;
+    filter: alpha(opacity=0);
+    font-family: sans-serif;
+    font-size: 118px;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.fd-zone.over {
+    background: #808080;
+    border-color: maroon;
+}
+
+#dropbox {
+    border: 3px dashed black;
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+}
+
+#message {
+    border: 0px solid black;
+    color: red;
+    float: left;
+    font-weight: bold;
+    height: 16px;
+    width: 70%;
+}
+
+#remain_time {
+    border: 0px solid black;
+    color: red;
+    float: right;
+    font-weight: bold;
+    height: 16px;
+    width: 20%;
+}
+
+#progress {
+    animation: progress .7s linear infinite;
+    background: url(images/progress.gif);
+    color: #FF0000;
+    display: block;
+    font-weight: bold;
+    height: 16px;
+    text-align: center;
+    vertical-align: middle;
+    width: 0%;
+    -moz-animation: progress .7s linear infinite;
+    -webkit-animation: progress .7s linear infinite;
+    -o-animation: progress .7s linear infinite;
+}
+
+#doc_file_div {
+    border: 1px solid black;
+    height: 130px;
+    max-width: 1145px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+#doc_file_table {
+    border: 0px solid black;
+}
+
+.doc_file_td {
+    border: 0px solid black;
+    height: 100px;
+    padding: 3px 5px 3px 5px;
+    position: relative;
+    width: 100px;
+}
+
+.doc_file_img {
+    border: 1px solid black;
+    height: 100px;
+    width: 100px;
+}
+
+.doc_file_moveup_img {
+    border: 1px solid black;
+    left: 7px;
+    position: absolute;
+    top: 7px;
+    z-index: 100;
+}
+
+.doc_file_movedn_img {
+    border: 1px solid black;
+    left: 26px;
+    position: absolute;
+    top: 7px;
+    z-index: 100;
+}
+
+.doc_file_del_img {
+    border: 1px solid black;
+    left: 87px;
+    position: absolute;
+    top: 7px;
+    z-index: 100;
+}
+
+#other_file_div {
+    border: 1px solid black;
+    height: 22px;
+    margin: 5px 0px 0px 0px;
+    padding: 1px 2px 1px 2px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.other_file_span {
+    border: solid 1px red;
+    float: left;
+    height: 16px;
+    margin: 0px 3px 0px 0px;
+    padding: 0px 3px 3px 3px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.other_file_img {
+    float: right;
+    padding: 3px 3px 3px 3px;
+}
+/*refer*/
+.refer_div {
+    border: 1px solid black;
+    display: none;
+    height: 24px;
+    padding: 2px 2px 2px 2px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.refer_span {
+    border: solid 1px red;
+    float: left;
+    height: 16px;
+    padding: 3px 3px 3px 3px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.refer_img {
+    float: right;
+    padding: 3px 3px 3px 3px;
+}

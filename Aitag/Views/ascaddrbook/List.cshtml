@@ -1,0 +1,149 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.employee>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string aaa5 = "true";
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/ascaddrbook/List";
+                break;
+            case "A":
+                FormList.action = "/ascaddrbook/Add";
+                break;
+            case "E":
+                FormList.action = "/ascaddrbook/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/ascaddrbook`/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+    function ascaddrbookcsv() {
+        FormList.target = '_blank';
+        FormList.action = "/ascaddrbook/ascaddrbookcsv";
+        FormList.submit();
+        FormList.action = "/ascaddrbook/List";
+        FormList.target = '';
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+    @Html.Raw(ViewBag.SetOrder_ch)
+
+    $(document).ready(function () {
+        SetOrder_ch();
+    });
+</script>
+@using (Html.BeginForm("List", "ascaddrbook", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            中英文姓名：<input type="text" name="qempname" id="qempname" value="@ViewBag.qempname">&nbsp;
+                            部門：@{string selectsql = "select dptid,dpttitle from department where comid='" + (string)(Session["comid"]) + "' order by dptid";}
+                            @{string dptid = ""; dptid = dbobj.get_selectobj(comconn, selectsql, "qdptid", ViewBag.qdptid, "1");}
+                            @Html.Raw(dptid)
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                            <input id="Submit3" type="submit" value="匯出Excel檔" class="abutton" onclick="ascaddrbookcsv();" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        
+                        <th width="15%">員工編號<a href="#" name="order1"></a></th>
+                        <th width="8%">中文姓名<a href="#" name="order2"></a></th>
+                        <th width="13%">英文姓名<a href="#" name="order3"></a></th>
+                        <th width="">部門<a href="#" name="order4"></a></th>
+                        <th width="15%">電話</th>
+                        <th width="11%">手機</th>
+                        <th >電子郵件<a href="#" name="order5"></a></th>
+                    </tr>
+                  
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd">
+                                <b><font color=cc3322>@item.empid</font></b>
+                            </td>
+                            <td class="colstd">
+                                @item.empname
+                            </td>
+                            <td class="colstd">
+                                @item.empenname
+                            </td>
+                            <td class="colstd">
+                                @{//部門
+                                    string tmpname ="";
+                                    tmpname = dbobj.get_dbvalue(comconn,"select dpttitle from Department where dptid = '" + item.empworkdepid + "' and comid='" + item.empworkcomp + "'");
+                                }
+                                @tmpname
+                            </td>
+                            <td class="colstd">
+                                @item.entel
+                            </td>
+                            <td class="colstd">
+                                @item.enmob
+                            </td>
+                            <td class="colstd">
+                                @item.enemail
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+                @if (Model.TotalItemCount < 1)
+                {
+                    @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

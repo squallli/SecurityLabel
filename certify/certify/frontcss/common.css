@@ -1,0 +1,82 @@
+/*手機選單*/
+
+/*body { -webkit-text-size-adjust: none;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+h1,h2,h3,h4 ,form,input,textarea,select,button,label {
+margin: 0px; padding: 0px; font-family: "微軟正黑體", Arial, "Noto Sans T Chinese", "LiGothicMed"; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}*/
+img {border: 0px currentColor; border-image: none; text-decoration: none; vertical-align: top; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
+a {	text-decoration: none;}
+textarea {	resize: none;}
+input,label {vertical-align: middle;}
+textarea.safariOff,input.safariOff {border-radius: 0px; -webkit-appearance: none;}
+.clearfix::before {	display: table; content: "";}
+.clearfix::after {	display: table; content: "";}
+.clearfix::after {	clear: both;}
+.clearfix {	-ms-zoom: 1;}
+.reset {list-style: none; margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; border-collapse: collapse; border-spacing: 0;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+.reset input {	vertical-align: middle;}
+.reset label {	vertical-align: middle;}
+.reset select {	vertical-align: middle;}
+:-ms-input-placeholder {color: rgb(153, 153, 153);}
+.animate {	transition:0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
+.hidden-element {position: absolute; clip: rect(1px, 1px, 1px, 1px);}
+
+.main-panel::before {	left: 0px; top: 0px; width: 100%; height: 100%; display: none; position: absolute; z-index: 99999999; content: ""; pointer-events: none; background-color: rgba(0, 0, 0, 0.7);}
+.toggle.main-panel::before {display: block;}
+.content-wrap {	padding: 10px; background-color: rgb(255, 255, 255);}
+.top-subject {	padding: 10px; color: rgb(32, 181, 232); font-size: 1.14em; border-bottom-color: rgb(32, 181, 232); border-bottom-width: 2px; border-bottom-style: solid;}
+.top-desc {	padding: 10px;}
+/*搜尋鈕底色*/
+.gradient-orange {	background-image: linear-gradient(to top, rgb(255, 138, 0) 1%, rgb(255, 162, 52));}
+.gradient-blue {	background-image: linear-gradient(to top, rgb(27, 179, 231), rgb(102, 199, 232)); background-color: rgb(27, 179, 231);}
+.gradient-gray {	background-image: linear-gradient(to top, rgb(255, 255, 255), rgb(221, 221, 221)); background-color: rgb(255, 255, 255);}
+.gradient-green {	background-image: linear-gradient(to top, rgb(255, 158, 0), rgb(255, 177, 50)); background-color: rgb(255, 177, 50);}
+
+
+/*#header {	left: 0px; top: 0px; width: 100%; height: 47px; border-bottom-color: rgb(0, 135, 175); border-bottom-width: 1px; border-bottom-style: solid; /*position: fixed; z-index: 100; background-image: linear-gradient(to top, rgb(27, 179, 231), rgb(65, 196, 241)); background-color: rgb(27, 179, 231);*/}
+/*#header h1 {	width: 105px; height: 25px; float: left;}
+#header h1 a {	background: url("../images/logo.png") 0% 0% / 100%; margin: 12px 0px 0px 5px; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden; display: block;}*/
+
+.button-box {	margin: 5px 0px 0px; width: 28px; height: 38px; text-align: center; float: right; position: relative;	background-image: url(../images/icon-menu.svg);	background-repeat: no-repeat;	background-position: center center;	background-size:100% auto;}
+.button-box a {	height: 100%; color: rgb(255, 255, 255); line-height: 1.52em; font-size: 1.85em; display: block; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
+.button-box {	margin-right: 5px;}
+
+.nav-panel {transition:0.2s ease-in-out; top: 0px; width: 100%; left: -100%;/*選單收在左邊隱藏*//* padding-top: 48px; *//*搜尋列高度*/position: absolute; z-index: 99; box-shadow: 0px 0px 10px rgba(0,0,0,0.15); background-color:#333/*rgb(34, 182, 233)*/; -moz-box-shadow: 0 0 10px rgba(0, 0, 0, .15); -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .15); -webkit-transition: all 0.2s ease-in-out; -moz-transition: all 0.2s ease-in-out;}
+.toggle.nav-panel {	left: 0px;/*選單從左邊出現*/ }
+#nav{ display:block; z-index:999999999; margin-top:51px;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+#nav li { display:block;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;	border-bottom-color: rgba(255, 255, 255, 0.3); border-bottom-width: 1px; border-bottom-style: solid; position: relative;}
+#nav li.open .nav-first {border-bottom-color: rgb(145, 224, 250); border-bottom-width: 5px; border-bottom-style: solid;}
+#nav li::before {border-width: 6px 6px 0px; border-style: solid; border-color: rgb(255, 255, 255) transparent transparent; top: 29px; width: 0px; height: 0px; right: 10px; margin-top: -3px; display: none; position: absolute; content: ""; pointer-events: none;}
+#nav li.open::before {border-width: 6px 6px 0px; border-style: solid; border-color: rgb(255, 255, 255) transparent transparent; top: 29px; width: 0px; height: 0px; right: 10px; margin-top: -3px; display: none; position: absolute; content: ""; pointer-events: none;}
+#nav li.open::before {border-width: 0px 6px 6px; border-color: transparent transparent rgb(255, 255, 255);}
+#nav li.nav-first::before {	display: block;}
+#nav h2 {font-size: 1em; font-weight: normal;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+#nav h3 {font-size: 1em; font-weight: normal;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+#nav a {padding: 15px 20px 15px 10px; color: rgb(255, 255, 255); font-size: 1.08em; display: block; position: relative;font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;}
+/*#nav a::before {background-position: 0px 0px; left: 10px; top: 12px; width: 24px; height: 24px; position: absolute; content: ""; pointer-events: none; background-repeat: no-repeat; background-size: 110%;}
+#nav a::after {	background-position: 0px 0px; left: 10px; top: 12px; width: 24px; height: 24px; position: absolute; content: ""; pointer-events: none; background-repeat: no-repeat; background-size: 110%;}
+#nav a::before {border-radius: 50%; border: 1px solid rgb(255, 255, 255); border-image: none; -webkit-border-radius: 50%;}
+#nav a.events::after {background-image: url("icon_events.png");}
+#nav a.pro::after {	background-image: url("icon_pro.png");}
+#nav a.about::after {	background-image: url("../images/icon_about.png");}
+#nav a.contact::after {	background-image: url("../images/icon_contact.png");}
+#nav a.news::after {background-image: url("../images/icon_news.png");}
+#nav a.info::after {background-image: url("../images/icon_info.png");}
+#nav a.links::after {background-image: url("../images/icon_links.png");}*/
+/*第二層選單*/
+#nav .nav-second {	padding: 5px 0px; display: none; background-color:#fff; font-size:90%;}
+#nav .nav-second li {	border-bottom-color: currentColor; border-bottom-width: medium; border-bottom-style: none; line-height:130%;}
+#nav .nav-second a {padding: 10px 20px 10px 20px; color: rgb(0, 0, 0);}
+#nav .nav-second a:hover{ text-decoration:underline;}
+#nav .nav-second a::before {display: none;}
+#nav .nav-second a::after {	display: none;}
+.search-panel {	background-color: rgb(255, 255, 255); margin-top:-46px;}
+.search-panel .inText {	padding: 5px 10px;border: currentColor; border-image: none; width: calc(100% - 120px); font-size: 1.02em; vertical-align: middle; float: left; box-sizing: border-box; background-color: rgb(255, 255, 255); -webkit-box-sizing: border-box; -moz-box-sizing: border-box; border-style:none;}
+.search-panel .submit {	margin:0 auto; text-align:center; border: currentColor; border-image: none; width: 120px; height: 32px; color: rgb(255, 255, 255); text-transform: uppercase; font-size: 1.01em; vertical-align: middle; float: right; display: block; cursor: pointer; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
+
+.bx-wrapper {	margin: 0px;}
+.bx-wrapper .bx-viewport {	border: currentColor; border-image: none; left: 0px; z-index: 0; box-shadow: none; background-color: transparent; -moz-box-shadow: none; -webkit-box-shadow: none;}
+.bx-wrapper .bx-loading {	background-image: url("../images/ajax-loader.gif");}
+.bx-wrapper li img {	width: 100%;}
+
+.button-style {	padding: 5px 0px; border-radius: 5px; width: 80px; text-align: center; color: rgb(255, 255, 255); margin-left: 10px; float: right; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+.button-style {	margin: 20px; padding: 10px 20px; width: auto; float: none; display: block;}

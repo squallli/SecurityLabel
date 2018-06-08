@@ -1,0 +1,167 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.subreadwrite>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+  
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/sublevel1/subreadwritelist?" + tmpkey;
+                break;
+            case "A":
+                FormList.action = "/sublevel1/subreadwriteadd?" + tmpkey;
+                break;
+            case "E":
+                FormList.action = "/sublevel1/subreadwriteedit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/sublevel1/subreadwritedel?" + tmpkey;
+                break;
+           
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("subreadwritelist", "sublevel1", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" })) 
+{
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr valign=top>
+        <td align="center" colspan="2">          
+            <input type="hidden" id="page" name="page" value="@ViewBag.page">
+            <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+            <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+            <input type="hidden" id="uplink" name="uplink" value="@ViewBag.uplink">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            <a href="/sublevel1/List?sid=@Session["sid"].ToString()&realsid=@Session["realsid"].ToString()">所在目錄：@ViewBag.uplinkname</a>
+                            <br>
+                            主目錄選單名稱：<input type="text" name="qsublevelname1" id="qsublevelname1" value="@ViewBag.qsublevelname1">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />   
+                        </td>
+                    </tr>
+                </table>          
+        </td>
+    </tr>
+    <tr class="pagestyle">
+        <td align="left" class="buttontd">         
+            <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 'tmpsid=@Request["tmpsid"]','');}" />   
+            <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page,'tmpsid=@Request["tmpsid"]','')" />
+        </td>
+        <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+    </tr> 
+    <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="10"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                    <!--th width="30">順序</th-->
+                    <th width="30%">
+                        所屬部門
+                    </th>
+                    <th width="30%">
+                        所屬使用者
+                    </th>
+                    <th width=60><b>觀看權限</b></th>
+                    <th width=60><b>新增權限</b></th>
+                    <th width=60><b>修改權限</b></th>
+                    <th width=60><b>刪除權限</b></th>
+                    <th width=40><b>修改</b></th>
+                    
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="colstd" align="center">
+                            <input type="checkbox" name="cdel" id="cdel" value="@item.srwid">
+                        </td>
+                        <td class="colstd">
+                            @if (item.dptgroup!=null){
+                            @dbobj.get_commavalue(comconn, "select dpttitle from department where dptid in (" + item.dptgroup.ToString().Replace('#','\'') + ")")
+                            }
+                        </td>
+                        <td class="colstd">
+                            @if (item.empgroup != null)
+                            {
+                                @dbobj.get_commavalue(comconn, "select empname from employee where empid in (" + item.empgroup.ToString().Replace('#', '\'') + ")")
+                            }
+                        </td>
+                        <td class="colstd">
+                            @if (item.subread == "2")
+                            { @("全部") }
+                            @if (item.subread == "1")
+                            { @("個人") }
+                            @if (item.subread == "0")
+                            { @("無") }
+                        </td>
+                        <td class="colstd">
+                            @if (item.subadd == "2")
+                            { @("全部") }
+                            @if (item.subadd == "0")
+                            { @("無") }
+                        </td>
+                        <td class="colstd">
+                            @if (item.submod == "2")
+                            { @("全部") }
+                            @if (item.submod == "1")
+                            { @("個人") }
+                            @if (item.submod == "0")
+                            { @("無") }
+                        </td>
+                        <td class="colstd">
+                            @if (item.subdel == "2")
+                            { @("全部") }
+                            @if (item.subdel == "1")
+                            { @("個人") }
+                            @if (item.subdel == "0")
+                            { @("無") }
+                        </td>
+                        <td class="colstd">
+                            <input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'tmpsid=@item.sid&srwid=@item.srwid')" />
+                        </td>
+                    </tr>
+                }
+                @{
+                comconn.Close();
+                comconn.Dispose();
+                }
+            </table>
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+<tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+</table>
+}
+
+
+           
+
+
+
+          
+

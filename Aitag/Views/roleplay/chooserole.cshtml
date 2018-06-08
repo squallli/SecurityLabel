@@ -1,0 +1,190 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.roleplay>
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = null;
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string alldata = "";
+    if (!string.IsNullOrWhiteSpace(Request["txtcheck"]))
+    {
+        string tmpallstr = Request["txtcheck"].ToString().Replace("#", "'");
+        if(tmpallstr.Substring(tmpallstr.Length-1,1)==",")
+        { tmpallstr += "''"; }
+
+
+        string sqlstr = "select * from roleplay where rid in (" + tmpallstr + ")";
+        SqlCommand cmd = new SqlCommand();
+        cmd.Connection = comconn;
+        cmd.CommandText = sqlstr;
+        SqlDataReader dr = cmd.ExecuteReader();
+        while (dr.Read())
+        {
+            alldata = alldata + dr["roletitle"].ToString() + "\r";
+        }
+        dr.Close();
+        dr.Dispose();
+    }
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/roleplay/chooserole";
+                break;
+           
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+
+    function addall(tmpvalue, thisobj) {
+        var tmpstr = document.FormList.txtcheck.value 
+              
+        if (thisobj.checked == true) {
+            if (tmpstr!="")
+                tmpstr = tmpstr + ",#" + tmpvalue + "#";
+            else
+                tmpstr = tmpstr + "#" + tmpvalue + "#";
+        }
+        else
+        {
+            tmpstr = tmpstr.replace("" + tmpvalue + "", "");
+            //alert("#" + tmpvalue + "#,");
+        }
+        tmpstr = tmpstr.replace("##,", "");
+        document.FormList.txtcheck.value = tmpstr.replace("##", "");
+    }
+
+    function checkform1() {
+
+       // document.FormList.pagenum.value = 1;
+        document.FormList.tmpend.value = 1;
+        document.FormList.action = "/roleplay/chooserole"
+        document.FormList.submit();
+
+    }
+
+
+</script>
+@using (Html.BeginForm("chooserole", "roleplay", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="fname" name="fname" value="@Request["fname"]" />
+                <input type="hidden" id="tmp1" name="tmp1" value="@Request["tmp1"]" />
+                <input type="hidden" id="tmp2" name="tmp2" value="@Request["tmp2"]" />
+                <input type="hidden1" id="txtcheck" name="txtcheck" value="@Request["txtcheck"]" />
+                <input type="hidden" id="txtcheckname" name="txtcheckname" value="@alldata" />
+                <input type="hidden" id="tmpend" name="tmpend" value="" />
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            組織代碼：<input type="text" name="qrid" size="8" id="qrid" value="@ViewBag.qrid">
+                            組織名稱：<input type="text" name="qroletitle" size="12" id="qroletitle" value="@ViewBag.qroletitle">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+           <td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                        <!--th width="30">順序</th-->
+                        <th width="60">組織代碼</th>
+                        <th width="200">組織名稱</th>
+                        <!--th width="60">異動人員</th>
+                        <th width="150">異動日期</th-->
+                     </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd" align="center">
+                                @if ((Request["txtcheck"].ToString()).Contains("#" + item.rid + "#"))
+                                {
+                                    <input type="checkbox" name="ck@(item.rid)" id="ck@(item.rid)" checked value="@item.rid" name="ckA001" onclick="javascript: addall('@item.rid',this)">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="ck@(item.rid)" id="ck@(item.rid)" value="@item.rid" onclick="javascript: addall('@item.rid',this)">
+                                }
+                            </td>
+                            <td class="colstd">
+                                @item.rid
+                            </td>
+                            <td class="colstd">
+                                @item.roletitle
+                            </td>
+                            <!--td class="colstd">
+                                @dbobj.get_name(comconn, item.bmodid)
+                            </td>
+                            <td class="colstd">
+                                @item.bmoddate
+                            </td-->
+              
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+                <br>
+                <div align=center>
+                    <input type=button value="確認" class=button onclick="javascript:checkform1();" id=button2 name=button2>
+                    <input type=button value="關閉視窗" class=button onclick="javascript:window.close();" id=button3 name=button3>
+                </div>            
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+<script>
+    window.focus();
+    @if (Request["tmpend"].ToString()=="1")
+    {   string tmpdd = "";
+        tmpdd += "self.opener." + Request["fname"] + "." + Request["tmp1"] + ".value = document.FormList.txtcheck.value;\r";
+        tmpdd += "self.opener." + Request["fname"] + "." + Request["tmp2"] + ".value = document.FormList.txtcheckname.value;\r";
+        tmpdd += "      window.close();\r";
+       @(tmpdd);
+    }
+</script>
+
+
+
+
+
+
+
+

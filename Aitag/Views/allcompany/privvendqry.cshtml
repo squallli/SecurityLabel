@@ -1,0 +1,135 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.allcompany>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("AitagBill_DBContext");
+
+    string aaa5 = "true";
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/allcompany/vendlist";
+                break;
+            case "A":
+                FormList.action = "/allcompany/Add";
+                break;
+            case "E":
+                FormList.action = "/allcompany/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/allcompany/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1, tmp2) {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+    @Html.Raw(ViewBag.SetOrder_ch)
+
+    $(document).ready(function() {
+        SetOrder_ch();
+    });
+</script>
+@using (Html.BeginForm("vendlist", "allcompany", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            客戶代碼：<input type="text" name="qcomid" id="qcomid" value="@ViewBag.qcomid">
+                            客戶統編：<input type="text" name="qcomsno" id="qcomsno" value="@ViewBag.qcomsno">
+                            客戶名稱：<input type="text" name="qcomtitle" id="qcomtitle" value="@ViewBag.qcomtitle">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left" class="buttontd">
+                <input id="dbut" type="button" value="刪除" class="abutton" onclick="return submitform('D',@ViewBag.page, 0,'')" />
+                <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />
+            </td>
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                        <!--th width="30">順序</th-->
+                        <th width="80">公司代碼<a href="#" name="order1"></th>
+                        <th width="80">公司統編</th>
+                        <th >公司名稱<a href="#" name="order2"></th>
+                        <th width="80">維謢</th>
+                        <!--th width="80">客戶產品</th-->
+                        <th width="80">媒體資訊</th>
+                        <th width="80">交易條件</th>
+                   </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type="checkbox" name="cdel" id="cdel" value="@item.comid">
+                            </td>
+                            <td class="colstd">
+                                @item.comid
+                            </td>
+                            <td class="colstd">
+                                @item.comsno
+                            </td>
+                            <td class="colstd">
+                                @item.comtitle
+                            </td>
+                            <td width="10" class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'comid=@item.comid')" /> </td>
+                            <!--td width="10" class="colstd"><input id="ebut" type="button" value="客戶產品" class="abutton" onclick="location.href = '/allcompany/prodlist/?allcomid=@(item.comid)&fprodid=0';" /> </td-->
+                            <td width="10" class="colstd"><input id="ebut" type="button" value="媒體資訊" class="abutton" onclick="location.href = '/allcompany/medialist/?allcomid=@(item.comid)&mcno=TV';" /> </td>
+                            <td width="10" class="colstd"><input id="ebut" type="button" value="交易條件" class="abutton" onclick="location.href = '/allcompany/brlist/?allcomid=@(item.comid)&bseason=01';" /> </td>
+                         </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

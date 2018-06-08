@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "List";
+    Layout = null;
+}
+<form action="/roleplay/chooserole" id="form1" name="form1" methof="post">
+    <input type=hidden name="fname" value="FormAdd">
+    <input type=hidden name="tmp1" value="allrid">
+    <input type=hidden name="tmp2" value="allridname">
+    <input type=hidden name="tmpend" value="">
+    <input type=hidden name="txtcheck" value="">
+</form>
+<script>
+    form1.txtcheck.value = self.opener.choose.txtcheck.value;
+    form1.submit();
+</script>
+
+
+
+
+
+
+
+
+

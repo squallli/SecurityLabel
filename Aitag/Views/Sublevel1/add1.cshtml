@@ -1,0 +1,235 @@
+﻿@model Aitag.Models.sublevel1
+@using MvcPaging
+@{
+    ViewBag.Title = "List1";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    ViewBag.mtid = dbobj.get_dbvalue(comconn, "select mtid from sublevel1 where sid=" + ViewBag.uplink);
+    ViewBag.psid = dbobj.get_dbvalue(comconn, "select psid from sublevel1 where sid=" + ViewBag.uplink);
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#stype").val() == "")
+            { errmsg += "請選擇分類\n"; }
+
+            if ($("#sublevelname").val() == "")
+            { errmsg += "請輸入主目錄名稱\n"; }
+
+            if ($("#functype").val() == "")
+            { errmsg += "請選擇類型\n"; }
+
+      //      if ($("#mtid").val() == "")
+      //      { errmsg += "請選擇選單群組\n"; }
+
+            if ($("#psid").val() == "")
+            { errmsg += "請選擇所屬系統\n"; }
+
+            if ($("#location").val() == "")
+            { errmsg += "請輸入連結程式名稱\n"; }
+
+            if ($("#corder").val() == "") {
+                errmsg += "請輸入表單順序\n";
+            }
+            else {
+                if (isNaN($("#corder").val()) == true) {
+                    errmsg += "表單順序請輸入數字\n";
+                }
+            }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+
+    function flinkch(tmpvar)
+    {
+        if (tmpvar == "0") {
+            FormAdd.location.value = '/oa/maincontent'
+            //FormAdd.counttype.value='01';
+            //dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "1") {
+            FormAdd.location.value = '/oa/boardmain'
+            // FormAdd.counttype.value='01';
+            // dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "2") {
+            FormAdd.location.value = '/oa/maincontent'
+            // FormAdd.counttype.value='01';
+            //dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "3") {
+            FormAdd.location.value = '/oa/maincontent'
+            // FormAdd.counttype.value='01';
+            //dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "4") {
+            FormAdd.location.value = '/oa/filesystem'
+            // FormAdd.counttype.value='01';
+            //dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "7") {
+            FormAdd.location.value = '/oa/filelogin'
+            //dvadv.style.display = 'none'
+        }
+
+        if (tmpvar == "5") {
+            FormAdd.location.value = '/oa/maincontent1'
+            //FormAdd.counttype.value='01';
+            //dvadv.style.display = 'none'
+        }
+        if (tmpvar == "6") {
+            FormAdd.location.value = '/oa/otherbill'
+            //FormAdd.counttype.value='00';
+            //dvadv.style.display = 'block'
+        }
+        if (tmpvar == "9") {
+            FormAdd.location.value = ''
+            //FormAdd.counttype.value='00';
+            //dvadv.style.display = 'none'
+        }
+    }
+    </script>
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%" align=center>
+    <tr>
+        <td align="center" >
+            @using (Html.BeginForm("Add1", "sublevel1", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qsublevelname" name="qsublevelname" value="@ViewBag.qsublevelname">
+                <input type="hidden" id="uplink" name="uplink" value="@ViewBag.uplink">
+                
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="80%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料新增</td>
+                    </tr>
+                    <tr>
+                        <td align="right" width=23%><img src="~/images/art.gif" border="0" /> 分類</td>
+                        <td align="left">
+                            <select name="stype" id="stype">
+                                <option value="">請選擇</option>
+                                <option value="01">固定選單</option>
+                                <option value="02" selected>一般客戶選單</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 主目錄名稱</td>
+                        <td align="left">
+                            <input type="text" maxlength="50" id="sublevelname" name="sublevelname" style="width:300px;" value="@Model.sublevelname" />
+                            @Html.ValidationMessageFor(m => m.sublevelname)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 系統類型</td>
+                        <td align="left">
+                            <select name="functype" id="functype" onchange="javascript:flinkch(this.value);">
+                                <option value="">請選擇</option>
+                                <option value="0">消息系統</option>
+                                <!--option value="1">討論區</option-->
+                                <option value="2">內容系統</option>
+                                <option value="3">網路連結</option>
+                                <option value="4">檔案系統</option>
+                                <!--option value="7">檔案系統(含權限登入)</option-->
+                                <!--option value="5">電子相簿</option-->
+                                <!--option value="6">呈核表單</!--option-->
+                                <option value="9">其他</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 目錄管理人</td>
+                        <td align="left"> @Html.Raw(dbobj.get_selectobj(comconn, "select empid , empname from employee where empstatus <> '4' and ifuse = 'y'", "empmagid", "", "1"))</td>
+                    </tr>
+                    <tr>
+                        <td align="right">選單群組</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select mtid , mttitle from menutab order by mtid ", "x_mtid disabled", @ViewBag.mtid, "1"))
+                            <input type="hidden" id="mtid" name="mtid" value="@ViewBag.mtid">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">所屬系統</td>
+                        <td align="left">
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select sid , sublevelname from sublevel1 where lid='1' order by sid ", "x_psid disabled", @ViewBag.psid, "1"))
+                            <input type="hidden" id="psid" name="psid" value="@ViewBag.psid">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 連結程式名稱</td>
+                        <td align="left">
+                            <input type="text" maxlength="200" class="c12border" id="location" name="location" style="width:300px;" value="@Model.location" />
+                            @Html.ValidationMessageFor(m => m.location)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 表單順序</td>
+                        <td align="left">
+                            <input type="text" maxlength="4" class="c12border" id="corder" name="corder" style="width:40px;" value="10" />
+                            @Html.ValidationMessageFor(m => m.corder)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 開新視窗</td>
+                        <td align="left">
+                            <input type=radio name="property1" value="1">是
+                            <input type=radio name="property1" value="0" checked>否
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 呈現前台</td>
+                        <td align="left">
+                            <input type=radio name="ifshow" value="y">是
+                            <input type=radio name="ifshow" value="n" checked>否
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 隱私</td>
+                        <td align="left">
+                            <input type=radio name="ifname" value="0">不記名
+                            <input type=radio name="ifname" value="1" checked>記名
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            <input id="btnback" class="abutton" name="btnback" type="button" value="回上頁" onclick="history.go(-1)" />
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+           
+    
+

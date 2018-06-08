@@ -1,0 +1,149 @@
+﻿@model Aitag.Models.certifystamp
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext"); 
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#citemid").val() == "")
+            { errmsg = "請選擇認證項目\n"; }
+
+            if ($("#wtrack").val() == "")
+            { errmsg += "請輸入字軌\n"; }
+
+            if ($("#cftitle").val() == "")
+            { errmsg += "請輸入標章標題\n"; }
+
+            if ($("#sno").val() == "")
+            { errmsg += "請輸入起始號碼\n"; }
+
+            if ($("#eno").val() == "")
+            { errmsg += "請輸入結束號碼\n"; }
+            
+            if ($("#cfmoney").val() == "")
+            { errmsg += "請輸入單張費用\n"; }
+
+            //if ($("#cfnumber").val() == "")
+            //{ errmsg += "請輸入數字位數\n"; }
+          
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+
+    function cscountdo() {
+        var sno1 = $("#sno").val(); $("#sno").val(sno1.replace(/[^0-9]/g, ''));
+        var eno1 = $("#eno").val(); $("#eno").val(eno1.replace(/[^0-9]/g, ''));
+
+        if ($("#sno").val() != "" && $("#eno").val() != "") {
+            var sno = parseInt($("#sno").val());
+            var eno = parseInt($("#eno").val());
+            $("#cscount").val(eno - sno + 1);
+        }
+    }
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "certifystamp", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+    <input type="hidden" id="qwtrack" name="qwtrack" value="@ViewBag.qwtrack">
+    <input type="hidden" id="qcitemid" name="qcitemid" value="@ViewBag.qcitemid">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 認證項目</td>
+        <td align="left">
+            @{
+                string Selectstatus = "select citemid,citemname from certifyitem where  comid = '" + Session["comid"] + "'  order by citemid";
+                Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "citemid", Model.citemid, "1");
+                @Html.Raw(Selectstatus)
+            }
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 字軌</td>
+        <td align="left">
+            <input type=text name="wtrack" id="wtrack" value="@Model.wtrack" maxlength=2 size=10 class=c12border>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 標章標題</td>
+        <td align="left">
+            <input type=text name="cftitle" id="cftitle" value="@Model.cftitle" maxlength=20 size=40 class=c12border>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 起始號碼</td>
+        <td align="left">
+            <input type=text name="sno" id="sno" value="@Model.sno" maxlength=20 size=40 class=c12border onkeyup="cscountdo()">
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 結束號碼</td>
+        <td align="left">
+            <input type=text name="eno" id="eno" value="@Model.eno" maxlength=20 size=40 class=c12border onkeyup="cscountdo()">
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 數量</td>
+        <td align="left">
+            <input type=text name="cscount" id="cscount" value="@Model.cscount" maxlength=20 size=40 class="textrdonly" readonly>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 單張費用</td>
+        <td align="left">
+            <input type=text name="cfmoney" id="cfmoney" value="@Model.cfmoney" maxlength=10 size=10 > 元
+        </td>
+    </tr>
+    @*<tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 數字位數</td>
+        <td align="left">
+            <input type=text name="cfnumber" id="cfnumber" value="@Model.cfnumber" maxlength=3 size=10>
+        </td>
+    </tr>*@
+    <tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            <input id="submit1" class="abutton" name="回上頁" type="button" value="回上頁" onclick="javascript:history.go(-1);" />
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

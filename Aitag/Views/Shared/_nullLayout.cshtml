@@ -1,0 +1,44 @@
+﻿@{
+  string titleStr = "AITag安品數據-智慧物聯雲標籤服務管理系統";
+}
+<html>
+<head>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>@titleStr</title>
+    <link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/leftmenu.css" />
+    @Scripts.Render("~/bundles/jquery")
+    <script type="text/javascript" src="~/js/date/js/jscal2.js"></script>
+    <script type="text/javascript" src="~/js/date/js/lang/en.js"></script>
+    <script src="~/Scripts/jquery.min.js"></script>
+    <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
+ </head>
+<body>
+    @RenderBody()
+</body>
+</html>
+<script>
+    //網頁離開屏蔽的做法,插這裡才可,須找原因
+    function showblock() {
+        $.blockUI({ message: '<table width=100% cellpadding=5 style="background:#FFFFFF;width:350px;height:60px;border:solid 2px #C0C0C0;filter:progid:DXImageTransform.Microsoft.Glow(color=#999999,strength=5)"><tr><td align=center style=font-size:16px;font-weight:bold;color:#882244;><img src=/images/process.gif align=absmiddle width=32 height=32>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;資料處理中，請稍候...</td></tr><tr><td align=center style=font-size:12px;font-weight:;color:#333333;>(請勿關閉視窗或離開本網頁)</td></tr></table>' });
+    }
+
+    function closeblock() {
+      //  $.unblockUI();
+    }
+
+    $(window).load(function () {
+        ;//
+    }).ready(function () {
+        ;//
+    }).bind("pageshow", function () {
+        closeblock();
+    }).bind("pagehide", function () {
+        showblock();
+    });
+
+ </script>
+ 

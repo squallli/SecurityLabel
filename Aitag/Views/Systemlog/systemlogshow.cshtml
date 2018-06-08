@@ -1,0 +1,78 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Data;
+@using System.Data.SqlClient;
+@using Aitag.Models;
+@*using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Aitag.Filters;
+using System.Collections.ObjectModel;*@
+
+@{
+    Layout = "";
+Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+
+string sqlstr = "", slevent="";
+
+
+}
+
+
+
+<html>
+<head>
+    <title>企業資訊入口網</title>
+    <link href="css.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<style>
+    body {
+        margin: 0px;
+        background-image: url();
+        background-repeat: repeat-x;
+        background-color: #F3F3F3;
+    }
+    table,tr,td {
+        border-color:#009bd8;
+    }
+</style>
+
+<body topmargin=0 leftmargin=0 onload="javascirpt:window.focus();">
+    <table cellpadding=3 cellspacing=0 border=1 width=100% bordercolor="#0084bc" bgcolor="#ffffff" bordercolordark=ffffff align=center>
+        <tr><td colspan=4 bgcolor="#0084bc" style='color:ffffff;font-size:10pt'><b>系統異動詳細資料</b></td></tr>
+
+        <tr valign=top>
+            <td width=10% align=right>內容</td>
+            <td colspan=3 height=200>
+                @{
+                    sqlstr = "SELECT * from systemlog where slid=" + Request["slid"].Trim();
+
+
+                    using (SqlConnection CMconn = dbobj.get_conn("Aitag_DBContext"))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(sqlstr, CMconn))
+                        {
+                            SqlDataReader dr = cmd.ExecuteReader();
+                            if (dr.Read())
+                            {
+                                if (!System.DBNull.Value.Equals(dr["slevent"]))
+                                {
+                                    slevent = dr["slevent"].ToString();
+                                }
+                            }
+                            dr.Close();
+                        }
+                    }
+
+                }
+                @Html.Raw(slevent)
+            </td>
+        </tr>
+        <tr>
+            <td colspan=4 bgcolor=dddddd align=center>
+                <input type=button value="關閉視窗" onclick="javascript:window.close();" class=button id=button1 name=button1>
+            </td>
+        </tr>
+    </table>
+</body>

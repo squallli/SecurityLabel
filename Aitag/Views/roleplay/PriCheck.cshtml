@@ -1,0 +1,145 @@
+﻿@model Aitag.Models.ViewModels.PriViewModel
+@using Aitag.Helper;
+@using System.Data.SqlClient;
+@using System.Data;
+@{
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    ViewBag.funtitle = dbobj.get_menuname("Aitag_DBContext", Session["realsid"].ToString(), Session["sid"].ToString());
+    ViewBag.Title = "CheckBox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    SqlConnection tmpconn = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection tmpconn1 = dbobj.get_conn("Aitag_DBContext");
+    string tmpmname = "";
+    if (Session["realsid"].ToString() == "213")
+    {
+        tmpmname = dbobj.get_dbvalue(tmpconn, "select AC_mstitle from Privrole where AC_msid = '" + @ViewBag.tmpid + "'");
+    }
+    else
+    { tmpmname = dbobj.get_name(tmpconn, @ViewBag.tmpid); }
+
+
+
+}
+<script language=javascript>
+    function checkall(tmpval, tmpformid) {
+        for (i = 0; i < tmpformid.length; i++) {
+            if (tmpformid.elements[i].type == "checkbox") {
+                if (tmpval == "1")
+                    tmpformid.elements[i].checked = true;
+                else
+                    tmpformid.elements[i].checked = false;
+            }
+        }
+    }
+    function f1() {
+        Form1.fsubmit.value = "1";
+        Form1.submit();
+    }
+</script>
+
+<table cellpadding="3" cellspacing="0" bordercolorlight="LightGrey" bordercolordark="ffffff" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "Form1", id = "Form1" }))
+            {
+                @Html.HiddenFor(m => m.id)
+                <input type="hidden" name="bid" id="bid" value="@ViewBag.tmpid" />
+                <input type="hidden" class="c12readonly" id="fsubmit" name="fsubmit" style="width:80px;" value="" />
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td align=center>
+                            <span id="ctl00_ContentPlaceHolder1_lbname" style="font-size:11pt;color:#990000">&nbsp;@(tmpmname)的權限<br></span>
+                            <input type="submit" name="Button1" value="權限修改確定" id="Button1" class="button" />
+                            <input type="button" name="Button2" value="功能全部選取" onclick="checkall(1, Form1); return false;" id="Button2" class="button" />
+                            <input type="button" name="Button3" value="功能全部取消" onclick="checkall(0, Form1); return false;" id="Button3" class="button" />
+                            @if (Session["realsid"].ToString() == "213")
+                            {
+                                <input type="button" name="Button3" value="權限角色同步" onclick="javascript:f1();" id="Button3" class="button" />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=center>
+                            <table border=0 cellpadding=0 cellspacing=0 bordercolorlight=999999 bordercolordark=ffffff width=100% bgcolor=#eeeebb style=font-size:8pt>
+                                <tr>
+                                    <td valign=top align=center>
+                                        <table cellpadding=0 cellspacing=0 style='font-size:11pt' width=100% border=0>
+                                            @{
+                            string sqlstr = "";
+                            string tmpstr = "";
+                            int k = 0;
+                            int i = 0;
+                            SqlCommand sqlsmd = new SqlCommand();
+                            SqlCommand sqlsmd1 = new SqlCommand();
+                            sqlsmd.Connection = tmpconn;
+                            sqlsmd1.Connection = tmpconn1;
+                            string[] priv = new string[500];
+                            sqlsmd.CommandText = "select * from Privtb where AC_Bid = '" + ViewBag.tmpid + "'";
+                            SqlDataReader dr = sqlsmd.ExecuteReader();
+                            while (dr.Read())
+                            {
+                                priv[int.Parse(dr["AC_Sid"].ToString())] = "1";
+                            }
+                            dr.Close();
+                            dr.Dispose();
+                            sqlsmd.CommandText = "select * from sublevel where AC_lid = '1' order by AC_Sid";
+                            dr = sqlsmd.ExecuteReader();
+                            SqlDataReader dr1;
+                            while (true)
+                            {
+                                for (i = 1; i < 7; i++)
+                                {
+                                    if (dr.Read())
+                                    {
+                                        if (i == 1)
+                                        { tmpstr += "<tr>"; }
+                                        sqlsmd1.CommandText = "select * from sublevel where AC_Uplink = '" + dr["AC_Sid"].ToString() + "' and  AC_lid <> '1' order by AC_Sid";
+                                        dr1 = sqlsmd1.ExecuteReader();
+                                        tmpstr += "<td valign=top><table cellpadding=2 cellspacing=1 width=100%>";
+                                        tmpstr += "<tr><td bgcolor='#ccccaa' style='font-weight:bold'>" + dr["AC_Sublevelname"].ToString() + "</td></tr>";
+                                        while (dr1.Read())
+                                        {
+                                            if (priv[int.Parse(dr1["AC_Sid"].ToString())] == "1")
+                                            {
+                                                tmpstr += "<tr><td bgcolor=#ffeedd><input type=checkbox id='privdata' name='privdata' value='" + dr1["AC_Sid"].ToString() + "' checked>" + dr1["AC_Sublevelname"].ToString() + "</td></tr>";
+                                            }
+                                            else
+                                            {
+                                                tmpstr += "<tr><td bgcolor=#ffeedd><input type=checkbox id='privdata' name='privdata' value='" + dr1["AC_Sid"].ToString() + "'>" + dr1["AC_Sublevelname"].ToString() + "</td></tr>";
+                                            }
+                                        }
+                                        dr1.Close();
+                                        dr1.Dispose();
+                                        tmpstr += "</table></td>";
+                                        if (i == 6)
+                                        { tmpstr += "</tr>"; }
+                                    }
+                                    else
+                                    {
+                                        k = 1;
+                                        break;
+                                    }
+                                }
+                                if (k == 1)
+                                { break; }
+                            }
+                            dr.Close();
+                            dr.Dispose();
+                                            }
+                                            @Html.Raw(tmpstr)
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </table>
+                            <!--input type="submit" title="submit" /-->
+
+                        </td>
+                    </tr>
+                </table>
+                            tmpconn.Close();
+                            tmpconn.Dispose();
+            }
+        </td>
+    </tr>
+</table>

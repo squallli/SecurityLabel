@@ -1,0 +1,216 @@
+﻿@model Aitag.Models.certifyorder
+@using System.Data.SqlClient
+@{
+    Layout = "~/views/shared/_frontLayout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+   
+    
+    string allpkg = "";
+}
+
+<script type="text/javascript">    
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+                        
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入申請人\n"; }
+
+            if ($("#vendno").val() == "")
+            { errmsg += "請輸入受委託廠商\n"; }
+
+            //if ($("#fmob").val() == "")
+            //{ errmsg += "請輸入連絡電話\n"; }
+
+            //if ($("input[name='doccheck']:checked").val() == undefined)
+            //{ errmsg += "請選擇檢附文件\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+<!--article-->
+<div class="article">
+ <div class="container">
+  <div class="maintitle"><h1>認證標章申請表</h1></div>
+    @using (Html.BeginForm("Applicationedit", "html", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+    {
+     <input type="hidden" id="sysflag" name="sysflag" value="E">
+        
+     <div class="member">
+        <div class="newbox"> 
+            <p>申請標章後，可至"查詢歷史紀錄"查看狀態 。(*必填)</p>
+                <h6>
+                    <span class="title01"><i>*</i>申請代碼：</span>
+                    @Model.codno
+                    <input type="hidden" name="codno" id="codno" value="@Model.codno" />
+                    <input type="hidden" name="costatus" id="costatus" value="@Model.costatus" />
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>申請日期</span>
+                    @dbobj.get_date(Model.adddate.ToString(), "1")
+                    <input type="hidden" name="adddate" id="adddate" value="@dbobj.get_date(Model.adddate.ToString(), "1")" />
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>認證項目</span>
+                    @dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + Model.citemid + "'")
+                    <input type="hidden" name="citemid" value="@Model.citemid" />
+                    @{
+                         string kg1 = dbobj.get_dbvalue(comconn, "select qtykg from certifyitem where citemid = '" + Model.citemid + "'");
+                    }
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>申請人</span>
+                    @dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Model.farmerno + "'")
+                    <input type="hidden" name="farmerno" id="farmerno" value="@Model.farmerno" />
+                </h6>
+
+                <h6>
+                   <span class="title01"><i>*</i>農戶地址</span>
+                    @Session["faddr"]
+                </h6>
+                <h6>
+                    <span class="title01"><i>&nbsp;</i>身分證字號</span>
+                    <input type="text" name="idcard" id="idcard" size="10" maxlength="10" value=""><span class="ps01">英文及數字共10碼</span>
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>受委託廠商</span>
+                    @dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Model.vendno + "'")
+                    <input type="hidden" name="vendno" id="vendno" value="@Model.vendno" />
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>連絡電話</span>
+                    @Session["fmob"]
+                </h6>
+
+                <h6>
+                    <span class="title01"><i>*</i>申請期別</span>
+                    <input type=text name="certime" id="certime" value="@Model.certime" size=12 maxlength=10>
+                </h6>
+                <h6>
+                    <span class="title01"><i>*</i>檢附文件</span>
+                    @Html.Raw(dbobj.get_checkboxobj(comconn, "select chkcode,chkitem from checkcode where chkclass='80'", "doccheck", Model.doccheck))
+                </h6>
+          
+        </div>
+    </div>
+    <div>
+        <p>申請土地資料</p>
+        <div class="member1">
+            <div class="tabA">
+                <h5 class="title">
+                    <span>地段</span>
+                    <span>地號</span>
+                    <span>種植面積</span>
+                    <span>容重量</span>
+                    <span>稻穀總產量</span>
+                    <span>碾製成品</span>
+                    <span>公斤</span>
+                    <span>包裝</span>
+                    <span>張數</span>
+                    <span>處理狀態</span>
+                </h5>
+
+                    @{
+                         string sqlstr = "select *  from  viewcertifycheckdet where farmerno = '" + Model.farmerno + "' and cstatus in ('05','06')";
+                         SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+                         SqlDataReader dr = cmd.ExecuteReader();
+                         int i = 1;
+                         while (dr.Read())
+                         {
+                            <h5>
+                                <input type="hidden" name="ldno" value="@dr["ldno"].ToString()" />
+                                <input type="hidden" name="fwarea" value="@dr["fwarea"].ToString()" />
+                                <input type="hidden" name="cerdid" value="@dr["cerdid"].ToString()" />                                                   
+                                <span><strong>地段：</strong>@dr["ltitle"].ToString()</span>
+                                <span><strong>地號：</strong>@dr["landno1"]@*-@dr["landno2"]*@</span>
+                                <span><strong>種植面積：</strong>@dr["fwarea"].ToString()</span>
+
+                                @{
+                                    sqlstr = "select *  from  certifyorderdet where codno = '" + Model.codno + "' and cerdid = '" + dr["cerdid"].ToString() + "'";
+                                    SqlCommand cmd1 = new SqlCommand(sqlstr, comconn1);
+                                    SqlDataReader dr1 = cmd1.ExecuteReader();
+
+                                    decimal allheavy = Math.Round(decimal.Parse(dr["fwarea"].ToString()) * decimal.Parse(kg1), 3);
+                                    decimal proh = Math.Round(allheavy * decimal.Parse("0.7"), 3);
+                            
+                                     <span><strong>容重量：</strong><input type=text size=10 name=heavyval id="heavyval@(i)" value="@(allheavy)"></span>
+                                     <span><strong>稻穀總產量：</strong><input type=text size=10 name=produceval id="produceval@(i)" value="@(allheavy)"></span>
+                                     <span><strong>碾製成品：</strong><input type=text size=10 name=prodname id="prodname@(i)" value=""></span>
+                                     <span><strong>公斤：</strong><input type=text size=10 name=prodheavy id="prodheavy@(i)" value="@proh"></span> 
+                                     <span><strong>包裝：</strong>
+                                           <select name="bgid" id="bgid@(i)" class='c12border' onchange="changekg(@i,$(' #bgid@(i) option:selected').index())">
+                                           <option value="">請選擇</option>
+                                            @{
+                                                string sqlb = "select * from bag where citemid = '" + Model.citemid + "' order by bgid";
+
+                                                SqlCommand cmd2 = new SqlCommand(sqlb, comconn2);
+                                                SqlDataReader dr3 = cmd2.ExecuteReader();
+                                                while (dr3.Read())
+                                                {
+                                                    allpkg += dr3["bgkg"].ToString() + ",";
+                                                    <option value="@dr3["bgid"].ToString()" @if ("" == dr3["bgid"].ToString()) { @Html.Raw(" selected ")         }>@dr3["bgtitle"].ToString()</option>
+                                                }
+                                                dr3.Close();
+                                                dr3.Dispose();
+                                            }
+                                            comconn3.Close();
+                                            comconn3.Dispose();
+                                        </select>
+                                    </span>
+                                    <span><strong>張數：</strong><input type=text size=10 name=opcount id="opcount@(i)" value=""></span>
+                                    <span><strong>處理狀態：</strong>申請中</span>
+                                    
+                                dr1.Close();
+                                dr1.Dispose();
+                                }
+                            </h5> 
+                                i++;
+                                }
+                                dr.Close();
+                                dr.Dispose();
+                        }
+                        </div>       
+       
+                        </div>  
+                    </div>
+
+                    <div class="btnbox"><input type="submit" value="確定" class="btn"></div>
+                                comconn.Close();
+                                comconn.Dispose();
+                                comconn1.Close();
+                                comconn1.Dispose();
+                                comconn2.Close();
+                                comconn2.Dispose();
+        }
+
+    </div>
+</div>
+<script>
+    var allpkgdata = "@(allpkg)";
+    var allpkgarr = allpkgdata.split(",");
+    function changekg(tmpi,tmpsel)
+    {
+        //$("#opcount" + tmpi).val(Math.Round($("#prodheavy" + tmpi).val() / allpkgarr(tmpi), 0));
+        //alert(allpkgarr[tmpi+1]);
+        //alert(tmpsel)
+        $("#opcount" + tmpi).val(Math.ceil(parseFloat($("#prodheavy" + tmpi).val()) / parseFloat(allpkgarr[tmpsel-1])));
+    }
+</script>
+<!--article-end-->

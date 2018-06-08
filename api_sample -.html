@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        
+		<title></title>
+		
+		<style type="text/css">
+			.code {
+				display: block;
+				padding: 10px;
+				margin: 0 0 10px;
+				font-size: 14px;
+				line-height: 1.5;
+				color: #333;
+				word-break: break-all;
+				word-wrap: break-word;
+				background-color: #f5f5f5;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+			}
+		</style>
+		
+        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js" ></script>
+        <script>
+			$(document).ready(function(){
+				$('#buttonGetImage').click(function(){
+					jQuery.support.cors = true;
+					$.ajax({
+						url: 'http://security.imstag.com/csfa/api/Tag/GetImage',
+						data: {
+							token: '70A661300840B50F835F6CB3BCC600F1',
+							serial: $('#inputSerial').val()
+						},
+						type: 'POST',
+						dataType: "json",
+						cache: false,
+						
+						success: function(msg){
+							$('#tagImg').attr('src', 'data:image/png;base64,' + msg.Base64Image);
+						},
+						
+						error: function(xhr, ajaxOpt, err){
+							alert('error');
+						}
+					});
+				});
+			});
+        </script>
+		
+    </head>
+    <body>
+		<div>
+			<span>
+				<label>Serial:&nbsp;</label>
+				<input type="text" id="inputSerial" />
+			</span>
+			<input type="button" id="buttonGetImage" value="SUBMIT" />
+		</div>
+		<hr />
+		<div>
+			<img id="tagImg" src="#" />
+		</div>
+		<br />
+		<div>
+			<div>Api</div>
+			<pre class="code">http://security.imstag.com/csfa/api/Tag/GetImage</pre>
+		</div>
+		<br />
+		<div>
+			<div>Data Format</div>
+			<pre class="code">{
+  "Token": "70A661300840B50F835F6CB3BCC600F1",
+  "Serial": "R00512100"
+}</pre>
+		</div>
+		<br />
+		<div>
+			<div>Response Format</div>
+			<pre class="code">{
+  "Serial": "R00512100",
+  "SpecialIx": 5,
+  "Base64Image": "IMAGE_IN_BASE64_STRING"
+}</pre>
+		</div>
+		<br />
+		<div>
+			<div>Response Status Code</div>
+			<pre class="code">
+  Success: 200 OK
+  Error: 406 Not Acceptable
+</pre>
+		</div>
+    </body>
+</html>

@@ -1,0 +1,169 @@
+﻿@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    string schid = ViewBag.schid;
+    string schtype = ViewBag.schtype;
+    string tmptitle = "";
+    string sqlstr = "";
+    
+    switch (schtype)
+    {
+        case "0":
+            tmptitle = "個人備忘";
+            sqlstr = "select * from schedule where schid=" + schid;
+            break;
+        case "1":
+            tmptitle = "個人行程";
+            sqlstr = "select * from schedule where schid=" + schid;
+            break;
+        case "2":
+            tmptitle = "公司行程";
+            sqlstr = "select * from schedule where schid=" + schid;
+            break;
+        case "8":
+            tmptitle = "個人請假";
+            sqlstr = "select * from holidaylog where hlogid=" + schid;
+            break;
+        case "9":
+            tmptitle = "個人出差";
+            sqlstr = "select * from battalog where blogid=" + schid;
+            break;
+    }
+ 
+  
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = comconn;
+    cmd.CommandText = sqlstr;
+    SqlDataReader dr = cmd.ExecuteReader(); 
+    if (dr.Read())
+    { }
+    
+    string tmpnote = "";
+
+}
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            
+                    <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%" bgcolor="#ffffff">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">@Html.Raw(tmptitle)資料觀看</td>
+                    </tr>
+                       @{ if (schtype == "0" || schtype == "1" || schtype == "2")
+                          {
+                    <tr>
+                        <td align="right" width="80">標題</td>
+                        <td align="left">@dr["schtitle"].ToString()</td>
+                    </tr>
+                        <tr>
+                            <td align="right">日期</td>
+                            <td align="left">@dbobj.get_date(dr["schdate"].ToString(), "1") @dr["schhour"].ToString()時@dr["schmin"].ToString()分~@dr["schehour"].ToString()時@dr["schemin"].ToString()分</td>
+                        </tr>
+                        <tr>
+                            <td align="right">地點</td>
+                            <td align="left">@dr["schplace"].ToString()</td>
+                        </tr>
+                        <tr>
+                            <td align="right">檔案</td>
+                            <td align="left">
+                                @if (dr["sfile"] != "" && dr["sfile"] != null)
+                                {
+                                    <a target="_blank" href="@Url.Content("~/Upload/" + dr["sfile"])">檔案</a>
+                                }
+                                else
+                                {  @("無"); }                                
+                         
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">內容</td>
+                            <td align="left">
+                               
+                            @if (dr["schcontent"] != "" && dr["schcontent"] != null)
+                            {
+                                tmpnote =dr["schcontent"].ToString();
+                            
+                            }
+                             @Html.Raw(tmpnote);                         
+                            </td>
+                        </tr>
+                           }
+                        else
+                        {
+                        
+                                 if (schtype == "8" )
+                                 {
+                                    <tr>
+                                        <td align="right" width="80">請假者</td>
+                                        <td align="left">@dr["empname"].ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" width="80">假別</td>
+                                        <td align="left">@dbobj.get_dbvalue(comconn1,"select hdaytitle from holidaycode where hdayid = '" + dr["hdayid"].ToString() + "'")</td>
+                                    </tr>
+                                   <tr>
+                                        <td align="right">請假日期</td>
+                                        <td align="left">@dbobj.get_date(dr["hlogsdate"].ToString(), "1") @dr["hlogstime"].ToString()~@dbobj.get_date(dr["hlogedate"].ToString(), "1") @dr["hlogetime"].ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">事由</td>
+                                        <td align="left">@dr["hlogcomment"].ToString()</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                <tr>
+                                        <td align="right" width="80">出差者</td>
+                                        <td align="left">@dr["empname"].ToString()</td>
+                                    </tr>
+                                   <tr>
+                                        <td align="right">請假日期</td>
+                                        <td align="left">@dbobj.get_date(dr["blogsdate"].ToString(), "1")~@dbobj.get_date(dr["blogedate"].ToString(), "1")</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">事由</td>
+                                        <td align="left">@dr["blogcomment"].ToString()</td>
+                                    </tr>
+                                
+                                }
+                         }
+                         }
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">                           
+                            @Html.ActionLink("關閉", "", "", new { }, new { @class = "abutton", @onclick = "window.close();" })
+                        </td>
+                    </tr>
+                </table>
+              
+          
+        </td>
+    </tr>
+</table>
+@{
+    dr.Close();
+    dr.Dispose();
+    comconn.Close();
+    comconn.Dispose();
+    comconn1.Close();
+    comconn1.Dispose();
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,94 @@
+﻿@model Aitag.Models.Department
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#dptid").val() == "")
+            { errmsg = "請選擇部門編號\n"; }
+
+            if ($("#dpttitle").val() == "")
+            { errmsg += "請選擇部門名稱\n"; }
+
+            if ($("#accdptid").val() == "")
+            { errmsg += "請選擇歸帳部門代號\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "Department", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qdptid" name="qdptid" value="@ViewBag.qdptid">
+                <input type="hidden" id="qdpttitle" name="qdpttitle" value="@ViewBag.qdpttitle">
+                <input type="hidden" id="comid" name="comid" value="@ViewBag.comid" />
+                
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料修改</td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 部門編號</td>
+                        <td align="left">
+                            <input type="text" maxlength="10" class="c12border" id="dptid" name="dptid" readonly style="width:60px;background:#aaaaaa" value="@Model.dptid" />
+                            @Html.ValidationMessageFor(m => m.dptid)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 部門名稱</td>
+                        <td align="left">
+                            <input type="text" maxlength="30" class="c12border" id="dpttitle" name="dpttitle" style="width:200px;" value="@Model.dpttitle" />
+                            @Html.ValidationMessageFor(m => m.dpttitle)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 歸帳部門代號</td>
+                        <td align="left">
+                            <input type="text" maxlength="20" class="c12border" id="accdptid" name="accdptid" style="width:60px;" value="@Model.accdptid" />
+                            @Html.ValidationMessageFor(m => m.accdptid)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            <a class="abutton" href="/Department/List/?comid=@Request["comid"]">回上頁</a>
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

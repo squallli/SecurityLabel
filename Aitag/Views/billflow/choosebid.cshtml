@@ -1,0 +1,136 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.roleplay>
+@using MvcPaging
+@{
+    ViewBag.Title = "choosebid";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string fname = ViewBag.fname;
+    string tmp1 = ViewBag.tmp1;
+    string tmp2 = ViewBag.tmp2;
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<style>
+    body {
+        margin: 0px;
+        background-image: url();
+        background-repeat: repeat-x;
+        background-color: #F3F3F3;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+
+    function addall(tmpvalue,tmpvaluename)
+    {
+        var tmpstr = self.opener.document.@(fname).@(tmp1).value;
+        var tmpstr1 = self.opener.document.@(fname).@(tmp2).value;
+
+        //if(tmpstr.indexOf(tmpvalue) > 0)
+        //alert('角色重複')
+        //else
+        {
+            if(tmpvalue!='')
+            {
+                if(tmpstr == '')
+
+                {
+                    self.opener.document.@(fname).@(tmp1).value = " '" + tmpvalue + "'";
+                    self.opener.document.@(fname).@(tmp2).value = " " + tmpvaluename ;
+
+                }
+                else
+                {
+                    self.opener.document.@(fname).@(tmp1).value = tmpstr + ",'" + tmpvalue + "'";
+                    self.opener.document.@(fname).@(tmp2).value = tmpstr1 + " → " + tmpvaluename ;
+
+
+                }
+            }
+        }
+
+    }
+</script>
+@using (Html.BeginForm("choosebid", "billflow", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type=hidden id="fname" name=fname value="@ViewBag.fname" size=12>
+                <input type=hidden id="tmp1" name=tmp1 value="@ViewBag.tmp1" size=12>
+                <input type=hidden id="tmp2" name=tmp2 value="@ViewBag.tmp2" size=12>
+                <input type="hidden" id="ctype" name="ctype" value="@ViewBag.ctype">
+
+                <table cellpadding=5 cellspacing=0 bgcolor=ffeeee width=100% bordercolorlight=990000 bordercolordark=ffffff border=1 class=c12>
+                    <tr>
+                        <td>
+                            角色名稱：<input type="text" name="qroletitle" id="qroletitle" value="@ViewBag.qroletitle">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="100">角色代碼</th>
+                        <th >角色名稱</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type=radio name=radio1 id="radio1" onclick="javascript: addall('@item.rid','@item.roletitle')">
+                                @item.rid
+                            </td>
+                            <td class="colstd">
+                                @item.roletitle
+                            </td>
+                           
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+
+            </td>
+        </tr>
+        </table>
+}
+
+
+
+
+
+
+
+

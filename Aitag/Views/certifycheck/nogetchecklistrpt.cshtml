@@ -1,0 +1,127 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.certifycheck>
+@using MvcPaging
+@using System.Data.SqlClient
+@*2017/02/19 Mark 匯出時數字可以呈現字串*@
+@Html.Raw("<style>")
+@Html.Raw("td{mso-number-format: \\@}")
+@Html.Raw("</style>")
+@{
+    ViewBag.Title = "List";
+    Layout = "";
+    HttpContext.Current.Response.Clear();
+    HttpContext.Current.Response.Charset = "";
+    HttpContext.Current.Response.ContentType = "application/vnd.ms-csv";
+    string strFileName = "nogetchecklistrpt" + ".xls";
+    HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + strFileName);
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+      <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="80">
+                        認證項目
+
+                    </th>
+                    <th width="90">
+                        檢驗登記編號
+
+                    </th>
+                    <th width="80">
+                        農戶編號 / 農戶姓名
+                    </th>
+                    <th>
+                        電話
+                    </th>
+                    <th>
+                        期別
+                    </th>
+                    <th>
+                        申請日期
+                    </th>
+                    <th>
+                        受理日期
+                    </th>
+                    <th>
+                        割稻日期
+                    </th>
+                    <th>
+                        備註
+                    </th>
+
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr style="font-size:9pt">
+                        @*<td class="colstd" align="center">
+                            <input type="checkbox" name="cdel" id="cdel" value="@item.cerno">
+                        </td>*@
+                        @*<td class="colstd">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass = '33' and chkcode = '" + item.cstatus + "'");}
+                            @dbtitle
+                        </td>*@
+                        <td class="colstd" style="font-size:9pt;">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + item.citemid + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.cerno
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.farmerno
+                            /
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + item.farmerno + "'");}
+                            @dbtitle
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @{ dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select ('電話:'+ftel+'/ 手機:'+fmob) as tel1 from farmer where farmerno = '" + item.farmerno + "'");}
+                            @Html.Raw(dbtitle)
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @item.certime
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.adddate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.cerdate.ToString(), "1")
+                        </td>
+                        <td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.dealdate.ToString(), "1")
+                        </td>
+                        @*<td class="colstd" style="font-size:9pt">
+                            @dbobj.get_date(item.givedate.ToString(), "1")
+                        </td>*@
+                        <td class="colstd" style="font-size:9pt">
+                            @item.cercomment
+                        </td>
+                   </tr>
+                }
+                @{
+                comconn.Close();
+                comconn.Dispose();
+               // comconn1.Close();
+               // comconn1.Dispose();
+                }
+            </table>
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+</table>
+
+
+           
+
+
+
+          
+

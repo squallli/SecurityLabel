@@ -1,0 +1,160 @@
+﻿@model Aitag.Models.certifyorder
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext"); 
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+           // if ($("#cerno").val() == "")
+           // { errmsg = "請選擇縣市代碼\n"; }
+            if ($("#citemid").val() == "")
+            { errmsg += "請輸入認證項目\n"; }
+
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入農戶姓名\n"; }
+
+            if ($("#vendno").val() == "")
+            { errmsg += "請輸入委託廠商\n"; }
+
+            if ($("#certime").val() == "")
+            { errmsg += "請輸入期別\n"; } 
+
+            if ($("#adddate").val() == "")
+            { errmsg += "請選擇申請日期\n"; }
+            else
+            { errmsg = errmsg + check_date(document.FormAdd.adddate, "申請日期") }
+
+                 
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "certifyorder", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+    <input type="hidden" id="qcerno" name="qcerno" value="@ViewBag.qcerno">
+    <input type="hidden" id="qcstatus" name="qcstatus" value="@ViewBag.qcstatus">
+    <input type="hidden" id="qcitemid" name="qcitemid" value="@ViewBag.qcitemid">
+    <input type="hidden" id="qfarmerno" name="qfarmerno" value="@ViewBag.qfarmerno">
+    <input type="hidden" id="qscerdate" name="qscerdate" value="@ViewBag.qscerdate">
+    <input type="hidden" id="qecerdate" name="qecerdate" value="@ViewBag.qecerdate">
+    <input type="hidden" id="qsdealdate" name="qsdealdate" value="@ViewBag.qsdealdate">
+    <input type="hidden" id="qedealdate" name="qedealdate" value="@ViewBag.qedealdate">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 認證項目</td>
+        <td align="left">
+            @{String Selectstatus = "select citemid,citemname from certifyitem where  comid = '" + Session["comid"] + "'  order by citemid";
+              Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "citemid", "", "1");}@Html.Raw(Selectstatus)&nbsp;
+            @Html.ValidationMessageFor(m => m.citemid)
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 農戶姓名</td>
+        <td align="left">
+            <input type="text" id="farmerno" name="farmerno" autocomplete="off" placeholder="請輸入關鍵字" value="" onkeyup="drop_prod(this.value)">
+            <input type="text" id="farmername" value="" class="textrdonly" size="40" />
+            <div class="img1" id="ajaxgo" style="position:absolute;display:none;overflow:auto;height:200px;width:30%">
+            </div>
+            <script>
+                function drop_prod(tmpval) {
+                    var dvsql = "select top 20 * from (select DISTINCT farmer.farmerno , farmer.farmername from  farmwork AS farmwork LEFT JOIN  farmer AS farmer ON farmwork.farmerno = farmer.farmerno where fstatus = '1' and farmer.comid = '" + @Session["comid"] + "' and (farmer.farmerno like '%" + tmpval + "%' or farmer.farmername like '%" + tmpval + "%' or farmer.ftel like '%" + tmpval + "%'  or farmer.fmob like '%" + tmpval + "%' or farmer.fcomment like '%" + tmpval + "%')) as tmpdb";
+                    ajax_drop('ajaxgo', dvsql, 'farmerno', 'farmername', '');
+                }
+            </script>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 委託廠商</td>
+        <td align="left">
+            <input type="text" id="vendno" name="vendno" autocomplete="off" placeholder="請輸入關鍵字" value="" onkeyup="drop_prod1(this.value)">
+            <input type="text" id="vendname" value="" class="textrdonly" size="40" />
+            <div class="img1" id="ajaxgo1" style="position:absolute;display:none;overflow:auto;height:200px;width:30%">
+            </div>
+            <script>
+                function drop_prod1(tmpval) {
+                    var dvsql = "select top 20 farmerno , farmername from farmer where ftype = '2' and fstatus = '1' and comid = '" + @Session["comid"] + "' and  (farmerno like '%" + tmpval + "%' or farmername like '%" + tmpval + "%' or ftel like '%" + tmpval + "%'  or fmob like '%" + tmpval + "%' or fcomment like '%" + tmpval + "%')";
+                    ajax_drop('ajaxgo1', dvsql, 'vendno', 'vendname', '');
+                }
+            </script>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 期　　別</td>
+        <td align="left">
+            <input type=text name="certime" id="certime" value="@(DateTime.Now.Year-1911)年第一期" size=12 maxlength=10 class=c12border>&nbsp;
+            
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 申請日期</td>
+        <td align="left">
+            <input type=text name="adddate" id="adddate" value="@DateTime.Now.ToString("yyyy/MM/dd")" size=12 maxlength=10 class=c12border>&nbsp;
+            <img src="../images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+            <script type="text/javascript">
+                cal.manageFields("f_btn1", "adddate", "%Y/%m/%d");
+            </script>
+
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> 檢附文件</td>
+        <td>
+           @Html.Raw(dbobj.get_checkboxobj(comconn,"select chkcode,chkitem from checkcode where chkclass='80'","doccheck",""))
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> 備註</td>
+        <td>
+            <textarea cols="80" rows="5" name="cocomment" id="cocomment"></textarea>
+        </td>
+    </tr>
+<tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            @Html.ActionLink("回上頁", "List", "certifyorder", new { }, new { @class = "abutton" })
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+              
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

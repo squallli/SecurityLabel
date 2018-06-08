@@ -1,0 +1,210 @@
+﻿@model MvcPaging.IPagedList<UniteErp.Models.billflow>
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    UniteErp.Models.NDcommon dbobj = new UniteErp.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("UniteErp_DBContext");
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/billflow/List";
+                break;
+            case "A":
+                FormList.action = "/billflow/Add";
+                break;
+            case "E":
+                FormList.action = "/billflow/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/billflow/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("List", "billflow", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            呈核單類別：@Html.Raw(dbobj.get_selectobj(comconn, "select docid,doctitle from docgroup order by doctype ,docid", "qbillid", @ViewBag.qbillid, "1"))
+                            所屬公司：@Html.Raw(dbobj.get_selectobj(comconn, "select comid,comtitle from company", "qcomclass", @ViewBag.qcomclass, "1"))
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left" class="buttontd">
+                <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 0,'');}" />   
+                <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />
+            </td>
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>                     
+                        <th width="50">狀態</th>
+                        <th width="60">優先順序</th>
+                        <th >所屬公司</th>
+                        <th width="100">呈核單類別</th>
+                        <th width="100">單據分類</th>
+                        <th>呈核流程</th>
+                        <th width="60">核准層級</th>
+                        <th width="100">時數數量<br>金額起迄</th>
+                        <th width="80">其他屬性</th>
+                        <th width="40">修改</th>
+                        
+
+                    </tr>
+                  
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type="checkbox" name="cdel" id="cdel" value="@item.bid">
+                            </td>
+                            <td class="colstd">
+                                @if (item.ifuse == "1")
+                                { @("使用中"); }
+                                else
+                                { @("停用") }                                    
+                            </td>
+                            <td class="colstd">
+                                @item.btop
+                            </td>
+                            <td class="colstd">
+                                @dbobj.get_dbvalue(comconn, "select comtitle from Company where comid='" + @item.comclass + "'")
+                            </td>
+                            <td class="colstd">
+                                @dbobj.get_dbvalue(comconn, "select doctitle from docgroup where docid='" + @item.billid + "'")
+                            </td>
+                            <td class="colstd">
+                                @{
+                                string bt = item.billtype;
+                                bt += "";
+                                string[] arr1 = bt.Split(',');
+                                }
+                                    @for(int k = 0 ; k < arr1.Length ; k++)
+                                    {
+                                     @Html.Raw(dbobj.get_billname(item.billid,arr1[k].ToString()) + "<br>");
+                                    }
+                               
+                            </td>
+                            <td class="colstd">
+                                @{ string flowcheck = "";
+                                   if (!string.IsNullOrWhiteSpace(@item.flowcheck))
+                                   {
+
+                                       string[] all1 = System.Text.RegularExpressions.Regex.Split(@item.flowcheck, ",");
+
+                                       for (int n = 0; n < all1.Length; n++)
+                                       {
+                                           flowcheck += dbobj.get_dbvalue(comconn, "select roletitle from roleplay where rid=" + all1[n].ToString()) + " → ";
+                                       }
+
+                                       if (flowcheck != "")
+                                       {
+                                           flowcheck = flowcheck.Substring(0, flowcheck.Length - 2);
+                                       }
+
+                                   }                   
+                                }
+                               @flowcheck
+                            </td>
+                            <td class="colstd">
+                                @item.flowlevel
+                            </td>
+                            <td class="colstd">
+                                @item.flowscount ~ @item.flowecount
+                            </td>
+                            <td class="colstd">
+                                @{
+                                        string addr = item.addr;
+                                        string[] addr1 ;
+                                        string addr2 = "";
+                                        
+                                        if (!string.IsNullOrWhiteSpace(item.addr))
+                                        {
+                                            addr1 = addr.Split(',');
+                                            if(item.billid=="P")
+                                            { 
+                                                if(addr.IndexOf("1")>=0)
+                                                {
+                                                    addr2 += "成本,";
+                                                }
+
+                                                if (addr.IndexOf("2") >=0)
+                                                {
+                                                    addr2 += "部門";
+                                                }
+                                            }
+                                            else
+                                            { 
+                                                foreach (string trim in addr1)
+                                                {
+                                                    addr2 += dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass='90' and chkcode='" + trim + "'")+",";
+                                                }
+                                                addr2 = addr2.Substring(0, addr2.Length - 1);
+                                            }
+                                        }
+                                  }
+                                @addr2
+                            </td>
+                            <td class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'bid=@item.bid')" /> </td>
+                            
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+                @if (Model.TotalItemCount < 1)
+                {
+                    @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

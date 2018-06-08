@@ -1,0 +1,103 @@
+﻿@model Aitag.Models.maincontent
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection erpconn = dbobj.get_conn("AitagBill_DBContext");
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = erpconn;
+    SqlDataReader dr ;
+    
+          
+}
+
+<script type="text/javascript">
+    
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+           
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">附件檔案上傳</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=left colspan="2" class="headfont"> 附件檔案</td>
+                    </tr>
+                    <tr>
+                        <td align=left colspan="2">
+                            <table cellpadding=3 cellspacing=0 class=c12 border=1 width=100% align=center>
+                                <tr class="headfont" style=color:#ffffff><td>序號</td><td>檔案名稱</td><td width=100>檔案大小</td><td width=50>刪除</td></tr>
+                                @{
+                                    string vcno = Request["vcno"].ToString();
+                                    string billtype = Request["billtype"].ToString();
+                                    string tvcinvid = dbobj.get_vcinvid(erpconn, Session["comid"].ToString(), vcno);
+                                 cmd.CommandText = "select * from erpbilldoc where vcno = '" + Request["vcno"].ToString() + "' and comid = '" + Session["comid"].ToString() + "' order by cupid";
+                                 dr = cmd.ExecuteReader();
+                                 int i = 1;
+                                     while (dr.Read()) { 
+                                    <tr><td align="center" width="40">@i</td><td><a href="/filemain/cupfile?cupid=@dr["cupid"].ToString()" class="abutton" target="_blank">@dr["cfilename"].ToString()</a></td><td width=100>@dbobj.get_MB(dr["cfilesize"].ToString()) MBytes</td>
+                                @if (Session["realsid"].ToString() != "512") {
+                                <td align="center" width="50"><input type="button" value="刪除" class="abutton" onclick="location.href='/filemain/contuploaddel?cdel=@dr["cupid"].ToString()&vcno=@vcno&billtype=@billtype'" /></td>
+                                }
+                                else
+                                {
+                                    <td>&nbsp;</td>
+                                }
+                                    </tr>
+                                         i++;    
+                                }
+                                    dr.Close();
+                                    dr.Dispose();
+                                }
+                                </table>
+                        </td>
+                    </tr>
+                    @if (Session["realsid"].ToString() != "512") { 
+                          <tr id=filedir1 bgcolor=#ffffff align=center>
+                            <td colspan=2>
+
+                                <table id="showzone" cellpadding=4 cellspacing=0 class=c12 border=1 width=100% align=center>
+                                    <tr class="headfont" style=color:#ffffff><td width=40>&nbsp;</td><td>檔案名稱</td><td width=150>檔案大小</td></tr>
+
+                                </table>
+                             
+                                <iframe width=600 height=180 frameborder="0" src="/MoreUpload/billindex?vcno=@vcno&billtype=@billtype&realsid=@Session["realsid"].ToString()"></iframe>
+                            </td>
+                        </tr>
+                    }
+                        <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <!--input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" /-->
+                            @if (Session["realsid"].ToString()=="452")
+                            {
+                            <input type="button" value="回主畫面" onclick="javascript: location.href = '/paybill/expensechkmod?vcinvid=@(tvcinvid)'" />
+                            }
+                            else
+                            {
+                            <input type="button" value="回上頁" onclick="javascript: window.history.go(-1);" />
+                            }
+                        </td>
+                    </tr>
+                </table>
+            @{
+            erpconn.Close();
+            erpconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>

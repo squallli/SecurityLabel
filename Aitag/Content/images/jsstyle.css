@@ -1,0 +1,195 @@
+﻿/* ######### Drop Down ULs CSS ######### */
+
+
+.ddsubmenustyle, .ddsubmenustyle ul{ /*topmost and sub ULs, respectively*/
+font-family: "微軟正黑體",Arial, Helvetica, sans-serif;
+font-size: 13px;
+margin: 0;
+padding: 0;
+position: absolute;
+left: 0;
+top: 0;
+list-style-type: none;
+background: #76CBD2;
+border: 0;
+border-bottom-width: 0;
+visibility: hidden;
+z-index: 100;
+color: #ffffff;
+}
+
+.ddsubmenustyle li ul{
+margin-left:0px;
+}
+
+
+.ddsubmenustyle li a{
+display: block;
+width: 160px; /*width of menu (not including side paddings)*/
+color: #ffffff;
+background-color: #76CBD2;
+text-decoration: none;
+padding: 4px 5px;
+border-bottom: 1px solid #fff;
+}
+
+* html .ddsubmenustyle li{ /*IE6 CSS hack*/
+display: inline-block;
+width: 170px; /*width of menu (include side paddings of LI A*/
+}
+
+.ddsubmenustyle li a:hover{
+background-color: #76CBD2;
+color: #ffffff;
+}
+
+/* ######### Neutral CSS  ######### */
+
+.downarrowpointer{ /*CSS for "down" arrow image added to top menu items*/
+padding-left: 4px;
+border: 0;
+display: none;
+}
+
+.rightarrowpointer{ /*CSS for "right" arrow image added to drop down menu items*/
+position: absolute;
+padding-top: 3px;
+left: 100px;
+border: 0;
+display: none;
+}
+
+.ddiframeshim{
+position: absolute;
+z-index: 500;
+background: transparent;
+border-width: 0;
+width: 0;
+height: 0;
+display: none;
+}
+
+/* ######### Marker List Vertical Menu ######### */
+
+.markermenu{
+width: 175px; /*width of side bar menu*/
+clear: left;
+position: relative; /*Preserve this for "right" arrow images (added by script) to be positioned correctly*/
+
+}
+
+.markermenu ul{
+list-style-type: none;
+margin: 5px 0;
+padding: 0;
+border: 0;
+}
+
+.markermenu ul li a{
+background: #F2F2F2; /*light gray background*/
+font: bold 13px ;
+font-family: "微軟正黑體",Arial, Helvetica, sans-serif;
+color: #00014e;
+display: block;
+width: auto;
+padding: 3px 0;
+padding-left: 20px;
+text-decoration: none;
+border: 0;
+}
+
+* html .markermenu ul li a{ /*IE6 hack*/
+width: 155px;
+}
+
+.markermenu ul li a:visited, .markermenu ul li a:active{
+color: #00014e;
+}
+
+.markermenu ul li a:hover, .markermenu ul li a.selected{
+color: white;
+background-color: black;
+}
+
+/* ######### Customized Drop Down ULs CSS (inherits from ddlevelsmenu-base.css) ######### */
+
+.blackwhite li a{
+background: white;
+}
+
+.blackwhite li a:hover{
+background: black;
+color: white;
+}
+
+/* ######### Matt Black Strip Main Menu Bar CSS ######### */
+
+.mattblackmenu ul{
+margin: 0;
+padding: 0;
+font-size: 16px;
+font-weight: bold;
+font-family: "微軟正黑體",Arial, Helvetica, sans-serif;
+list-style-type: none;
+border: 0;
+background: #ffffff;
+overflow: hidden;
+width: 100%;
+color: #4d4d4d;
+}
+
+.mattblackmenu li{
+display: inline;
+margin: 0px;
+}
+
+.mattblackmenu li a{
+float: left;
+display: block;
+text-decoration: none;
+margin: 0;
+padding: 6px 13px; /*padding inside each tab*/
+border-right: 1px solid white; /*right divider between tabs*/
+color: #4d4d4d;
+background: #ffffff;
+font-size: 16px;
+font-weight: bold;
+font-family: "微軟正黑體",Arial, Helvetica, sans-serif;
+}
+
+.mattblackmenu li a:visited{
+color: #4d4d4d;
+}
+
+.mattblackmenu li a:hover{
+background: #ffffff; /*background of tabs for hover state */
+}
+
+.mattblackmenu a.selected{
+background: #ffffff; /*background of tab with "selected" class assigned to its LI */
+}
+
+/* ######### 下方選單 ######### */
+
+/* CSS Document */
+ul,li{margin:0;padding:0;border:0;}
+ul,ol,li{list-style:none;}
+table{border-collapse:collapse;border-spacing:0;}
+.clearfloat{height:0;font-size:1px;clear:both;line-height:0;}
+a{color:#333;text-decoration:none;}
+a:hover{color:#ef9b11; text-decoration:underline;}
+
+.pointer {
+	CURSOR: pointer;
+	margin-top: 23px;
+	border: 1px solid #fff;
+}
+
+.lanmu {MARGIN: 0px auto; WIDTH: 900px}
+.lanmu .top { background:url(../images/bg01.gif) no-repeat; HEIGHT: 52px; width:100%;}
+.mydpx .bottom {PADDING-TOP: 15px; HEIGHT: 265px}
+#scrollbox li table{ width:146px; height:240px; background:url(../images/bg02.gif) no-repeat;}
+#scrollbox li table td{ vertical-align:top;}
+#scrollbox li {PADDING-RIGHT: 10px;FLOAT: left; PADDING-BOTTOM: 0px; PADDING-TOP: 0px; LIST-STYLE-TYPE: none}
+#scrollbox LI img{ width:135px; height:60px; margin-top:4px; margin-bottom:6px;border: #B0B0B0 1px solid;}
+	

@@ -1,0 +1,218 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.employee>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+    string aaa5 = "true";
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/employee/List";
+                break;
+            case "A":
+                FormList.action = "/employee/Add";
+                break;
+            case "E":
+                FormList.action = "/employee/Edit?" + tmpkey;
+                break;
+            case "E2":
+                FormList.action = "/employee/PriCheck?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/employee/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1, tmp2) {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+    @Html.Raw(ViewBag.SetOrder_ch)
+
+    function loadsearch() {
+        @*公司  部門*@
+        $('#qempworkcomp').load("@weblink/Ajax/ComDepartmentSelect?Code=qempworkcomp:@ViewBag.qempworkcomp,condition:");
+        $('#qempworkdepid').load("@weblink/Ajax/ComDepartmentSelect?Code=qempworkdepid:@ViewBag.qempworkdepid,qempworkcomp:@ViewBag.qempworkcomp");
+
+        $("#qempworkcomp").change(function () {
+            var tmpval = $("#qempworkcomp").val();
+            if (tmpval != "") {
+                $('#qempworkdepid').load("@weblink/Ajax/ComDepartmentSelect?Code=qempworkdepid:@ViewBag.qempworkdepid,qempworkcomp:" + tmpval);
+            }
+        });
+    }
+    function orggraph() {
+        var errmsg = "";
+
+
+        if (errmsg != "") {
+            alert(errmsg);
+            return false;
+        } else {
+            FormList.action = "/employee/orggraph";
+            FormList.target = "_blank";
+            FormList.submit();
+            FormList.action = "/employee/List";
+            FormList.target = "";
+        }
+    }
+
+    $(document).ready(function () {
+        SetOrder_ch();
+    });
+</script>
+@using (Html.BeginForm("List", "employee", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%" style="line-height:200%">
+                    <tr>
+                        <td>
+                            公司/部門：
+                            <select name="qempworkcomp" id="qempworkcomp" class="selectmenu">
+                                <option value="" >請選擇</option>
+                            </select>&nbsp;
+                            <select name="qempworkdepid" id="qempworkdepid" class="selectmenu">
+                                <option value="">請選擇</option>
+                            </select>&nbsp;
+
+                            <script type="text/javascript">
+                                loadsearch();
+                            </script>
+
+                            在職狀態：@{string Selectstatus = "select chkcode,chkitem from checkcode where chkclass = '12' order by chkcode";
+                                   Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qempstatus", ViewBag.qempstatus, "1");}@Html.Raw(Selectstatus)&nbsp;
+                            @*組織角色：@{Selectstatus = "select rid,roletitle from roleplay order by rid";
+                            Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qrid", ViewBag.qrid, "1");}@Html.Raw(Selectstatus)&nbsp;*@
+                            <br>
+                            員工編號：<input type="text" name="qempno" id="qempno" value="@ViewBag.qempno">&nbsp;
+                            帳號：<input type="text" name="qempid" id="qempid" value="@ViewBag.qempid">&nbsp;
+                            員工姓名：<input type="text" name="qempname" id="qempname" value="@ViewBag.qempname">
+                           
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                            @*<input id="Submit2" type="button" value="組織列印" class="abutton" onclick="orggraph();" />*@
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            <td align="left" class="buttontd">
+                <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 0,'');}" />   
+                <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />
+            </td>
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                        <th width="">所屬公司</th>
+                        <th width="">所屬部門</th>
+                        <th width="30">在職狀態</th>
+                        <th width="">帳號狀態<br>(啟用日)</th>
+                        <th width="80">員工編號<a href="#" name="order1"></th>
+                        <th width="">帳號<a href="#" name="order2"></th>
+                        <th width="">姓名</th>
+                        <th width="">卡號</th>
+                        <th width="">到職日期</th>
+                        <th colspan="2">維謢</th>
+                    </tr>
+                   
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type="checkbox" name="cdel" id="cdel" value="@item.emid">
+                            </td>
+                            <td class="colstd">
+                                @{string comtitle = ""; comtitle = dbobj.get_dbvalue(comconn, "select comtitle from company where comid='" + item.empworkcomp + "'");}
+                                @comtitle
+                            </td>
+                            <td class="colstd">
+                                @{string tmpname = ""; tmpname = dbobj.get_dbvalue(comconn, "select dpttitle from Department where dptid = '" + item.empworkdepid + "' and comid='" + item.empworkcomp + "'");}
+                                @tmpname
+                            </td>
+                            <td class="colstd">@*在職狀態*@
+                                @{string status = ""; status = dbobj.get_dbvalue(comconn, "select chkitem from checkcode where chkclass='12' and chkcode='" + item.empstatus + "'");}
+                                @status
+                            </td>
+                            <td class="colstd">
+                                @{string ifuse = "";
+                                  if (item.ifuse == "y") 
+                                  {
+                                      ifuse = "使用" + "<font color=red>(" + Convert.ToDateTime(item.usedate).ToString("yyyy/M/d") + ")</font>";
+                                  }
+                                  else
+                                  {
+                                      ifuse = "停用";
+                                  }
+                                  }
+                                @Html.Raw(ifuse)
+                            </td>
+                            <td class="colstd">@*員工編號*@
+                                @item.empno
+                            </td>
+                            <td class="colstd">@*帳號*@
+                                @item.empid
+                            </td>
+                            <td class="colstd">@*姓名*@
+                                @item.empname                                
+                            </td>
+                            <td class="colstd">@*卡號*@
+                                @item.cardno
+                            </td>
+                            <td class="colstd">@*到職日期*@
+                                @Convert.ToDateTime(item.jobdate).ToString("yyyy/MM/dd")
+                            </td>
+
+                            <td width="10" class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'emid=@item.emid')" /> </td>
+                            <td width="10" class="colstd"><input id="ebut" type="button" value="權限" class="abutton" onclick="return submitform('E2',@ViewBag.page, 'empid=@item.empid&psid=2')" /> </td>
+                            
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+                @if (Model.TotalItemCount < 1)
+                {
+                    @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

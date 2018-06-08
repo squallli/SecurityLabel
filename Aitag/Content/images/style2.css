@@ -1,0 +1,50 @@
+@charset "utf-8";
+/* CSS Document */
+
+.menu_bg {
+	background-color: #76CBD2;
+}
+
+.main_menu2 a:link {
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	font-size: 13px;
+	font-style: normal;
+	line-height: normal;
+	font-variant: normal;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.main_menu2 a:visited {
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	font-size: 13px;
+	font-style: normal;
+	line-height: normal;
+	font-variant: normal;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.main_menu2 a:hover {
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	font-size: 13px;
+	font-style: normal;
+	line-height: normal;
+	font-variant: normal;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.main_menu2 a:active {
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	font-size: 13px;
+	font-style: normal;
+	line-height: normal;
+	font-variant: normal;
+	text-transform: capitalize;
+	color: #ffffff;
+	text-decoration: none;
+}

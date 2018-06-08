@@ -1,0 +1,60 @@
+﻿@charset "utf-8";
+@import url("search.css");
+
+.colorbgpage{
+	width:100%;
+	margin:0 auto;
+	background:#fff url(../images/colorbgpage.jpg) repeat-x bottom center; 
+	padding:0px;overflow:auto;}
+	.box_colorpage{background-color:#f2f2f2;width:990px; height:470px;margin:0 auto; padding:20px;_width:1020px; border-radius:10px; margin-bottom:20px; overflow:hidden;_width:990px;}
+.box_colorpage .box_movie{width:740px;height:470px;background:#000 url(../images/imgbg.png) no-repeat center center; overflow:hidden;color:#FFF; float:left; padding:0; margin:0;margin:0; position:relative; text-align:center;}
+.box_colorpage .box_movie .imgsize{max-width:740px;height:470px;}
+.box_colorpage .box_movie .mesk{ background: url(../images/bkbg.png) repeat; position:absolute; bottom:0px;width:740px; padding:3px 10px; font-size:14px;}
+.box_colorpage .box_movie .mesk h2{ font-size:18px; color:#f5b400;}
+.box_colorpage .box_movie .mesk span{ color:#FFF;}
+.box_colorpage .box1{width:240px;height:150px;background:#d8d9da url(../images/imgbg.png) no-repeat center center; overflow:hidden;color:#FFF; float:left; padding:0; margin:0; margin:0px 0px 10px 10px; position:relative;}
+.box_colorpage .box1 .imgsize{width:240px;}
+.box_colorpage .box1 .mesk{ background: url(../images/bkbg.png) repeat; position:absolute; bottom:0px;width:230px; margin:0; padding:2px 5px; font-size:12px;}
+
+nav{width:100%;}
+nav .nav{width:1020px; height:auto;margin:0 auto;padding:10px;overflow:auto;_width:1040px;/*_IE6 HACK*/ clear:both; text-align:right; font-size:14px; color:#CCC; position: relative;}
+nav .nav a{padding:3px; color:#ccc; text-decoration:none;}
+nav .nav a:hover{color:#000;}
+
+article{ width:100%;background-color:#fff;}
+article .main{width:1020px; height:auto;margin:0 auto;padding:10px;overflow:auto;_width:1020px;/*_IE6 HACK*/ clear:both; text-align:justify;}
+article .main .box{width:240px;height:150px;background:#d8d9da url(../images/imgbg.png) no-repeat center center; overflow:hidden;color:#FFF; float:right; padding:0; margin:0; margin:50px 0px 10px 20px; position:relative;}
+article .main .box .imgsize{width:240px;}
+article .main .box .mesk{ background: url(../images/bkbg.png) repeat; position:absolute; bottom:0px;width:230px; margin:0; padding:2px 5px; font-size:12px;}
+article .main .title{ margin:0;line-height:120%; color:#634d42; font-size:20px; border-bottom:solid 2px #FF9900; padding-bottom:10px; margin-bottom:10px; font-weight:bold;}
+article .main .title img { padding:0px 5px; vertical-align: bottom;}
+article .main h1{ font-size:20px; color:#000;line-height:130%;}
+article .main p{ font-size:16px; color:#666; line-height:150%;}
+article .main .tabzone{ background: url(../images/tabzone.png) no-repeat left center; padding-left:28px; font-size:16px; font-weight:bold; clear:both;}
+article .main .tabzone a{padding:3px 8px; color:#000; text-decoration:none;/*border-right:dashed #eee 1px; */line-height:220%;background: url(../images/tabzoneline.png) no-repeat right center;}
+article .main .tabzone a:hover{color:#000; text-decoration:underline;}
+/*相關影段*/
+.othermovie{width:1040px; height:auto;margin:0 auto;padding:10px;overflow:auto;_width:1050px;_overflow:hidden;/*_IE6 HACK*/ clear:both;_text-align:center;}
+.othermovie h4{width:1020px;margin:0 auto;border-top: dashed 1px #999999; margin:0px 10px; padding-top:15px;_text-align:left;}
+.othermovie .box{
+	width: 240px;  
+	height: 150px;  
+	margin: 10px; 
+	background:#d8d9da url(../images/imgbg.png) no-repeat center center; 
+	color:#FFF;
+	overflow:hidden;float:left; position:relative;}
+	.othermovie .box .imgsize{width:240px;}
+	.othermovie .box .mesk{ background: url(../images/bkbg.png) repeat; position:absolute; bottom:0px;width:220px; margin:0; padding:3px 10px; font-size:14px;}
+
+
+.mapbg {
+	width:100%;
+	margin:0 auto;
+	background-color:#fdb522;
+	padding:5px 0px 10px 0px; clear:both;}
+.mapbg .box_map{width:1040px; height:auto;margin:0 auto;padding:10px;overflow:auto;_width:1040px;/*_IE6 HACK*/ position:relative;}
+.mapbg .box_map h1{ background:url(../images/icon03.png) no-repeat left top; color:#fff; font-size:24px; padding-left:30px; margin-left:10px;}
+.mapbg .box_map .info{ position:absolute;top:15px; right:20px; font-size:16px; width:auto; color:#804800;}
+.mapbg .box_map .info img { padding:5px; vertical-align: bottom;}
+.mapbg .box_map .map{width:1020px;margin:0 auto; margin-top:15px;}
+.mapbg .box_map .map img{width:1020px;}

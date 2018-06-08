@@ -1,0 +1,200 @@
+﻿@model List<Aitag.Models.employee>
+@using System.Data;
+@using System.Data.SqlClient;
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection tconn = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+
+    string NOWempworkcomp = "";
+    //NOWempworkcomp = Request["empworkcomp"].Trim();
+    if (NOWempworkcomp == "")
+    {
+        NOWempworkcomp = (string)Session["comid"];
+    }
+
+
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#FormList").submit(function (e) {
+            var errmsg = "";
+            
+            
+            if ($("input[name='epagesize']").val() == "")
+            { errmsg += "請輸入畫面呈現筆數\n"; }
+            
+            if ($("select[name='eicon']").val() == "")
+            { errmsg = errmsg + "請選擇使用圖片組\n" }
+
+            if ($("select[name='etab']").val() == "")
+            { errmsg = errmsg + "請選擇預設登入左側選單\n" }
+
+            if ($("#emppasswd").val() == "")
+            { errmsg = errmsg + "密碼不可為空白\n" }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                $("#sysflag").val("E")
+                return true;
+            }
+        });
+
+    });
+
+    function empfunc(qstatus,empdid) {
+        var straction;
+        
+        switch(qstatus) {
+            case "add":
+                straction = "/Empfunction/empadd";
+                break;
+            case "mod":
+                straction = "/Empfunction/empEdit?empdid=" + empdid ;
+                break;
+            case "del":
+                straction = "/Empfunction/empdel?sysflag=D";
+                break;
+        }
+        //alert(straction)
+        if(straction!=''){ 
+        FormList.action = straction;
+        FormList.submit();
+        FormList.action = "/Employee/perservice";
+        FormList.target = '';
+        }
+    }
+
+    
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("perservice", "Employee", FormMethod.Post, new { @name = "FormList", @id = "FormList" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="100%">
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">修改畫面</td>
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <input type="hidden" id="empid" name="empid" value="@item.empid">
+                    <tr>
+                        <td align="right" width="15%"><img src="~/images/art.gif" border="0" /> 畫面資料呈現筆數</td>
+                        <td width=25%><input type=text name="epagesize" id="epagesize" maxlength=9 class=c12border size=6 value=@item.epagesize> <font color=990000>請輸入數字</font></td>
+                        <td align="right" width="15%"><img src="~/images/art.gif" border="0" /> 使用圖片組</td>
+                        <td width=25%>
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select chkcode , chkitem from checkcode where chkclass ='07' order by chkcode", "eicon", item.eicon, "1"))
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td align=right><img src="~/images/art.gif" border="0" /> 預設登入左側選單</td>
+                        <td>
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select mtid , mttitle from menutab order by mtid", "etab", @item.etab, "1"))
+                        </td>
+                        <td align=right><img src="~/images/art.gif" border="0" /> EIP登入密碼</td>
+                        <td><input type=password name="emppasswd" id="emppasswd" maxlength=20 class=c12border value="@item.emppasswd" size=15></td>
+                    </tr>
+                    <tr bgcolor=dedede>
+                        <td colspan=4 align=center>
+                            <input type=submit value="確認" class=abutton id=submit1 name=submit1>
+                            <input type=reset value="重新輸入" class=abutton id=reset1 name=reset1>
+                        </td>
+                    </tr>
+                    }
+                </table>
+            
+                <div width="95%" align="left">
+                <input type="button" value="刪除" class=abutton id=button1 name=btndel1 onclick="javascript: if (confirm('確定刪除勾選資料??') == 1) { return empfunc('del'); }">
+                <input type="button" value="新增" class=abutton id=button2 name=btnadd1 onclick="empfunc('add')">
+                </div>
+                string sql = " select * from empfunction where empid = '" + (string)Session["empid"] + "'";
+
+
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="100%">
+                    <tr class="headfont">
+                        <td height=25 width=45 align=center><input type=checkbox name=chkall id=chkall onclick ="javascript:checkallbox()"></td>
+                        <td><b>個人化挑選功能</b></td>
+                        <td><b>位置</b></td>
+                        <td><b>順序</b></td>
+                        <td><b>呈現筆數</b></td>
+                        <td><b>修改</b></td>
+                    </tr>
+                    @using (SqlCommand cmd = new SqlCommand(sql, comconn))
+                    {
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (!dr.HasRows)
+                        {
+                            @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                        }
+                        while (dr.Read())
+                        {
+                            <tr>
+                                <td align=center><input type=checkbox name=cdel id=cdel value ='@dr["empdid"].ToString()'></td>
+                                <td>
+                                    @{string funname = ""; funname = dbobj.get_dbvalue(tconn, "select chkitem from checkcode where chkclass='08' and chkcode='" + dr["funid"].ToString() + "'");}
+                                    @funname
+                                </td>
+                                <td>
+                                    @{
+                                    string funposition = "";
+                                    switch (dr["funposition"].ToString())
+                                    {
+                                        case "n":
+                                            funposition = "無";
+                                            break;
+                                        case "m":
+                                            funposition = "中間";
+                                            break;
+                                        case "r":
+                                            funposition = "右邊";
+                                            break;
+                                    }
+                                    }
+                                    @funposition
+                                </td>
+                                <td>
+                                    @Html.Raw(dr["funorder"].ToString())
+                                </td>
+                                <td>
+                                    @Html.Raw(dr["funrowcount"].ToString())
+                                </td>
+                                <td>
+                                    <input type="button" value="修改" class=abutton id=btnmod1 name=btnmod1 onclick="empfunc('mod','@dr["empdid"].ToString()')">
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+                    tconn.Close();
+                    tconn.Dispose();
+                    comconn.Close();
+                    comconn.Dispose();
+            }
+
+
+</td>
+    </tr>
+</table>
+

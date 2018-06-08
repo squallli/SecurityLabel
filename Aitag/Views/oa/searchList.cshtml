@@ -1,0 +1,157 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.maincontent>
+@using System.Data.SqlClient
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string qkeyword = ViewBag.qkeyword;
+    SqlDataReader dr;
+  
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/oa/searchList";
+                break;
+            
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+        else
+        {
+            if ($("#qkeyword").val() == "")
+            { alert("請輸入關鍵字\n"); }
+            else
+            { FormList.submit(); }
+
+        }
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+
+    
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("searchList", "oa", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" })) 
+{
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr valign=top>
+        <td align="center" colspan="2">          
+            <input type="hidden" id="page" name="page" value="@ViewBag.page">
+            <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+            <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+            <input type="hidden" id="sid" name="sid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="realsid" name="realsid" value="@Session["realsid"].ToString()">
+            
+            <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                <tr>
+                    <td>
+                    關鍵字查詢：<input type="text" size="30" name="qkeyword" id="qkeyword" value="@ViewBag.qkeyword">
+                            
+                    <input id="Submit1" type="submit" value="查詢" class="abutton" />   
+                    </td>
+                </tr>
+            </table>          
+        </td>
+    </tr>
+    <tr class="pagestyle">
+        <td align="left">
+        關鍵字"<font color="red"> @(ViewBag.qkeyword) </font>"快速查詢，搜尋結果如下：<br>
+        @Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)
+        </td>
+    </tr> 
+
+    <tr valign=top>
+        <td align="center" colspan="2">
+            @{
+                string mccontent = "", mctitle = "", categorystr = "", linkto = "";                
+            }
+            @foreach (var item in Model)
+            {
+                //標題及內容
+                mctitle = item.mctitle;
+                mctitle = mctitle.Replace(qkeyword, "<font color='red'>" + qkeyword + "</font>");
+
+                
+                mccontent = dbobj.get_canceltag(item.mccontent, 2000);
+                if (!string.IsNullOrEmpty(mccontent))
+                {
+                    int startstr = mccontent.IndexOf(qkeyword);
+                    if (startstr <= 5) { startstr = 6; }
+                    
+                    if (mccontent.Length >= startstr - 6 + 100)
+                    { mccontent = mccontent.Substring(startstr - 6, 50) + "..."; }
+                    else
+                    { mccontent = mccontent.Substring(startstr - 6) + "..."; }
+                    mccontent = mccontent.Replace(qkeyword, "<font color='red'>" + qkeyword + "</font>");
+                }
+                else
+                { mccontent = ""; }
+                //目錄及鏈結
+                string sqlstr = "select *,(select sublevelname from sublevel1 as s1 where sublevel1.uplink = s1.sid) as uplinkname from sublevel1 where sid='" + item.sid.ToString() + "'";
+                dr = dbobj.dbselect(comconn, sqlstr);
+                if (dr.HasRows)
+                {
+                    dr.Read();
+                    string categoryname = dr["sublevelname"].ToString();
+                    string uplinkname = dr["uplinkname"].ToString();
+                    string sid = dr["uplink"].ToString();
+                    string realsid = dr["sid"].ToString();
+                    string location = dr["location"].ToString();
+                 
+                    categorystr = uplinkname + " > " + categoryname;
+                    // linkto = location + "mod?sid=" + sid + "&realsid=" + realsid + "&mcid=" + item.mcid + "&qmcparentid=";
+                    linkto = location + "view?sid=" + sid + "&realsid=" + realsid + "&mcid=" + item.mcid ;
+                   
+                }
+                dr.Close();
+                dr.Dispose();
+                                
+                <div style="text-align:left;width:100%">
+                    <p><img src="~/Images/tabzone.png" width="10px">@categorystr</p>
+                    <p style="background-color:#f4f4f4">
+                        <img src="~/Images/ballicon.gif"> @Html.Raw(mctitle)
+                        <br>
+                        <a href="@linkto">@Html.Raw(mccontent)</a>
+                    </p>
+                        
+                </div>
+            }
+            @{
+            
+            comconn.Close();
+            comconn.Dispose();
+            }
+            
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+<tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+</table>
+}
+
+
+           
+
+
+
+          
+

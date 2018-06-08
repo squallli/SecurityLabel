@@ -1,0 +1,187 @@
+﻿@model Aitag.Models.roleplay
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#rid").val() == "")
+            { errmsg = "請選擇組織角色代碼\n"; }
+
+            if ($("#roletitle").val() == "")
+            { errmsg += "請選擇組織角色名稱\n"; }
+
+            var tmpvstatus = $('input:radio:checked[name="ifrtype"]').val();
+            //alert(tmpvstatus)
+            if (tmpvstatus == "n")
+            {
+                if ($("#hourgroup").val() == "")
+                { errmsg += "請輸入工時群組\n"; }
+            }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+
+    function checkdata(tmp) {
+        if (tmp == "y") {
+            data1.style.display = "";
+            data2.style.display = "none"
+            data3.style.display = "none"
+        }
+        else {
+            data1.style.display = "none";
+            data2.style.display = "";
+            data3.style.display = "";
+            document.FormAdd.allrid.value = "";
+            document.FormAdd.allridname.value = "";
+        }
+    }
+
+    function choosebid(i)//挑選角色
+    {
+        document.choose.txtcheck.value = document.FormAdd.allrid.value;
+        document.choose.txtcheckname.value = document.FormAdd.allridname.value;
+        //url="chooserole.asp?fname=roleplay&tmp1=allrid&tmp2=allridname&txtcheck=" + document.roleplay.allrid.value + "&txtcheckname=" + document.roleplay.allridname.value;
+        window.open('/roleplay/tmpchooserole', 'edm', 'scrollbars=yes,width=400,height=500')
+
+    }
+
+
+</script>
+
+
+<form method="post" action="" name="choose">
+    <input type=hidden name="fname" value="FormAdd">
+    <input type=hidden name="tmp1" value="allrid">
+    <input type=hidden name="tmp2" value="allridname">
+    <input type=hidden name="txtcheck" value="">
+    <input type=hidden name="txtcheckname" value="">
+</form>
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Add", "roleplay", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qrid" name="qrid" value="@ViewBag.qrid">
+                <input type="hidden" id="qroletitle" name="qroletitle" value="@ViewBag.qroletitle">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料新增</td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 組織角色代碼</td>
+                        <td align="left">
+                            <input type="text" maxlength="10" class="c12border" id="rid" name="rid" style="width:100px;" value="@Model.rid" />
+                            @Html.ValidationMessageFor(m => m.rid)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 組織角色名稱</td>
+                        <td align="left">
+                            <input type="text" maxlength="50" class="c12border" id="roletitle" name="roletitle" style="width:400px;" value="@Model.roletitle" />
+                            @Html.ValidationMessageFor(m => m.roletitle)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=right> 是否為虛擬角色</td>
+                        <td>
+                            <input type=radio name="ifrtype" value="y" onclick='javascript:checkdata(this.value);' checked>是
+                            <input type=radio name="ifrtype" value="n" onclick='javascript:checkdata(this.value);'>否
+                        </td>
+                    </tr>
+                    @{  string data2show = "";
+                        string data3show = "";
+                      string data1show = "";
+                      if (Model.ifrtype == "n")
+                      {
+                          data2show = "style=display:";
+                          data3show = "style=display:";
+                          data1show = "style=display:none";
+                      }
+                      else
+                      {
+                          data2show = "style=display:none";
+                          data3show = "style=display:none";
+                          data1show = "style=display:";
+                      }
+                    }
+                    <tr @data2show id="data2">
+                        <td align=right> 所屬主管</td>
+                        <td>
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select rid,roletitle from roleplay order by rid", "bossrid", @Model.bossrid, "1"))
+                        </td>
+                    </tr>
+                    <tr @data3show id="data3">
+                        <td align=right><img src="~/images/art.gif" border="0" /> 工時群組</td>
+                        <td>
+                            @Html.Raw(dbobj.get_selectobj(comconn, "select chkcode, chkitem from checkcode where chkclass like '%77%' order by chkclass,chkcode desc", "hourgroup", @Model.hourgroup, "1"))
+                        </td>
+                    </tr>
+
+                    <tr @data1show id="data1">
+                        <td align=right> 包含角色</td>
+                        <td>
+                            <input type=hidden name="allrid" id="allrid" value="@Model.allrid">
+                            @{
+                      string alldata = "";
+                      if (!string.IsNullOrWhiteSpace(Model.allrid))
+                      {
+                          string sqlstr = "select * from roleplay where rid in (" + Model.allrid.Replace("#", "'") + ")";
+                          SqlCommand cmd = new SqlCommand();
+                          cmd.Connection = comconn;
+                          cmd.CommandText = sqlstr;
+                          SqlDataReader dr = cmd.ExecuteReader();
+                          while (dr.Read())
+                          {
+                              alldata = alldata + dr["roletitle"].ToString() + "\r";
+                          }
+                          dr.Close();
+                          dr.Dispose();
+                      }
+                            }
+                            <textarea name="allridname" id="allridname" cols=50 rows=5 class=c12border readonly>@alldata</textarea><br>
+                            <input type="button" value="挑選角色" class=button onclick="javascript:return choosebid();" id=button1 name=button1>
+                            <input type=button value="取消角色" onclick="javascript:allrid.value='';allridname.value='';" id="Button3" name=button2 class=button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "roleplay", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

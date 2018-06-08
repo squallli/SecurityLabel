@@ -1,0 +1,168 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.employee>
+@using MvcPaging
+@using System.Data.SqlClient;
+@{
+    ViewBag.Title = "知會人員選取畫面";
+    Layout = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string cdelID = "";
+
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript">
+    var lman = $('#lman', opener.document).html();
+    var otherman = $('#otherman', opener.document).val();
+
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/Ajax/chooseemployee";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+    function undolman() {
+        $('#lman', opener.document).html($("#backlman").val());
+        $('#otherman', opener.document).val($("#backotherman").val());
+        window.close();
+    }
+
+    function SetSelfopener(cdel) {
+        lman = $('#lman', opener.document).html();
+        otherman = $('#otherman', opener.document).val();
+        var id = cdel.val();
+        var na = cdel.next().val();
+        if (otherman.match("'" + id + "'") != null) {//有找到
+            if (cdel.prop("checked") != true) {//沒有勾
+                otherman = otherman.replace(",'" + id + "'", "");
+                lman = lman.replace("," + na + "", "");
+            }
+        } else {
+            if (cdel.prop("checked") == true) {//有勾
+                otherman += ",'" + id + "'";
+                lman += "," + na;
+            }
+        }
+        $('#lman', opener.document).html(lman);
+        $('#otherman', opener.document).val(otherman);
+
+        //alert(cdel.prop("checked"));
+        //alert(id);
+    }
+
+    function loadsearch() {
+        @*公司  部門*@
+        $('#qempworkcomp').load("/Ajax/ComDepartmentSelect?Code=qempworkcomp:@ViewBag.qempworkcomp,condition:");
+        $('#qempworkdepid').load("/Ajax/ComDepartmentSelect?Code=qempworkdepid:@ViewBag.qempworkdepid,qempworkcomp:@ViewBag.qempworkcomp");
+
+        $("#qempworkcomp").change(function () {
+            var tmpval = $("#qempworkcomp").val();
+            if (tmpval != "") {
+                $('#qempworkdepid').load("/Ajax/ComDepartmentSelect?Code=qempworkdepid:@ViewBag.qempworkdepid,qempworkcomp:" + tmpval);
+            }
+        });
+    }
+
+
+    $(document).ready(function ($) {
+        if ("@ViewBag.sysflag" != "L") {
+            $("#backlman").val(lman);
+            $("#backotherman").val(otherman);
+        }
+
+        loadsearch();
+    });
+
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("chooseemployee", "Ajax", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="sysflag" name="sysflag" value="L">
+
+                <input type="hidden" id="backlman" name="backlman" value="@ViewBag.backlman">
+                <input type="hidden" id="backotherman" name="backotherman" value="@ViewBag.backotherman">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            公司：
+                            <select name="qempworkcomp" id="qempworkcomp" class="selectmenu">
+                                <option value="">請選擇</option>
+                            </select>
+                            <br>部門：
+                            <select name="qempworkdepid" id="qempworkdepid" class="selectmenu">
+                                <option value="">請選擇</option>
+                            </select>&nbsp;
+                            <br>姓名：<input type="text" name="qempname" id="qempname" value="@ViewBag.qempname">
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable" bgcolor="#ffffff">
+                    <tr>
+                        <th width="30"><input type=checkbox name="chkall" onclick="checkall();"></th>
+                        <th width="">員工編號</th>
+                        <th width="">中文姓名</th>
+                        <th width="">英文姓名</th>
+                    </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        
+                        <tr>
+                            <td class="colstd" align="center">
+                                @{cdelID = "cdel" + item.empno;}
+                                <input type="checkbox" name="cdel" id="@cdelID" value="@item.empid" onclick="SetSelfopener($(this));">
+                                <input type="hidden" name="empname" id="empname" value="@item.empname">
+                                <script>if (otherman.match("'" + $("#@cdelID").val() + "'") != null) { $("#@cdelID").prop("checked", true); }
+                                </script>
+                            </td>
+                            <td class="colstd">
+                                @item.empno
+                            </td>
+                            <td class="colstd">
+                                @item.empname
+                            </td>
+                            <td class="colstd">
+                                @item.empenname
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+
+    <div align=center>
+        <input type=button value="確認" class=button onclick="window.close();" id=button2 name=button2>
+        <input type=button value="取消" class=button onclick="undolman();" id=button3 name=button3>
+    </div>
+}

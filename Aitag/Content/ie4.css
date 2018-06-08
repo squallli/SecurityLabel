@@ -1,0 +1,534 @@
+body {  
+    font-family:"新細明體","Arial","Helvetica","sans-serif";
+	background-repeat: repeat;
+    margin-left: auto;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	FONT-SIZE: 14px;
+	letter-spacing: 1px;
+    background :#ffffff;
+	}
+
+#maim
+{
+	background-repeat: repeat-x;
+	background-position: center top;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+.tbclass
+{background:#F9F9F9; 
+ width:100%; 
+ margin:auto; 
+ padding-top:2PX;
+ padding-left:2px;
+ padding-bottom:2px;
+ padding-right:2px;
+ position:relative;
+ border: 1px solid #CCCCCC;
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+ }
+ .tbclass1
+{background:#B4C5F1; 
+ width:100%; 
+ margin:auto; 
+ padding-top:2PX;
+ padding-left:2px;
+ padding-bottom:2px;
+ padding-right:2px;
+ position:relative;
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+ }
+.e12
+{
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 1px;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.c12
+{
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 1px;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+    
+}
+.qfont
+{
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 1px;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.cmenu
+{
+    COLOR: #000000;
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 1px;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+a:link {
+	color: #06C;
+	text-decoration: none;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+a:visited {
+	color: #666;
+	text-decoration: none;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+a:hover {
+	color: #606;
+	text-decoration: none;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+
+.c12border
+{
+    FONT-SIZE: 14px;
+    border-width: 1px;
+    border-left-color: #dedede;
+    border-right-color: #dedede;
+    border-top-color: #dedede;
+    border-bottom-color: #dedede;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.rdonly
+{
+    FONT-SIZE: 14px;
+    border-width: 1px;
+    border-left-color: #dedede;
+    border-right-color: #dedede;
+    border-top-color: #dedede;
+    border-bottom-color: #dedede;
+    font-family:""新細明體",l","Georgia","Helvetica","sans-serif";
+	background:#dedede; 
+}
+.c12readonly
+{
+    FONT-SIZE: 14px;
+    border-width: 1px;
+    border-left-color: #dedede;
+    border-right-color: #dedede;
+    border-top-color: #dedede;
+    border-bottom-color: #dedede;
+    font-family:""新細明體",l","Georgia","Helvetica","sans-serif";
+	background:#dedede; 
+}
+.headfont
+{
+    line-height:30px;
+    FONT-SIZE: 14px;
+    COLOR: #000000;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.headfont:link
+{
+    FONT-SIZE: 14px;
+    COLOR: #000000;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.headfont:hover
+{
+    FONT-SIZE: 14px;
+    COLOR: #000000;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.headfont:visited
+{
+    FONT-SIZE: 14px;
+    COLOR: #000000;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+
+
+
+.abutton:link,.abutton:visited
+{
+	width:51px; 
+	cursor:pointer;
+	border-top-color: #5C574F;
+	border-right-color: #5C574F;
+	border-bottom-color: #5C574F;
+	border-left-color: #5C574F;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #5C574F;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left:5px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif"; 
+    text-decoration: none;
+}
+
+.kabutton:link,.kabutton:visited
+{
+	width:51px; 
+	cursor:pointer;
+	border-top-color: #5C574F;
+	border-right-color: #5C574F;
+	border-bottom-color: #5C574F;
+	border-left-color: #5C574F;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #5C574F;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left:5px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif"; 
+    text-decoration: none;
+}
+.kabutton:hover
+{
+    width:51px; 
+	cursor:pointer;
+	border-top-color: #FF8900;
+	border-right-color: #FF8900;
+	border-bottom-color: #FF8900;
+	border-left-color: #FF8900;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #FF8900;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left:5px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+    text-decoration: none;
+
+}
+
+.iframe1:hover
+{
+    width:51px; 
+	cursor:pointer;
+	border-top-color: #FF8900;
+	border-right-color: #FF8900;
+	border-bottom-color: #FF8900;
+	border-left-color: #FF8900;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #FF8900;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left:5px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+    text-decoration: none;
+
+}
+.button
+{
+	width:51px; 
+	cursor:pointer;
+	border-top-color: #5C574F;
+	border-right-color: #5C574F;
+	border-bottom-color: #5C574F;
+	border-left-color: #5C574F;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #5C574F;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 1px;
+	padding-left:5px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif"; 
+	height:31px;
+	}
+.button:hover
+{
+    width:51px; 
+	cursor:pointer;
+	border-top-color: #FF8900;
+	border-right-color: #FF8900;
+	border-bottom-color: #FF8900;
+	border-left-color: #FF8900;
+	COLOR: #ffffff;
+	font-size: 12px;
+	background-color: #FF8900;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 1px;
+	padding-left:5px;
+	font-family:"Arial","新細明體","Georgia","Helvetica","sans-serif";
+
+}
+
+
+.hindtext
+{
+    FONT-SIZE: 14px;
+    LETTER-SPACING: 0px;
+    border-width: 0px;
+    background-color: #F8F8F8;
+    border-left-color: #F8F8F8;
+    border-right-color: #F8F8F8;
+    border-top-color: #F8F8F8;
+    border-bottom-color: #F8F8F8;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+
+
+.tlink:link
+{
+    FONT-SIZE: 12px;
+    COLOR: #ffffff;
+    font-weight:bold;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.tlink:hover
+{
+    FONT-SIZE: 12px;
+    COLOR: #ffffff;
+    font-weight:bold;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.tlink:visited
+{
+    FONT-SIZE: 12px;
+    COLOR: #ffffff;
+	font-weight:bold;
+    text-decoration: none;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.lmenu01
+{
+    text-align:left;
+    FONT-SIZE: 16px;
+    COLOR: #715313;
+    padding:18px;
+    background:#CFCFCF;
+    text-decoration: none;   
+    border-bottom:#ffffff 2px solid;
+	font-weight:bold;
+    font-family: "新細明體" , "Arial","Georgia","Helvetica","sans-serif";
+}
+.lmenu02
+{
+    text-align:left;
+    FONT-SIZE:15px;
+    COLOR: #000000;    
+    padding:5px;
+    padding-left:20px;
+    background:#F2F2F2;
+    text-decoration: none;   
+    border-bottom:#ffffff 2px solid;
+	font-weight:bold;
+    font-family: "新細明體" ,"Arial","Georgia","Helvetica","sans-serif";
+}
+.lmenu03
+{
+    text-align:left;
+    FONT-SIZE:14px;
+    COLOR: #ffffff;    
+    padding:5px;
+    padding-left:20px;
+    background:#FF8900;
+    text-decoration: none;   
+    border-bottom:#ffffff 2px solid;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.kmenu01
+{
+    text-align:left;
+    FONT-SIZE:14px;
+    COLOR: #000000;    
+    padding:5px;
+    padding-left:20px;
+    background:#cccccc;
+    text-decoration: none;   
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.kmenu02
+{
+    text-align:left;
+    FONT-SIZE:14px;
+    COLOR: #ffffff;    
+    padding:5px;
+    padding-left:20px;
+    background:#FF8900;
+    text-decoration: none;   
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.tfont{
+ FONT-SIZE:8px;
+ COLOR: #FF8900;
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+ }
+.mfont{
+ FONT-SIZE:8px;
+ COLOR: #FF8900;
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+ }
+ 
+.tclass
+{
+ background:#ffffff; 
+ border: 1px solid #CCCCCC;
+ FONT-SIZE: 14px;
+ LETTER-SPACING: 1px; 
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+ }
+ .tclass td
+ {
+ border-bottom:#eaeaea 1px solid;
+ font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+ }
+
+ .cgrid
+{
+    FONT-SIZE: 14px;
+    border:0px solid #eaeaea;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.cgrid th
+{
+border: 1px solid  #E0E0E0;
+font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+
+.cgrid td
+{
+border: 1px solid  #eaeaea;
+font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+
+.pagestyle
+{
+    text-align:right;
+    FONT-SIZE:12pt;
+    style:visibility:hidden;
+     font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+.current {
+     font-size: 12pt;
+}
+.pagestyle td
+{
+
+    border-left:#F9F9F9 1px solid;
+    border-right:#F9F9F9 1px solid;
+    border-bottom:#F9F9F9 1px solid;
+    border-top:#F9F9F9 1px solid;
+     font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+
+.bpagestyle
+{
+    text-align:right;
+    FONT-SIZE:14px;
+    style: visibility:hidden;
+    font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+
+.bpagestyle td
+{
+
+    border-left:#F9F9F9 1px solid;
+    border-right:#F9F9F9 1px solid;
+    border-bottom:#F9F9F9 1px solid;
+     font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";	
+}
+.field-validation-error {
+     FONT-SIZE:12px;
+    color:#990000;
+   font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif";
+}
+.colstd {
+    height:40px;
+}
+.validation-summary-errors ul li {
+    font-family: "新細明體","Arial","Georgia","Helvetica","sans-serif";
+    font-size: 15px;
+    height: 25px;
+    line-height: 25px;
+    color: #990000;
+    list-style: none;
+    width: 100%;
+}
+.sall {
+   width:100px; 	
+   border: 1px solid #999;
+   font-size: 12px;
+    color: #000;
+    background-color: #c1c1c1;	
+	padding: 5px 8px;  
+    margin-top:-10px;
+	font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif"; 
+	height:30px;   
+}
+
+.container
+	{
+		width:100%; text-align:center;
+        font-family:"新細明體","Arial","Georgia","Helvetica","sans-serif"; 
+	}
+	.menuTitle
+	{
+	width:230px; height:20px; margin:0 auto; line-height:20px;cursor:pointer; margin-top:2px;
+    text-align:left;
+    FONT-SIZE: 16px;
+    COLOR: #715313;
+    padding:8px;
+    background:#CFCFCF;
+    text-decoration: none;   
+    border-bottom:#ffffff 2px solid;
+	font-weight:bold;
+    margin-left:-8px;
+    font-family: "新細明體" , "Arial","Georgia","Helvetica","sans-serif";
+	}
+	.activeTitle
+	{
+		width:230px; height:20px;text-align:left;  margin:0 auto; line-height:20px; font-weight:bold;color:#43860c; cursor:pointer; margin-top:2px; margin-left:-8px;
+	}
+	.menuContent
+	{
+		background-color:#fff; margin:5px; height:auto; width:230px; text-align:left;      
+	}
+	.container li
+	{
+		 background:url(images/arr.gif) no-repeat 20px 6px ; list-style-type:none;FONT-SIZE: 15px; height:25px; line-height:20px;text-align:left;
+	}
+	.container ul
+	{
+		margin:0;padding:0;
+	}
+
+
+    .container_en li
+	{
+		 background:url(images/arr.gif) no-repeat 20px 6px ; list-style-type:none;FONT-SIZE: 15px; height:40px; line-height:15px;text-align:left;
+	}
+    .container_en ul
+	{
+		margin:0;padding:0;
+	}

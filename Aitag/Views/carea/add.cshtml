@@ -1,0 +1,86 @@
+﻿@model Aitag.Models.carea
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    //System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext"); 
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#cid").val() == "")
+            { errmsg = "請選擇縣市代碼\n"; }
+
+            if ($("#cname").val() == "")
+            { errmsg += "請輸入縣市名稱\n"; }
+
+          
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "carea", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcname" name="qcname" value="@ViewBag.qcname">
+                <input type="hidden" id="qcid" name="qcid" value="@ViewBag.qcid">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 縣市代碼</td>
+        <td align="left">
+            <input type=text name="cid" id="cid" maxlength=3 size=10 class=c12border>
+            @Html.ValidationMessageFor(m => m.cid)
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 縣市名稱</td>
+        <td align="left">
+            <input type=text name="cname" id="cname" maxlength=50 size=40 class=c12border>            
+            @Html.ValidationMessageFor(m => m.cname)
+        </td>
+    </tr>
+    <tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            <input id="goback" class="abutton" name="goback" type="button" value="回上頁" onclick="history.go(-1)" />
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

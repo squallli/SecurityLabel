@@ -1,0 +1,155 @@
+﻿@model Aitag.Models.schedule
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    //System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string year1 = ViewBag.year1;
+    string month1 = ViewBag.month1;
+    string Mflag = ViewBag.Mflag;
+    string qschdate = ViewBag.qschdate;
+    string tmpadate = ViewBag.tmpadate;
+   
+    string schtype = ViewBag.schtype;
+   
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+
+            if ($("#schtitle").val() == "")
+            { errmsg += "請輸入標題\n"; }
+
+            if ($("#schdate").val() == "")
+            { errmsg += "請輸入日期\n"; }
+                      
+             if(errmsg!="")
+            {
+                alert(errmsg);
+                return false;
+            }
+        });
+    });
+
+ 
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="90%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("add", "schedule", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd", enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">             
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">                 
+                    <input type="hidden" id="year1" name="year1" value="@year1.ToString()">
+                    <input type="hidden" id="month1" name="month1" value="@month1.ToString()">
+            <input type="hidden" id="qschdate" name="qschdate" value="@qschdate.ToString()">
+                 <input type="hidden" id="Mflag" name="Mflag" value="@Mflag.ToString()">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料新增</td>
+                    </tr>                  
+                    <tr>
+                        <td align=right width=80><img src="/images/art.gif">分類</td>
+                        <td>
+                            <input type="radio" name="schtype" value="0" @if (schtype.ToString() == "0")
+                                                                       { @("checked")  ; } /> 個人備忘 
+                            <input type="radio" name="schtype" value="1" @if (schtype.ToString() == "1")
+                                                                         { @("checked")   ; } /> 個人行程
+                            <input type="radio" name="schtype" value="2" @if (schtype.ToString() == "2")
+                                                                         { @("checked")    ; } /> 公司行程
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align=right width=80><img src="/images/art.gif"> 標題</td>
+                        <td ><input type=text name="schtitle" id="schtitle"  maxlength=200 size=60 class=c12border></td>
+                    </tr>
+                    <tr><td align=right> 內容</td><td><textarea name=schcontent id=schcontent cols=60 rows=10 class=c12border></textarea></td></tr>
+                    <tr><td align=right><img src="/images/art.gif">日期</td>
+                    <td>
+                        <input type=text name="schdate" id="schdate" size=12 maxlength=10 class=c12border value="@tmpadate.ToString()">&nbsp;
+                        <img src="../images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                        <script type="text/javascript">
+                            cal.manageFields("f_btn", "schdate", "%Y/%m/%d");
+                        </script>
+                        <select name="schhour" id="schhour">
+                            @{
+                            string tmpi="";
+                            for (int i = 0; i <= 23; i++)
+                            {
+                                if (i <= 9)
+                                { tmpi = "0" + i.ToString();}
+                                else
+                                { tmpi = i.ToString(); } 
+                                <option value="@tmpi">@tmpi</option>}                   
+                             }
+                            </select>
+                        時
+                        <select name="schmin" id="schmin">
+                            @{
+                            for (int i = 0; i <= 45; i += 15)
+                            {
+                                if (i ==0)
+                                { tmpi = "0" + i.ToString(); }
+                                else
+                                { tmpi = i.ToString(); }
+                                <option value="@tmpi">@tmpi</option>}
+                            }
+                        </select>
+                        分
+                        ~
+                        <select name="schehour" id="schehour">
+                            @{
+                for (int i = 0; i <= 23; i++)
+                {
+                    if (i <= 9)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi">@tmpi</option>}
+                            }
+                        </select>
+
+                        時
+                        <select name="schemin" id="schemin">
+                            @{
+                for (int i = 0; i <= 45; i += 15)
+                {
+                    if (i == 0)
+                    { tmpi = "0" + i.ToString(); }
+                    else
+                    { tmpi = i.ToString(); }
+                    <option value="@tmpi">@tmpi</option>}
+                            }
+                        </select>
+                        分
+                    </td>
+                    </tr>
+                    <tr><td align=right>地點</td><td><input type=text name="schplace" id="schplace"  maxlength=100 size=50 class=c12border></td></tr>
+                    <tr><td align=right>附檔</td><td><input id="sfile" name="sfile" type="file" size=50 /> </td></tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "schedule", new { year1 = @year1, month1 = @month1, Mflag = @Mflag, qschdate = @qschdate }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                    //comconn.Close();
+                    //comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>

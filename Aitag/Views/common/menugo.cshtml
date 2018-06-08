@@ -1,0 +1,10 @@
+﻿@using MvcPaging
+@{
+   //  Layout = "~/Views/Shared/_nullLayout.cshtml";
+}
+<script>
+    $(window).load(function () {
+        $.blockUI({ message: '<table width=100% cellpadding=5 style="background:#FFFFFF;width:350px;height:60px;border:solid 2px #C0C0C0;filter:progid:DXImageTransform.Microsoft.Glow(color=#999999,strength=5)"><tr><td align=center style=font-size:16px;font-weight:bold;color:#882244;><img src=/images/process.gif align=absmiddle width=32 height=32>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;資料處理中，請稍候...</td></tr><tr><td align=center style=font-size:12px;font-weight:;color:#333333;>(請勿關閉視窗或離開本網頁)</td></tr></table>' });
+        @Html.Raw(ViewBag.js)
+    });
+</script>

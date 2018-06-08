@@ -1,0 +1,152 @@
+﻿@using MvcPaging
+@using System.Data.SqlClient
+@{
+   // Layout = "";
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_mainLayout.cshtml";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    SqlConnection erpconn = dbobj.get_conn("AitagBill_DBContext");
+    SqlConnection erpconn1 = dbobj.get_conn("AitagBill_DBContext");
+}
+<table cellpadding="10" cellspacing="0">
+<tr>
+    <td>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="25"><img src="/images/title_01.gif" width="25" height="37" /></td>
+                <td align="left" valign="middle" background="/images/title_03.gif">
+                    <table width="90%" border="0" cellpadding="3" cellspacing="0" class="title">
+                        <tr>
+                            <td valign="middle" style="font-size:12pt">單據待簽核作業</td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="109" background="/images/title_04.gif">&nbsp;</td>
+            </tr>
+        </table>
+
+        <table cellpadding="3" cellspacing="0" width="800" border="0">
+            <tr align="center"><td class="title_Name">單據別</td><td class="title_Name">本人申請中</td><td class="title_Name">他人待簽核</td></tr>
+            @{
+                string sql = "select * from docgroup where docorder is not null order by docorder";
+                string sql1 = "";
+                string ownstat = "", otherstat = "" , myurl = "" , otherurl = "";
+                SqlDataReader dr = dbobj.dbselect(comconn, sql);
+                while (dr.Read())
+                {
+                    ownstat = "0";
+                    otherstat = "0";    
+                    if (dr["docid"].ToString()=="A")
+                    {
+                        //出差自己的
+                        sql1 = "select isnull(count(*),0) as count1 from Battalog where blogstatus = '0' and empid = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(comconn1, sql1);
+                        //出差待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from Battalog where blogstatus = '0' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(comconn1, sql1);
+                        myurl = "/battalog/battalogqryList?sid=71&realsid=76&qblogstatus=0&qblogsdate=2016/1/1";
+                        otherurl = "/battalog/battacheckmainList?sid=71&realsid=74&qblogsdate=2016/1/1";
+                    }
+
+                    if (dr["docid"].ToString() == "B")
+                    {
+                        //請假自己的
+                        sql1 = "select isnull(count(*),0) as count1 from holidaylog where hlogstatus = '0' and empid = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(comconn1, sql1);
+                        //請假待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from holidaylog where hlogstatus = '0' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(comconn1, sql1);
+                        myurl = "/holidaylog/qry?sid=66&realsid=70&qhlogstatus=0&qhlogsdate=2016/1/1";
+                        otherurl = "/holidaylog/chk?sid=66&realsid=69&qhlogsdate=2016/1/1";
+                    }
+
+                    if (dr["docid"].ToString() == "Z")
+                    {
+                        //刷卡自己的
+                        sql1 = "select isnull(count(*),0) as count1 from cardlog where clogstatus = '0' and empid = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(comconn1, sql1);
+                        //刷卡待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from cardlog where clogstatus = '0' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(comconn1, sql1);
+                        myurl = "/cardlog/cardlogqryList?sid=150&realsid=154&qclogstatus=0&qclogsdate=2016/1/1";
+                        otherurl = "/cardlog/cardlogchkList?sid=150&realsid=153&qclogsdate=2016/1/1";
+                    }
+
+                    if (dr["docid"].ToString() == "H")
+                    {
+                        //銷假自己的
+                        sql1 = "select isnull(count(*),0) as count1 from delholidaylog where hdellogstatus = '0' and empid = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(comconn1, sql1);
+                        //銷假待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from delholidaylog where hdellogstatus = '0' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(comconn1, sql1);
+                        myurl = "/delholiday/logqryList?sid=458&realsid=462&qhdellogstatus=0";
+                        otherurl = "/delholiday/logcheckList?sid=458&realsid=461";
+                    }
+
+                    if (dr["docid"].ToString() == "P")
+                    {
+                        //付款自己的
+                        sql1 = "select isnull(count(*),0) as count1 from vend_contractinv where vctype = 'P' and vstatus in ('0','1') and ownman = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(erpconn1, sql1);
+                        //付款待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from vend_contractinv where vctype = 'P' and vstatus = '1' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(erpconn1, sql1);
+                        myurl = "/paybill/expenseperqry?sid=511&realsid=513&qvstatus=0";
+                        otherurl = "/paybill/expensechk?sid=510&realsid=512";
+                    }
+
+                    if (dr["docid"].ToString() == "S")
+                    {
+                        //委刊自己的
+                        sql1 = "select isnull(count(*),0) as count1 from purchase where pstatus = '0' and ownman = '" + Session["empid"] + "' and comid = '" + Session["comid"] + "'";
+                        ownstat = dbobj.get_dbvalue(erpconn1, sql1);
+                        //委刊待簽的
+                        sql1 = "select isnull(count(*),0) as count1 from purchase where pstatus = '0' and replace(rolestampid,'''','')='" + Session["rid"].ToString() + "'";
+                        otherstat = dbobj.get_dbvalue(erpconn1, sql1);
+
+                        myurl = "/purchase/list?sid=439&realsid=483";
+                        otherurl = "/purchase/chklist?sid=439&realsid=495";
+                    }
+                    <tr><td class="title_Con">@dr["doctitle"]</td><td align="center" class="title_Con"><a href="@(myurl)">@(ownstat)</a></td><td align="center" class="title_Con"><a href="@(otherurl)">@(otherstat)</a></td></tr>
+                }
+                dr.Close();
+                dr.Dispose();
+            }
+        </table>
+
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="25"><img src="/images/title_01.gif" width="25" height="37" /></td>
+                <td align="left" valign="middle" background="/images/title_03.gif">
+                    <table width="90%" border="0" cellpadding="3" cellspacing="0" class="title">
+                        <tr>
+                            <td valign="middle" style="font-size:12pt">公布欄</td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="109" background="/images/title_04.gif">&nbsp;</td>
+            </tr>
+        </table>
+
+        <table cellpadding="3" cellspacing="0" width="800" border="0">
+            <tr align="center"><td class="title_Name">標題</td><td class="title_Name">發布日期</td><td class="title_Name">發布人</td></tr>
+            @{
+                sql = "select * , (select uplink from sublevel1 where sid = maincontent.sid) as pssid from maincontent where mctype = '0' order by mdate desc";
+                dr = dbobj.dbselect(comconn, sql);
+                while (dr.Read())
+                {
+                    <tr><td class="title_Con" width="400"><a href="~/oa/maincontentview?mcid=@dr["mcid"]&sid=@dr["pssid"]&realsid=@dr["sid"]">@dr["mctitle"]</a></td><td align="center" class="title_Con">@dbobj.get_date(dr["mdate"].ToString(),"1")</td><td align="center" class="title_Con">@dbobj.get_name(comconn1, dr["ownman"].ToString())</td></tr>
+                }
+                dr.Close();
+                dr.Dispose();
+            }
+        </table>
+    </td>
+    <td>
+
+    </td>
+    </tr>
+    </table>

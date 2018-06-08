@@ -1,0 +1,14 @@
+﻿@{
+    string cid = string.Empty;
+
+    if (ViewBag.cid != null)
+    {
+        cid = ViewBag.cid as string;
+    }
+    
+}
+
+@if (!string.IsNullOrWhiteSpace(cid))
+{
+    @Html.Hidden("cid", cid);
+}

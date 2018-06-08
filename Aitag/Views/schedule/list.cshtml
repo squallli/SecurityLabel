@@ -1,0 +1,232 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.schedule>
+@using System.Data.SqlClient
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    string weblink = System.Configuration.ConfigurationManager.AppSettings["weblink"].ToString();
+    
+
+    string Mflag = ViewBag.Mflag;
+    int nextyear = 0;
+    if (Mflag == "M")
+    {
+                string sdate ="",edate="";    
+                edate = ViewBag.yy +"/" + ViewBag.mm +"/1";
+                if(ViewBag.mm=="12")
+                {
+                   sdate= (int.Parse(ViewBag.yy) + 1) +"/1/1";
+                }
+                else
+                {
+                  sdate= ViewBag.yy +"/"+(int.Parse(ViewBag.mm)+1) + "/1";
+                }
+
+ 
+    
+                DateTime dt1 = System.Convert.ToDateTime(edate.ToString());
+                DateTime dt2 = System.Convert.ToDateTime(sdate.ToString());    
+                TimeSpan span = dt2.Subtract(dt1);
+                int daycount = span.Days;
+                ViewBag.daycount = daycount;
+                nextyear= int.Parse(DateTime.Now.Year.ToString())+1;
+    }
+    string nowmdate = "";    
+    string tmpupdate = "";
+    string tmpnextdate = "";
+    if (ViewBag.mdate != "")
+    { nowmdate = System.Convert.ToDateTime(DateTime.Now).ToString("yyyy/MM/dd"); }
+
+    string qschdate = "";
+    if (!string.IsNullOrWhiteSpace(Request["qschdate"]))
+    { qschdate = Request["qschdate"]; }
+    string qcomid = ViewBag.qcomid, qdptid = ViewBag.qdptid, qschowner = ViewBag.qschowner;
+    //不可以使用string.IsNullOrWhiteSpace , 第一次預設session 20161215 Mark
+
+    if (qcomid == null)
+    {
+        qcomid = Session["comid"].ToString();
+    }
+
+    if (qdptid == null)
+    {
+        qdptid = Session["dptid"].ToString();
+    }
+
+    if (qschowner == null)
+    {
+        qschowner = Session["empid"].ToString();
+    }
+        
+    
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function gosubmitform(tmpgo, tmptype, tmpadate) {
+        switch (tmpgo) {
+            case "A":
+                FormList.action = "/schedule/Add?Mflag=@Html.Raw(Mflag)&schtype=" + tmptype + "&tmpadate=" + tmpadate;
+                break;
+            case "E":
+                FormList.action = "/schedule/Edit?Mflag=@Html.Raw(Mflag)&schtype=" + tmptype + "&schid=" + tmpadate;
+                break;
+            case "M":
+                FormList.action = "/schedule/List?Mflag=" + tmpgo;
+                break;
+            case "W":
+                FormList.qschdate.value = tmpadate;
+                FormList.action = "/schedule/List?Mflag=" + tmpgo;
+                break;
+                //case "D":
+                //    if (confirm('確定刪除勾選資料??') == 1)
+                //    {
+                //        FormList.action = "/schedule/Delete?schtype=" + tmptype + "&schid=" + tmpadate;
+                //        FormList.submit();
+                //    }
+                //    break;
+
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+    $(function () {
+        var str = "請選擇";
+        str = encodeURIComponent(str);
+        $('#qcomid').load("@weblink/Ajax/gschowner?args=qcomid:@qcomid&str=" + str);
+        $('#qdptid').load("@weblink/Ajax/gschowner?args=qdptid:@qdptid,qcomid:@qcomid&str=" + str);
+        $('#qschowner').load("@weblink/Ajax/gschowner?args=qschowner:@qschowner,qcomid:@qcomid,qdptid:@qdptid&str=" + str);
+
+
+        $("#qcomid").change(function () {
+            var tmpval = $("#qcomid").val();
+            if (tmpval != "") {
+                $('#qschowner').html("<option selected>請選擇</option>");
+                $('#qdptid').load("@weblink/Ajax/gschowner?args=qdptid:,qcomid:" + tmpval + "&str=" + str);
+            }
+        });
+        $("#qdptid").change(function () {
+            var tmpval1 = $("#qcomid").val();
+            var tmpval2 = $("#qdptid").val();
+            if (tmpval1 != "" && tmpval2 != "") {
+                $('#qschowner').load("@weblink/Ajax/gschowner?args=qschowner:,qcomid:" + tmpval1 + ",qdptid:" + tmpval2 + "&str=" + str);
+            }
+        });
+    });
+
+
+</script>
+
+@using (Html.BeginForm("List", "schedule", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return gosubmitform('LQ','','')" }))
+{
+    <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+    <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">  
+    <input type="hidden" id="Mflag" name="Mflag" value="@Mflag">
+    <input type="hidden" id="qschdate" name="qschdate" value="@qschdate">
+      <input type="button" class="abutton" value="週顯示模式" onclick="gosubmitform('W', '', '')">
+    <input type="button" class="abutton" value="月顯示模式" onclick="gosubmitform('M', '', '')">
+    if (Mflag == "W")
+      {
+
+          {
+              tmpupdate = System.Convert.ToDateTime(ViewBag.mdate.ToString()).AddDays(-7).ToString("yyyy/MM/dd");
+              tmpnextdate = System.Convert.ToDateTime(ViewBag.mdate.ToString()).AddDays(7).ToString("yyyy/MM/dd");
+          }
+        
+              
+       
+      }
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+       
+            @if (Mflag == "M")
+            { 
+            <tr valign=top>
+                <td align="center" colspan="2">   
+                    <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                        <tr>
+                            <td>
+                                西元：
+                        <select name="year1" id="year1">
+                        @for (int i = 2016; i <= nextyear; i++)
+                         {
+                             <option value="@i" @if (int.Parse(ViewBag.yy) == i)
+                           { @("selected") ; }>@i</option>}   
+                        </select>年
+					    <select name="month1" id="month1" onchange="return gosubmitform('LQ1','', '')">
+                            @for (int m = 1; m <= 12; m++)
+                         {
+                            <option value="@m" @if (int.Parse(ViewBag.mm) == m)
+                           { @("selected") ; }>@m</option>}   
+                        </select>月
+                             
+                                標題/內容： <input type="text" id="qschtitle" name="qschtitle" value="@ViewBag.qschtitle" size="20">
+                                公司/部門：
+                                <select name="qcomid" id="qcomid" class='c12border'>
+                                    <option selected>請選擇</option>
+                                </select>&#160;
+                                <select name="qdptid" id="qdptid" class='c12border'>
+                                    <option selected>請選擇</option>
+                                </select>&#160;員工：
+                                <select name="qschowner" id="qschowner" class='c12border'>
+                                    <option selected>請選擇</option>
+                                </select>
+
+                                <input id="Submit1" type="submit" value="查詢" class="abutton" />   
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            }
+            else
+            {
+                <tr valign=top>
+                    <td align="center" colspan="2">
+                        <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                            <tr>
+                                <td>
+                                    <input type="button" class="abutton" value="上一週" onclick="gosubmitform('W', '', '@tmpupdate')">
+                                    <input type="button" class="abutton" value="回本週" onclick="gosubmitform('W', '', '@nowmdate')">
+                                    <input type="button" class="abutton" value="下一週" onclick="gosubmitform('W', '', '@tmpnextdate')">
+                                    公司/部門：
+                                    <select name="qcomid" id="qcomid" class='c12border'>
+                                        <option selected>請選擇</option>
+                                    </select>&#160;
+                                    <select name="qdptid" id="qdptid" class='c12border'>
+                                        <option selected>請選擇</option>
+                                    </select>&#160;員工：
+                                    <select name="qschowner" id="qschowner" class='c12border'>
+                                        <option selected>請選擇</option>
+                                    </select>
+                                    標題/內容： <input type="text" id="qschtitle" name="qschtitle" value="@ViewBag.qschtitle" size="20">
+                                    <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            }
+            
+        <tr valign=top>
+            <td align="center" colspan="2">
+              @if(Mflag == "W")
+              {   @RenderPage("~/Views/schedule/Weekrschedule.cshtml");}
+              else
+              {   @RenderPage("~/Views/schedule/perschedule.cshtml");}
+            </td>
+        </tr>
+        
+    </table>
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,136 @@
+﻿@model List<Aitag.Models.empfunction>
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#funorder").keyup(function (e) {
+            $("#funorder").val($("#funorder").val().replace(/[^0-9]/g, ''));
+
+        });
+
+        $("#funrowcount").keyup(function (e) {
+            $("#funrowcount").val($("#funrowcount").val().replace(/[^0-9]/g, ''));
+
+        });
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#funorder").val() == "")
+            { errmsg = "請輸入順序\n"; }
+
+            if ($("#funrowcount").val() == "")
+            { errmsg += "請輸入呈現筆數\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("empEdit", "empfunction", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                foreach (var item in Model) { 
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qempdid" name="qempdid" value="@ViewBag.qempdid">
+                <input type="hidden" id="qfunid" name="qfunid" value="@ViewBag.qfunid">
+                <input type="hidden" id="empdid" name="empdid" value="@item.empdid">
+                <input type="hidden" id="funid" name="funid" value="@item.funid">
+
+
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="2" align="left">資料修改</td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 個人化挑選功能呈現</td>
+                        <td align="left">
+                          
+                            @{
+                    string selectsql = "select chkitem from checkcode where chkclass ='08' and chkcode ='" + @item.funid + "'";
+                            }
+                            @Html.Raw(dbobj.get_dbvalue(comconn, selectsql))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 位置</td>
+                        <td align="left">
+                          @{
+                              string[] dataList = { "n", "m", "r" };
+                              string[] wordList = { "無", "中間", "右邊" };
+                              string tmpstr = null;
+                              string tmpwrd = null;
+                            
+                              for (int i = 0; i < 3; i++)
+                              {
+
+                                  if (@item.funposition == dataList[i])
+                                  {
+                                      tmpwrd = wordList[i];
+                                      tmpstr = tmpstr +"<input type=radio name='funposition' value='" + dataList[i] + "' checked> " + tmpwrd + " \n\n";
+                                  }
+                                  else
+                                  {
+                                      tmpwrd = wordList[i];
+                                      tmpstr = tmpstr +"<input type=radio name='funposition' value='" + dataList[i] + "'>" + tmpwrd + "  \n\n";
+                                  }
+                              }  
+                                @Html.Raw(tmpstr)
+                          }
+                          
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 順序</td>
+                        <td>
+                            <input type="text" maxlength="3" class="c12border" id="funorder" name="funorder" size="10" value="@item.funorder" /> <span class="field-validation-error">請輸入數字</span>
+                        </td>
+                     
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 呈現筆數</td>
+                        <td>
+                            <input type="text" maxlength="3" class="c12border" id="funrowcount" name="funrowcount" size="10" value="@item.funrowcount" /> <span class="field-validation-error">請輸入數字</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            <input id="btnback" class="abutton" name="btnback" type="button" value="回上頁" onclick="history.go(-1)" />
+
+                        </td>
+                    </tr>
+                </table>
+                }
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

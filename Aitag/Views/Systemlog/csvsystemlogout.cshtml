@@ -1,0 +1,16 @@
+﻿@{
+    Layout = "";
+
+    HttpContext.Current.Response.Clear();
+    HttpContext.Current.Response.Charset = "";
+    HttpContext.Current.Response.ContentType = "application/vnd.ms-csv";
+    string strFileName = "systemlogfile" + ".xls";
+    HttpContext.Current.Response.AddHeader("Content-Disposition", "inline;filename=" + strFileName);
+
+    HttpContext.Current.Response.Write(ViewBag.Excel);
+    HttpContext.Current.Response.End();
+    HttpContext.Current.Response.Flush();
+
+}
+
+

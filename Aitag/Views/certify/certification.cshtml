@@ -1,0 +1,234 @@
+﻿@using System.Data.SqlClient
+@{
+    Layout = "";
+
+    string barcode = Request["barcode"].ToString();
+    string randno = Request["randno"].ToString();
+    string codno = Request["codno"].ToString();
+    string codid = Request["codid"].ToString();
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=11.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10.000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <title>AITag-認證成功畫面</title>
+    <link href="/frontcss/style.css" rel="stylesheet" type="text/css">
+    <script src="~/Scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="/frontjs/html5.js"></script>
+    <script src="/frontjs/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <script>
+        var barcode = "@barcode"
+        $(window).load(function () {
+            jQuery.support.cors = true;
+            $.ajax({
+                url: 'http://security.imstag.com/csfa/api/Tag/GetImage',
+                data: {
+                    token: '70A661300840B50F835F6CB3BCC600F1',
+                    serial: barcode
+                },
+                type: 'POST',
+                dataType: "json",
+                cache: false,
+
+            success: function (msg) {
+                $('#no1').html(msg.SpecialIx)
+                    $('#tagImg').attr('src', 'data:image/png;base64,' + msg.Base64Image);
+                },
+
+                error: function (xhr, ajaxOpt, err) {
+                    alert('error');
+                }
+            });
+
+        });
+    </script>
+    <style type="text/css">
+        ul {
+            list-style: none;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!--header-->
+    <div class="header">
+        <div class="container">
+            <div id="TOP"><img src="/frontimages/top.png" title="回到上面" /></div>
+            <div class="banner"><img src="/frontimages/banner2.jpg" alt="banner" border="0" /></div>
+            <div class="logo"><a href="index.html"><img src="/frontimages/logo.png" alt="LOGO" border="0" /></a></div>
+        </div>
+    </div>
+    <!--header-end-->
+    @*<div class="topmenu">
+        <ul>
+        <li><a href="Application.html">申請認證標章</a></li>
+        <li><a href="History.html">查詢歷史紀錄</a></li>
+        <li><a href="Certification.html">認證標章</a></li>
+        <li><a href="error.html">認證成功失敗</a></li>
+        <li><a href="login.html">登出</a></li>
+        </ul>
+        </div>*@
+
+    <!--article-->
+    
+    <div class="article">
+        <div class="container">
+           
+            <div class="maintitle"><h1>標章認證</h1></div>
+            <div>
+                   <table width="100%" border="0" cellspacing="0" cellpadding="0" class=" table01">
+                    <tr align="left">
+                        <td width="8%"><img id="tagImg1" src="~/Images/Aitag.jpg" alt="防偽" border="0" /></td>
+                        <td><strong><font style="FONT-SIZE: 25px; color: #228B22; ">池上米註冊證明標章</font></strong></td>
+                    </tr>
+                    <tr align="left">
+                        <td colspan="2">           
+                            <font style="FONT-SIZE: 12pt; color: #228B22; ">認明池上米認證標章，讓您吃得安心吃得健康<br></font>
+                            <font style="FONT-SIZE: 8pt; color: #228B22; ">池上鄉公所為您把關在地優質池上米!</font>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="Certificationbox">
+                <div class="box01">
+                    您所查詢的驗證號碼：<br>@(barcode)<br>左列第<span id="no1">3</span>位數字 ，為變色變體字
+                </div>
+                        <div class="img"><img id="tagImg" src="~/Images/accent.png" alt="標章認證" border="0" /><br><br>
+                        @{
+                            string sqlstr1 = "select * from looknumber where barcode = '" + barcode.Trim() + "'";
+                            SqlCommand cmd1 = new SqlCommand(sqlstr1, comconn2);
+                            SqlDataReader dr2 = cmd1.ExecuteReader();
+                            dr2.Read();
+                        }               
+                            <div class="box02">查詢次數@(dr2["lookno"].ToString())次<br>
+                            最後查詢時間為@(dr2["bmoddate"].ToString())</div>
+                        </div>
+                        @{
+                            dr2.Close();
+                            dr2.Dispose();
+                            comconn2.Close();
+                            comconn2.Dispose();
+                        }
+                        <div class="info">
+                            <h2>資訊：</h2>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                @{
+                                    string sqlstr = "select *  from  certifyorder where codno = " + codno + "";
+                                    SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+                                    SqlDataReader dr = cmd.ExecuteReader();
+                                    dr.Read();
+
+
+                                    <tr>
+                                        <td><strong>產地資訊</strong></td>
+                                        <td>
+                                            @{
+                                                 sqlstr1 = "select *  from  viewcertifycheckdet where farmerno = '" + dr["farmerno"].ToString() + "' and cstatus in ('05','06')";
+                                                 cmd1 = new SqlCommand(sqlstr1, comconn1);
+                                                SqlDataReader dr1 = cmd1.ExecuteReader();
+                                                while (dr1.Read())
+                                                {
+                                                    <span><strong>地段號：</strong>@dr1["ltitle"].ToString()-@dr1["landno1"]@*-@dr1["landno2"]*@</span><br>
+                                                }
+                                                dr1.Close();
+                                                dr1.Dispose();
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>申請人</strong></td>
+                                        <td>
+                                            @{string applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select farmername from farmer where farmerno = '" + dr["farmerno"].ToString() + "'");}
+                                            @applicant
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>受委託廠商</strong></td>
+                                        <td>
+                                            @{applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select farmername from farmer where farmerno = '" + dr["vendno"].ToString() + "'");}
+                                            @applicant
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>農戶地址</strong></td>
+                                        <td>
+                                            @{applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select faddr from farmer where farmerno = '" + dr["farmerno"].ToString() + "'");}
+                                            @applicant
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>申請註冊標章</strong></td>
+                                        <td>@dr["certime"].ToString()</td>
+                                    </tr>
+                                    dr.Close();
+                                    dr.Dispose();
+                                    comconn.Close();
+                                    comconn.Dispose();
+                                    comconn1.Close();
+                                    comconn1.Dispose();
+                                }
+                            </table>
+                        </div>
+                    </div>
+           
+            <div>
+                <strong>
+                    <font style="FONT-SIZE: 15pt; color: #A73710; ">
+                        池上米的四大保證<br>&nbsp;
+                    </font>
+                </strong>
+                
+                <ul>
+                    <li>
+                        一、產地保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        台灣全國水稻面積約17萬公頃，而台東縣池上鄉水稻面積僅1,500公頃，每期稻穀產量不到全國產量的1%。所以池上鄉公所為避免不肖業者以「假冒」方式仿冒池上米欺騙消費者，於94年11月30日推出「池上米®」的地理認證標章。這是本標章第一項的保證 : 產自池上鄉。
+                    </li><br>
+                   
+                    <li>
+                        二、產量控管保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一包經過池上鄉公所認證的池上米皆「以流水編號控管數量」，從編號可控管認證數量與產量相符，也可以查驗稻米原料來源。
+                    </li><br>
+                    
+                    <li>
+                        三、品質保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一包經過池上鄉公所認證的池上米皆符合CNS國家稻米標章及食味值規範(65分以上)，所以保證每一包通過認證的池上米都有優良的品質。
+                    </li><br>
+                    
+                    <li>
+                        四、安全保證<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        每一塊生產池上米的農地在收割前，即要由池上鄉公所派員抽樣檢驗農藥殘留，通過安全標準者才核發安全證明，農民才可以收割入倉。
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--article-end-->
+    <!--footer-->
+    <div class="footer">
+        <div class="container">Copyright©2017 All rights reserved.<br>驗證系統版權所有©安品數據股份有限公司</div>
+    </div>
+    <!--footer-end-->
+
+    <script type="text/javascript" src="/frontjs/jquery.min.js"></script>
+    <script type="text/javascript" src="/frontjs/top.js"></script>
+
+</body>
+</html>

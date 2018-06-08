@@ -1,0 +1,128 @@
+﻿@model Aitag.Models.billsubject
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";    
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext"); 
+    System.Data.SqlClient.SqlConnection erpconn = dbobj.get_conn("AitagBill_DBContext");  
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            if ($("#comclass").val() == "")
+            { errmsg = "請選擇類別代碼\n"; }
+
+            if ($("#itemcode").val() == "")
+            { errmsg = "請選擇歸帳代號\n"; }
+
+            if ($("#subjecttitle").val() == "")
+            { errmsg += "請選擇歸帳名稱\n"; }
+
+            if ($("#subjectcode").val() == "")
+            { errmsg = "請選擇新會計科目\n"; }
+
+   
+    //        if ($("#oldsubjectcode").val() == "")
+     //       { errmsg = "請選擇原會計科目\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+ <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td align="center" width=100%>      
+            @using (Html.BeginForm("Add", "billsubject", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            { 
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">                
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcomclass" name="qcomclass" value="@ViewBag.qcomclass">
+                <input type="hidden" id="qitemcode" name="qitemcode" value="@ViewBag.qitemcode">
+                <input type="hidden" id="qsubjecttitle" name="qsubjecttitle" value="@ViewBag.qsubjecttitle">
+<table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+    <tr>
+        <td class="headfont" colspan="2" align="left">資料新增</td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 類別</td>
+        <td align="left">
+           @Html.Raw(dbobj.get_selectobj(comconn, "select chkcode,chkitem from checkcode where chkclass='98'", "comclass", ViewBag.qcomclass, "1"))
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 歸帳代碼</td>
+        <td align="left">
+            <input type="text" maxlength="30" class="c12border" id="itemcode" name="itemcode" style="width:100px;" value="@Model.itemcode" />
+            
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 歸帳名稱</td>
+        <td align="left">
+            <input type="text" maxlength="2" class="c12border" id="subjecttitle" name="subjecttitle" style="width:250px;" value="@Model.subjecttitle" />
+            
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 新會計科目</td>
+        <td align="left">
+            <input type="text" maxlength="30" class="c12border" id="subjectcode" name="subjectcode" style="width:150px;" value="@Model.subjectcode" />
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><img src="~/images/art.gif" border="0" /> 原會計科目</td>
+        <td align="left">
+            <input type="text" maxlength="30" class="c12border" id="oldsubjectcode" name="oldsubjectcode" style="width:150px;" value="@Model.oldsubjectcode" />
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> 工時單價</td>
+        <td align="left">
+            <input type="text" maxlength="30" class="c12border" id="hourcost" name="hourcost" style="width:100px;" value="0" /> 元
+        </td>
+    </tr>
+    <tr>
+        <td align="right"> 是否有AC</td>
+        <td align="left">
+            <input type="radio" maxlength="30" class="c12border" id="acget" name="acget" value="1" /> 是
+            <input type="radio" maxlength="30" class="c12border" id="acget" name="acget" value="0" /> 否
+        </td>
+    </tr>
+    <tr >
+        <td align="center" colspan="2" class="footerfont">
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+            @Html.ActionLink("回上頁", "List", "billsubject", new { }, new { @class = "abutton" })
+
+        </td>
+    </tr>
+</table>
+                comconn.Close();
+                comconn.Dispose();
+                erpconn.Close();
+                erpconn.Dispose();
+            }
+                       
+   
+</td>
+</tr>
+</table>
+           
+    
+

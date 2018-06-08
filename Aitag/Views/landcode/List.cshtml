@@ -1,0 +1,150 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.landcode>
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+   // System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/landcode/List";
+                break;
+            case "A":
+                FormList.action = "/landcode/Add";
+                break;
+            case "E":
+                FormList.action = "/landcode/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/landcode/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("List", "landcode", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" })) 
+{
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr valign=top>
+        <td align="center" colspan="2">          
+            <input type="hidden" id="page" name="page" value="@ViewBag.page">
+            <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+            <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            @*村落：
+                            @{string Selectstatus = "select vcode,vtitle from village order by vcode";
+                              Selectstatus = dbobj.get_selectobj(comconn, Selectstatus, "qvcode", ViewBag.qvcode, "1");}@Html.Raw(Selectstatus)&nbsp;*@
+                            段名代碼：<input type="text" name="qlcode" id="qlcode" value="@ViewBag.qlcode">
+                            段名名稱：<input type="text" name="qltitle" id="qltitle" value="@ViewBag.qltitle">
+                            
+
+                                <input id="Submit1" type="submit" value="查詢" class="abutton" />
+</td>
+                    </tr>
+                </table>          
+        </td>
+    </tr>
+    <tr class="pagestyle">
+        <td align="left" class="buttontd">         
+            <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript:if(confirm('確定刪除勾選資料??')==1) {return submitform('D',@ViewBag.page, 0,'');}" />     
+            <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')"/>   
+        </td>
+        <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+    </tr> 
+    <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                    <!--th width="30">順序</th-->
+                    @*<th width="30%">
+                        村落
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('vcode', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('vcode', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>*@
+                    <th width="30%">段名代碼
+                    @if (@ViewBag.orderdata1 == "asc")
+                    {<a href="#" onclick="sortform('lcode', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                    else
+                    {<a href="#" onclick="sortform('lcode', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th>
+                        段名名稱
+                        @if (@ViewBag.orderdata1 == "asc")
+                        {<a href="#" onclick="sortform('ltitle', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('ltitle', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="40">修改</th>
+                </tr>
+           
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="colstd" align="center">
+                            <input type="checkbox" name="cdel" id="cdel" value="@item.lcode">
+                        </td>
+                        @*<td class="colstd">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select vtitle from village where vcode = '" + item.vcode + "'");}
+                            @dbtitle
+                        </td>*@
+                        <td class="colstd">
+                            @item.lcode
+                        </td>
+                        <td class="colstd">
+                            @item.ltitle
+                        </td>
+                        <td class="colstd"><input id="ebut" type="button" value="修改" class="abutton" onclick="return submitform('E',@ViewBag.page, 'lcode=@item.lcode')" /> </td>
+                       
+                    </tr>
+                }
+                @{
+                comconn.Close();
+                comconn.Dispose();
+               // comconn1.Close();
+               // comconn1.Dispose();
+                }
+            </table>
+            @if (Model.TotalItemCount < 1)
+            {
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+            }
+        </td>
+    </tr>
+<tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+</table>
+}
+
+
+           
+
+
+
+          
+

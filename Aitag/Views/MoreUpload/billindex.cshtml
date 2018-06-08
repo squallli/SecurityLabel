@@ -1,0 +1,216 @@
+﻿@{
+Layout = "";
+}
+<!DOCTYPE HTML>
+<!--
+/*
+ * jQuery File Upload Plugin Basic Demo
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+<!-- Force latest IE rendering engine or ChromeFrame if installed -->
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+<meta charset="utf-8">
+<title>批次上傳功能</title>
+<meta name="">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap styles -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<!-- Generic page styles -->
+    <link rel="stylesheet" href="~/css/MoreUpload/css/style.css">
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="~/css/MoreUpload/css/jquery.fileupload.css">
+</head>
+<body bgcolor=#ffffcc onload="//startcheck();">
+<div id="filDB" style="display:none" ></div>
+<div class="container" style="margin-top:-40px; ">
+<!--     <h1>jQuery File Upload Demo</h1>
+    <br> -->
+    <!-- fileinput-button span 用樣式文件輸入字段作為按鈕 -->
+    <span class="btn btn-success fileinput-button">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span> 請挑選檔案 ..</span>
+        <!-- 文件輸入字段作為目標文件上傳的插件 -->
+        <input id="fileupload" type="file" name="aimg" multiple style="background:#ffcccc" />
+	</span>
+    <button type="submit" id="start" class="btn btn-primary start">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>批次上傳</span>
+                </button>
+    <br>
+    <br>
+    <!-- 單個進度條 -->
+    <!-- <div id="progress2" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div> -->
+    <!-- 總進度條 -->
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div>
+    <!-- 上傳的文件的容器 -->
+    <div id="files" class="files"></div>
+    <br>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="~/js/MoreUpload/js/vendor/jquery.ui.widget.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+    <script src="~/js/MoreUpload/js/jquery.iframe-transport.js"></script>
+<!-- The basic File Upload plugin -->
+    <script src="~/js/MoreUpload/js/jquery.fileupload.js"></script>
+<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script>
+/*jslint unparam: true */
+/*global window, $ */
+var vname = "";
+var ino = 0;
+var no1 = 0;
+    $(function () {
+        'use strict';
+        // Change this to the location of your server-side upload handler:
+        var url = window.location.hostname === 'blueimp.github.io' ?
+                    '//jquery-file-upload.appspot.com/' : 'server/php/';
+
+
+        url = '/MoreUpload/fileupload';
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'json',
+
+            add: function (e, data) {
+                $.each(data.files, function (index, file) {
+                    // alert('Added file: ' + index + " -- " + file.name);
+                    $('<p/>').text(file.name).appendTo('#files');
+                });
+
+                $("#start").click(function () {
+                    var jqXHR = data.submit();
+                });
+            },
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    //Mark 20160713
+                    //alert('test');
+                    ino++;
+                    var narr = file.name.split(".");
+                    var tmp1 = Math.floor(Date.now() / 1000);
+                    var vname = tmp1 + ino + '.' + narr[1];
+                    //$("#vfilename").val(vname);
+
+                    $("#files p").each(function () {
+                        //  alert($(this).text());
+                        // $(this).text($(this).text() + "完成");
+                        if ($(this).text() == file.name) {
+                            if (file.fileERROR == "") {
+                                $(this).text($(this).text() + "........." + "完成");
+
+
+                                @{
+                                string setloadvalue = "cfilename: file.name , vfilename: vname ,cfilesize: file.size";
+                             //    if(Request["qmcparentid"].ToString() != ""){
+                                setloadvalue = setloadvalue + ",billtype: '" + Request["billtype"].ToString() + "'";
+                             //    }
+                                 
+                              //   if(Request["mcid"].ToString() != ""){
+                                setloadvalue = setloadvalue + ",vcno: '" + Request["vcno"].ToString() + "'";
+                              //   }
+							
+							  //   if(Request["realsid"].ToString() != ""){
+                                    setloadvalue = setloadvalue + ",realsid: '" + Request["realsid"].ToString() + "'";
+                              //   }
+							
+							                                   
+                            }
+
+                                $("#filDB").load("/MoreUpload/billfileuploadDB", {@Html.Raw(setloadvalue) }, function () {
+
+                                    var tableID = parent.document.getElementById('showzone');
+
+                                    var fileNAME = "<a href='/upload/" + file.name + "' target='_blank' class='abutton'>" + file.name + "</a>";
+
+                                    var filesize = file.size / 1000;
+                                    var filesizestr = filesize.toString()
+                                    filesize = "<font color=cc3322><b>" + filesizestr.substring(0, 5) + "K</b>Bytes</font>&nbsp;";
+                                    no1++;
+                                    var tdTextNode = [no1,
+                                   // "<input type=checkbox name='chkdel' value='cupid'>", 
+                                    fileNAME,
+                                    filesize];
+                                    fun_insertBefore(tableID, tdTextNode);
+                                });
+
+
+                            } else {
+                                $(this).text($(this).text() + "中斷" + file.fileERROR);
+                            }
+                        }
+                    });
+                });
+            },
+            progress: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress2 .progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
+
+</script>
+</body>
+</html>
+<script type="text/javascript">
+    function fun_insertBefore(tbID,tdTextNode) {
+  //var tbID = document.getElementById("tbID");
+  var trID = tbID.getElementsByTagName('tr');
+  var num = trID.length
+  //tr
+  var y = document.createElement("TR");
+  tbID.appendChild(y);
+  
+  //alert(tdTextNode.length);
+  //td
+  for (i = 0; i < tdTextNode.length; i++) { 
+    var z = document.createElement("TD");
+    // var t = document.createTextNode(tdTextNode[i]);
+    // z.appendChild(t);
+    z.innerHTML=tdTextNode[i]
+    if(i==0){
+        z.style.textAlign = "center";
+    }
+    trID[num].appendChild(z)
+}
+  // alert(trID.length);
+}
+var tm = 0;
+function startcheck(){
+   tm = setInterval("getval()",1000);
+}
+
+function getval(){
+
+            var mcid1 = parent.document.getElementById('mcid');
+        	mcid1.value = $("#filDB").text();
+			if(mcid1.value!="")
+			clearInterval(tm)
+						
+}
+</script>

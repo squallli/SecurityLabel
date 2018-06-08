@@ -1,0 +1,135 @@
+﻿@model MvcPaging.IPagedList<Aitag.Models.employee>
+@using MvcPaging
+@{
+    ViewBag.Title = "chooseemployee2";
+    Layout = "";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+
+    string aaa5 = "true";
+}
+<link rel="stylesheet" type="text/css" href="~/css/erpcss.css" />
+<link rel="stylesheet" type="text/css" href="~/css/leftmenu.css" />
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+<script src="~/Scripts/jquery-2.1.4.js"></script>
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/cardreallog/List";
+                break;
+            case "A":
+                FormList.action = "/cardreallog/Add";
+                break;
+            case "E":
+                FormList.action = "/cardreallog/Edit?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/cardreallog/Delete";
+                break;
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+
+    }
+    function radio_onclick(empid, empname, dptid, dptidname, cardno) {
+        $("input[name='empid']", opener.document).val(empid);
+        $("input[name='empname']", opener.document).val(empname);
+        $("input[name='dptid']", opener.document).val(dptid);
+        $("input[name='dptidname']", opener.document).val(dptidname);
+        $("input[name='cardno']", opener.document).val(cardno);
+        //self.opener.document.FormAdd.empid.value = empid;
+        //self.opener.document.FormAdd.empname.value = empname;
+        //self.opener.document.FormAdd.dptid.value = dptid;
+        //self.opener.document.FormAdd.dptidname.value = dptidname;
+        window.close()
+    }
+
+</script>
+@Html.Raw(ViewBag.DateEx)
+@using (Html.BeginForm("chooseemployee2", "openwin", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" }))
+{
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                @*
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                *@
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            部門：@{string Selectqdptid = "select dptid,dpttitle from department where comid='" + (string)Session["comid"] + "' order by dptid";
+                                 Selectqdptid = dbobj.get_selectobj(comconn, Selectqdptid, "qdptid", ViewBag.qdptid, "1");}@Html.Raw(Selectqdptid)&nbsp;
+                            申請人：<input type="text" name="qempname" id="qempname" value="@ViewBag.qempname">
+                            
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="pagestyle">
+            @*
+    <td align="left" class="buttontd">
+        <input id="dbut" type="button" value="刪除" class="abutton" onclick="return submitform('D',@ViewBag.page, 0,'')" />
+        <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',@ViewBag.page, 0,'')" />
+    </td>*@
+            <td align="left">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td>
+        </tr>
+        <tr valign=top>
+            <td align="center" colspan="2">
+                <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                    <tr>
+                        <th width=3%>&nbsp;</th>
+                        <th width=120>部門</th>
+                        <th width=120>姓名</th>
+                    </tr>
+                    @if (Model.TotalItemCount < 1)
+                    {
+                        @Html.Raw("<font color='#cc3322'>查詢無資料!!</font>");
+                    }
+                    @foreach (var item in Model)
+                    {
+                        string dptidname = "select dpttitle from Department where dptid='" + item.empworkdepid + "' and comid='" + (string)Session["comid"] + "'";
+                        dptidname = dbobj.get_dbvalue(comconn, dptidname);
+                        
+                        <tr>
+                            <td class="colstd" align="center">
+                                <input type=radio id=radio1 name=radio1 onclick="radio_onclick('@item.empid', '@item.empname', '@item.empworkdepid', '@dptidname', '@item.cardno');">
+                            </td>
+                            <td class="colstd">
+                                @dptidname
+                            </td>
+                            <td class="colstd">
+                                @item.empname
+                            </td>
+                        </tr>
+                    }
+                    @{
+                    comconn.Close();
+                    comconn.Dispose();
+                    }
+                </table>
+
+            </td>
+        </tr>
+        <tr class="pagestyle"><td align="left" colspan="2">@Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)</td></tr>
+    </table>
+}
+
+
+
+
+
+
+
+

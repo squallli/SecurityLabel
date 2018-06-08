@@ -1,0 +1,26 @@
+#menu_list .container .menuTitle {
+	margin: 5px 0px;
+	padding: 10px;
+	color: #fff;
+	font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	background-color: #ff811a;
+	background: linear-gradient(#f58a1e 50%, #f16120 100%);
+	cursor: pointer;
+	font-weight:bold;
+	border-bottom: 2px solid #ffda81;
+}
+#menu_list .container .menuContent {font-family: "微軟正黑體", "新細明體", "細明體",Arial, Helvetica, sans-serif; background-color: rgb(255, 255, 255);}
+#menu_list .container .menuContent ul li .tfont {
+	background-position: left center;
+	padding-left: 15px;
+	margin-left: 5px;
+	background-image: url(../images/menu_icon.png);
+	background-repeat: no-repeat;
+}
+#menu_list .container .menuContent ul{  margin-top: 5px;list-style: none;}
+#menu_list .container .menuContent ul li{ margin-left:-30px;}
+#menu_list .container .menuContent ul li .tfont a {
+	color: rgb(18, 112, 200); line-height: 200%; font-size: 14px; text-decoration: none; list-style-type: disc; list-style-position: outside;
+}
+#menu_list .container .menuContent ul li .tfont:hover { text-decoration:underline;}

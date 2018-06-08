@@ -1,0 +1,421 @@
+﻿@using System.Data.SqlClient
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string orderdata = "", orderdata1 = "";
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+
+    orderdata = Request["orderdata"] ;
+    orderdata1 =  Request["orderdata1"] ;
+    
+    if (string.IsNullOrWhiteSpace(orderdata))
+    { orderdata = "mdate"; }
+
+    if (string.IsNullOrWhiteSpace(orderdata1))
+    { orderdata1 = "desc"; }
+
+    
+    string qkeyword = "", qsmdate = "", qemdate = "", qmclassid = "", qmcparentid = "";
+    if (!string.IsNullOrWhiteSpace(Request["qkeyword"]))
+    {
+        qkeyword = Request["qkeyword"].Trim();
+       // ViewBag.qkeyword = qkeyword;
+    }
+    if (!string.IsNullOrWhiteSpace(Request["qsmdate"]))
+    {
+
+        qsmdate = Request["qsmdate"].Trim();
+        //ViewBag.qsmdate = qsmdate;
+    }
+    if (!string.IsNullOrWhiteSpace(Request["qemdate"]))
+    {
+
+        qemdate = Request["qemdate"].Trim();
+        //ViewBag.qemdate = qemdate;
+    }
+    if (!string.IsNullOrWhiteSpace(Request["qmclassid"]))
+    {
+        qmclassid = Request["qmclassid"].Trim();
+        //ViewBag.qmclassid = qmclassid;
+    }
+    if (!string.IsNullOrWhiteSpace(Request["qmcparentid"]))
+    {
+        qmcparentid = Request["qmcparentid"].Trim();
+        //ViewBag.qmcparentid = qmcparentid;
+    }
+
+    string sqlstr = "select * from mainclass where sid='" + Session["realsid"].ToString() + "'";
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = comconn;
+    cmd.CommandText = sqlstr;
+    SqlDataReader dr = cmd.ExecuteReader();
+    string t1 = "0";
+    if (dr.Read())
+    { t1 = "1"; }
+    dr.Close();
+    dr.Dispose();
+
+    string magid = "";
+    sqlstr = "select * from sublevel1 where sid='" + Session["realsid"].ToString() + "'";
+    cmd.CommandText = sqlstr;
+    dr = cmd.ExecuteReader();
+    string functype = "";
+    if (dr.Read())
+    { 
+        functype = dr["functype"].ToString();
+        magid = dr["empmagid"].ToString();
+    }
+    dr.Close();
+    dr.Dispose();
+
+    string[] filearr = { "2", "2", "2", "2" };
+    sqlstr = "select top 1 * from subreadwrite where sid = " + Session["realsid"] + " and (dptgroup like '%" + Session["dptid"] + "%' or empgroup like '%" + Session["empid"] + "%') order by subread desc , subadd desc , submod desc , subdel desc";
+    dr = dbobj.dbselect(comconn, sqlstr);
+    if (dr.Read())
+    {
+        filearr[0] = dr["subread"].ToString();
+        filearr[1] = dr["subadd"].ToString();
+        filearr[2] = dr["submod"].ToString();
+        filearr[3] = dr["subdel"].ToString();
+    }
+    dr.Close();
+    dr.Dispose();
+
+    sqlstr = "select * from viewmaincontent where sid = '" + Session["realsid"].ToString() + "'   and";
+    if (qkeyword != "")
+    { sqlstr += " (mctitle like '%" + qkeyword + "%' or  mccontent like '%" + qkeyword + "%')  and"; }
+    if (qsmdate != "")
+    { sqlstr += " mdate >= '" + qsmdate + "'  and"; }
+    if (qemdate != "")
+    { sqlstr += " mdate <= '" + qemdate + "'  and"; }
+    if (qmclassid != "")
+    { sqlstr += " mclassid = '" + qmclassid + "'  and"; }
+    if (qmcparentid != "")
+    { sqlstr += " mcparentid = '" + qmcparentid + "'  and"; }
+    else
+    { sqlstr += " mcparentid = 0   and"; }
+
+    if (filearr[0]=="1")
+    {
+        sqlstr += " ownman = '" + Session["empid"] + "'   and";
+    }
+    else if (filearr[0] == "0")
+    {
+        sqlstr += " 1 <> 1   and";
+    }
+
+    sqlstr = sqlstr.Substring(0, sqlstr.Length - 5);
+    sqlstr += " order by " + orderdata + " " + orderdata1;
+
+    SqlCommand cmd1 = new SqlCommand();
+    cmd1.CommandText = sqlstr;
+    cmd1.Connection = comconn1;
+    SqlDataReader fdr = cmd1.ExecuteReader();
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function submitform(tmpgo, tmppage, tmpkey) {
+        $('#page').val(tmppage);
+        switch (tmpgo) {
+            case "L":
+                FormList.action = "/oa/filesystem";
+                break;
+            case "A":
+                FormList.action = "/oa/maincontentadd";
+                break;
+            case "E":
+                FormList.action = "/oa/maincontentmod?" + tmpkey;
+                break;
+            case "D":
+                FormList.action = "/oa/maincontentdel";
+                break;
+            case "Down":
+                //FormList.action = "/oa/maincopyrar";
+                window.open('/oa/maincopyrar?' + tmpkey, 'sub', 'scrollbars=yes,width=500,height=300');
+                break;              
+        }
+
+        if (tmpgo != "LQ")
+        { FormList.submit(); }
+        else {
+            var errmsg = "";
+            if ($("#qsmdate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qsmdate, "發布日期起日") }
+
+            if ($("#qemdate").val() != "")
+            { errmsg = errmsg + check_date(document.FormList.qemdate, "發布日期迄日") }
+
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+    }
+
+    function sortform(tmp1,tmp2)
+    {
+        $('#page').val(1);
+        $('#orderdata').val(tmp1);
+        $('#orderdata1').val(tmp2);
+        FormList.submit();
+    }
+</script>
+@using (Html.BeginForm("filesystem", "oa", FormMethod.Post, new { @name = "FormList", @id = "FormList", @onsubmit = "return submitform('LQ',1,0,'')" })) 
+{
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr valign=top>
+        <td align="center" colspan="2">          
+            <input type="hidden" id="page" name="page" value="@ViewBag.page">
+            <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="orderdata" name="orderdata" value="@orderdata">
+            <input type="hidden" id="orderdata1" name="orderdata1" value="@orderdata1">
+            <input type="hidden" id="sid" name="sid" value="@Session["sid"].ToString()">
+            <input type="hidden" id="realsid" name="realsid" value="@Session["realsid"].ToString()">
+            <input type="hidden" id="mcid" name="mcid" value="">
+            <input type="hidden" id="qmcparentid" name="qmcparentid" value="@Request["qmcparentid"]">
+            
+            <input type="hidden" id="functype" name="functype" value="@functype">
+            @if (filearr[0] != "0") { 
+                <table class="qfont" border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <tr>
+                        <td>
+                            @if(t1=="1"){
+                            @("系統類別：") @Html.Raw(dbobj.get_selectobj(comconn, "select mclassid,mclasstitle from mainclass where sid = '" + Session["realsid"].ToString() + "'", "qmclassid", qmclassid, "1"))
+                            }
+                            else
+                            {
+                                <input type="hidden" id="qmclassid" name="qmclassid" />
+
+                            }
+                            關鍵字查詢：<input type="text" size="30" name="qkeyword" id="qkeyword" value="@Request["qkeyword"]">
+                            <br>
+                            發布日期起迄：
+                            <input type=text name="qsmdate" id="qsmdate" value="@Request["qsmdate"]" class=c12border size=12>
+                            <img src="/images/show-calendar.gif" border=0 id="f_btn" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn", "qsmdate", "%Y/%m/%d");
+                            </script>
+
+                            ~
+                            <input type=text name="qemdate" id="qemdate" value="@Request["qemdate"]" class=c12border size=12>
+                            <img src="/images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                            <script type="text/javascript">
+                                cal.manageFields("f_btn1", "qemdate", "%Y/%m/%d");
+                            </script>
+
+                            <input id="Submit1" type="submit" value="查詢" class="abutton" />   
+                            <input id="downbut" type="submit" value="下載壓縮目錄資料" class="abutton" onclick="javascript: if (confirm('確定下載此目錄下的資料??') == 1) { return submitform('Down', 1, 'qmcparentid=@Request["qmcparentid"]&realsid=@Session["realsid"].ToString()'); }" />
+                            @if (magid == Session["empid"].ToString()) { 
+                            <input id="ebutx" type="button" value="權限設定+" class="abutton" onclick="window.open('/sublevel1/subreadwritelist?tmpsid=@Session["realsid"]');" />  
+                            }
+                        </td>
+                    </tr>
+                </table>  
+            }        
+        </td>
+    </tr>
+    
+    <tr class="pagestyle">
+        <td align="left" class="buttontd">  
+            @if (filearr[3] != "0") {
+            <input id="dbut" type="button" value="刪除" class="abutton" onclick="javascript: if (confirm('確定刪除勾選資料??') == 1) { return submitform('D', 1, 0, ''); }" />  
+            }
+            @if (filearr[1] != "0") {
+            <input id="abut" type="button" value="新增" class="abutton" onclick="return submitform('A',1, 0,'')"/>   
+            }
+        </td>
+        <td align="left">@*Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)*@</td>
+    </tr> 
+
+    <tr valign=top>
+        <td align="center" colspan="2">
+            <table class="maintable" width="100%" border="1" cellspacing="0" cellpadding="3" id="mtable">
+                <tr>
+                    <th width="30"><input type=checkbox name=chkall onclick="javascript:checkallbox();"></th>
+                    <!--th width="30">順序</th-->
+                    @if (t1 == "1") { 
+                    <td width=90>系統類別</td>
+                    }
+                    <th>標題
+                        @if (orderdata1 == "asc" && orderdata == "mctitle")
+                        {<a href="#" onclick="sortform('mctitle', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('mctitle', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="80">大小
+                        @if (orderdata1 == "asc" && orderdata == "mcfiletype")
+                        {<a href="#" onclick="sortform('cfilesize', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('cfilesize', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="60">類型
+                        @if (orderdata1 == "asc" && orderdata == "mcfiletype")
+                        {<a href="#" onclick="sortform('mcfiletype', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('mcfiletype', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="60">發表人
+                        @if (orderdata1 == "asc" && orderdata == "ownman")
+                        {<a href="#" onclick="sortform('ownman', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('ownman', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="120">發布日期
+                        @if (orderdata1 == "asc" && orderdata == "mdate")
+                        {<a href="#" onclick="sortform('mdate', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('mdate', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="120">異動日期
+                        @if (orderdata1 == "asc" && orderdata == "bmoddate")
+                        {<a href="#" onclick="sortform('bmoddate', 'desc')" title="遞減"><img src="~/images/dorder.gif" border="0" alt="遞減" /></a> }
+                        else
+                        {<a href="#" onclick="sortform('bmoddate', 'asc')" title="遞增"><img src="~/images/aorder.gif" border="0" alt="遞增" /></a>}
+                    </th>
+                    <th width="40">修改</th>
+                                     
+                </tr>
+                @{
+                    string tmpmenu1 = dbobj.get_dbvalue(comconn, "select sublevelname from sublevel1 where sid=" + Session["sid"]);
+                    string tmpmenu2 = dbobj.get_dbvalue(comconn, "select sublevelname from sublevel1 where  sid=" + Session["realsid"]);
+                    string tmpname1 = "<font style=font-size:10pt><a style=font-size:10pt href='/oa/filesystem?realsid=" + Session["realsid"] + "&sid=" + Session["sid"] + "' > <img src=/images/folopen1.gif align=absmiddle border=0>" + tmpmenu1 + " \\ " + tmpmenu2 + "</a> \\ ";
+                    //string qmcparentid = "";
+                    string tmplink = "" , tmpname = "";
+                    if(Request["qmcparentid"]!= null)
+                   {
+			            qmcparentid = Request["qmcparentid"].ToString();
+			            while(true)
+                        {
+			            sqlstr = "select * from maincontent where mcid = '" + qmcparentid + "'" ;
+                        cmd.CommandText = sqlstr;
+                        dr = cmd.ExecuteReader();
+			               if(dr.Read()){
+					            tmplink = "<a style=font-size:10pt href='/oa/filesystem?qmcparentid=" + dr["mcid"] + "' title='" + dr["mctitle"].ToString().Trim() + "' >";
+					            tmpname = tmplink + "<img src=/images/folopen1.gif align=absmiddle border=0>" + dr["mctitle"].ToString().Trim() + "</a> \\ " + tmpname ;
+				 	            qmcparentid = dr["mcparentid"].ToString().Trim();
+                                dr.Close();
+                                dr.Dispose();
+                           }
+                           else
+                           {
+                               dr.Close();
+                               dr.Dispose();
+                               break;
+                           }
+                          
+			            } 
+                    }
+                }
+                <tr>
+                    <td colspan=9>
+                     @Html.Raw(tmpname1 + tmpname)
+                    </td>
+                </tr>
+                @*foreach (var item in Model)*@
+                @while(fdr.Read())
+                {
+                    <tr>
+                        <td class="colstd" align="center">
+                       
+                            @if (filearr[3] == "2")
+                            { 
+                                <input type="checkbox" name="cdel" id="cdel" value="@fdr["mcid"].ToString()">
+                            }
+                            else if (filearr[3] == "1")
+                            {
+                                if (fdr["ownman"].ToString() == Session["empid"].ToString())
+                                {
+                                      <input type="checkbox" name="cdel" id="cdel" value="@fdr["mcid"].ToString()">
+                                }
+                            }
+                      
+                        </td>
+                        @if (t1 == "1") { 
+                        <td>@dbobj.get_dbvalue(comconn, "select mclasstitle from mainclass where mclassid = " + fdr["mclassid"].ToString() + " and sid= '" + fdr["sid"].ToString() + "'")
+                            &nbsp;
+                        </td>
+                        }
+                        @if (fdr["mctitle"].ToString() != "") { 
+                        <td>
+                        <a href="/oa/filesystem?qmcparentid=@(fdr["mcid"].ToString())&mcid=@(fdr["mcid"].ToString())" ><img src=/images/folclose1.gif border=0 align=absmiddle> @fdr["mctitle"].ToString() </a>
+                        </td>
+                        }
+                        else
+                        {
+                            if (fdr["mcfiletype"].ToString() == "1")
+                            {
+                                <td class="colstd" onclick="window.open('/oa/cupfile?cupid=@(fdr["cupid"].ToString())');" style="cursor:pointer;color:#006699" title="下載@(fdr["cfilename"].ToString())" align="left">
+                                    <img src="/images/d.gif" title="下載檔案@(fdr["cfilename"].ToString())" align="absmiddle"> @fdr["cfilename"].ToString()
+                                </td>
+                            }
+                        }
+                        <td class="colstd">
+                            <font color="red"> @dbobj.get_MB(fdr["cfilesize"].ToString()) MBytes </font>
+                        </td>
+                        <td>@if (fdr["mcfiletype"].ToString() == "0")
+                             {   @("資料夾")  }
+                            else 
+                             { @("文件") } 
+                        </td>
+                        <td class="colstd">
+                            @dbobj.get_name(comconn, fdr["ownman"].ToString())
+                        </td>
+                        <td class="colstd">
+                            @fdr["mdate"].ToString()
+                        </td>
+                        <td class="colstd">
+                            @fdr["bmoddate"].ToString()
+                        </td>
+                        <td class="colstd">
+                            @if (fdr["mctitle"].ToString() != "" && fdr["mcfiletype"].ToString() == "0")
+                            {
+                                <input id="mbut" type="button" value="修改" class="abutton" onclick="return submitform('E', 1, 'mcid=@fdr["mcid"].ToString()')" />
+                            }
+                            
+                        </td>
+                        
+                    </tr>
+                }
+                
+            </table>
+            @if (!fdr.HasRows)
+            {
+                if(filearr[0]=="0")
+                {
+                    @Html.Raw("<div class=nodata align=left>此目錄無觀看權限!!</div>");
+                }
+                else { 
+                @Html.Raw("<div class=nodata align=left>查詢無資料!!</div>");
+                }
+            }
+        </td>
+    </tr>
+<tr class="pagestyle"><td align="left" colspan="2">@*Html.Pager(Model.PageSize, Model.PageNumber, Model.TotalItemCount)*@</td></tr>
+</table>
+}
+
+
+@{
+    fdr.Close();
+    fdr.Dispose();
+    comconn.Close();
+    comconn.Dispose();
+    comconn1.Close();
+    comconn1.Dispose();
+}
+
+           
+
+
+
+          
+

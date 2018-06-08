@@ -1,0 +1,149 @@
+﻿@model Aitag.Models.Company
+@using MvcPaging
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+
+            if ($("input[name='comid").val() == "")
+            { errmsg = "請選輸入公司代碼\n"; }
+
+            if ($("#comtitle").val() == "")
+            { errmsg += "請選輸入公司名稱\n"; }
+
+            if ($("#logopic1").val() == "") 
+            { errmsg += "請選擇公司logo\n"; }
+
+            if ($("#comtel").val() == "")
+            { errmsg += "請選輸入公司電話\n"; }
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Add", "Company", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd", enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcomid" name="qcomid" value="@ViewBag.qcomid">
+                <input type="hidden" id="qcsno" name="qcsno" value="@ViewBag.qcsno">
+                <input type="hidden" id="qcomtitle" name="qcomtitle" value="@ViewBag.qcomtitle">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">資料新增</td>
+                    </tr>
+
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司代碼</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="comid" name="comid"/>
+                            @Model.comid
+                        </td>
+                        <td align="right"> 使用狀態</td>
+                        <td align="left">
+                            <select name="cflag" id="cflag">
+                                <option value="1">使用中</option>
+                                <option value="0">停用</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 統編</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="csno" name="csno" maxlength="10" />
+                        </td>
+                        <td align="right"> 單據代碼</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="cmcode" name="cmcode" maxlength="1" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司名稱</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="comtitle" name="comtitle" style="width:400px;" />
+                        </td>
+                        <td align="right"> 公司簡稱</td>
+                        <td align="left" colspan="3">
+                            <input type="text" class="c12border" id="comsttitle" name="comsttitle" style="width:400px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司logo</td>
+                        <td align="left" colspan="3">
+                            <input type="file" name="logopic1" id="logopic1" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司網址</td>
+                        <td align="left" colspan="3">
+                            <input type="text" class="c12border" id="comhttp" name="comhttp" style="width:400px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司電話</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="comtel" name="comtel" style="width:400px;" />
+                        </td>
+                        <td align="right"> 公司傳真</td>
+                        <td align="left">
+                            <input type="text" class="c12border" id="comfax" name="comfax" style="width:400px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司地址</td>
+                        <td align="left" colspan="3">
+                            <input type="text" class="c12border" id="comadd" name="comadd" style="width:400px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 加入日期</td>
+                        <td align="left" colspan="3">
+                            <input type="hidden" id="cadate" name="cadate" value="@DateTime.Now.ToString("yyyy/MM/dd")"/>
+                            @DateTime.Now.ToString("yyyy/MM/dd")
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td align="center" colspan="4" class="footerfont">
+                            <input type="submit" value="確認" class="abutton" />
+                            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                            @Html.ActionLink("回上頁", "List", "Company", new { }, new { @class = "abutton" })
+
+                        </td>
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+            }
+
+
+        </td>
+    </tr>
+</table>
+
+
+

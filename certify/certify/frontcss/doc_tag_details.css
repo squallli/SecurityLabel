@@ -1,0 +1,134 @@
+﻿/*doc_file*/
+#doc_file_div {
+    border: 2px dashed black;
+    margin: 5px 0px 5px 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 130px;
+    width: inherit;
+    /*width: 100%;*/
+}
+
+#doc_file_table {
+    border: 0px solid black;
+}
+
+.doc_file_td {
+    border: 0px solid black;
+    height: 100px;
+    padding: 3px 5px 3px 5px;
+    position: relative;
+    width: 100px;
+}
+
+.doc_file_img {
+    border: 1px solid black;
+    height: 100px;
+    width: 100px;
+}
+
+#doc_file_edit_div {
+    border: 1px solid black;
+    margin: 5px 0px 5px 0px;
+    width: 800px;
+}
+
+#doc_file_edit_img {
+    border: 1px solid black;
+    width: 800px;
+}
+
+.red_dashed_box {
+    border: 2px dashed #FF0000;
+    position: absolute;
+}
+
+.red_solid_box {
+    border: 2px solid #FF0000;
+    position: absolute;
+}
+
+#doc_tag_caption {
+    background-color: #FFFFFF;
+    font-weight: bold;
+    height: 16px;
+    padding: 0px 5px 0px 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: 160px;
+}
+
+.long_text {
+    width: 300px;
+}
+
+#message {
+    color: red;
+    font-weight: bold;
+}
+/*scene*/
+.scene_div {
+    border: 1px solid black;
+    height: 24px;
+    padding: 2px 2px 2px 2px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.scene_span {
+    border: solid 1px red;
+    float: left;
+    height: 16px;
+    padding: 3px 3px 3px 3px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.scene_img {
+    float: right;
+    padding: 3px 3px 3px 3px;
+}
+/*activity*/
+.activity_div {
+    border: 1px solid black;
+    height: 24px;
+    padding: 2px 2px 2px 2px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.activity_span {
+    border: solid 1px red;
+    float: left;
+    height: 16px;
+    padding: 3px 3px 3px 3px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.activity_img {
+    float: right;
+    padding: 3px 3px 3px 3px;
+}
+/*food*/
+.food_div {
+    border: 1px solid black;
+    height: 24px;
+    padding: 2px 2px 2px 2px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.food_span {
+    border: solid 1px red;
+    float: left;
+    height: 16px;
+    padding: 3px 3px 3px 3px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.food_img {
+    float: right;
+    padding: 3px 3px 3px 3px;
+}

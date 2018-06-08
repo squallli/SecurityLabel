@@ -1,0 +1,399 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	margin-left: auto;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	background-color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	
+}
+
+/*menu*/
+.search_broder {
+	border: #ffffff 1px solid;
+	color: #999;
+	font-size: 13px;
+}
+
+/*.menu a:hover {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+}
+
+.menu a:active {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #ffffff;
+}
+
+.menu a:link {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+}
+
+.menu a:visited {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+}
+
+.menu2 a:hover {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #a8b29c;
+}
+
+.menu2 a:active {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #ffffff;
+}
+
+.menu2 a:link {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #a8b29c;
+}
+
+.menu2 a:visited {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #a8b29c;
+}*/
+.menu {
+	width: 470px;
+	.width: 490px;
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	text-decoration: none;
+	color: #59564D;
+	padding-left: 16px;
+	text-align: left;
+	background-image: url(../images/menu.png);
+	height: 33px;
+	background-repeat: no-repeat;
+	float: right;
+}
+/* remove all the bullets, borders and padding from the default list styling */
+.menu ul {
+padding:0;
+margin:0;
+list-style-type:none;
+}
+/*.menu ul ul {
+width:198px;
+}*/
+/* float the list to make it horizontal and a relative positon so that you can control the dropdown menu positon */
+.menu li {
+	float: left;
+	/*width: 98px;*/
+	position: relative;
+	/*background-image: url(images/menu_l.png);
+	background-repeat: no-repeat;
+	background-position: right top;*/
+}
+.menu li a {
+	display:block;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #333;
+	height:30px;
+	padding-left:11px; 
+padding-right:24px; 
+line-height:29px;
+background:none; 
+}
+.menu li :hover > a,.menu li :visited {
+	background: none;
+	color: #F90;
+}
+/* style the links for the top level */
+
+
+/* a hack so that IE5.5 faulty box model is corrected */
+* html .menu a, * html .menu a:visited {
+width:98px;
+w\idth:98px;
+}
+ 
+
+ 
+/* hide the sub levels and give them a positon absolute so that they take up no room */
+.menu ul ul {
+visibility:hidden;
+position:absolute;
+height:0;
+top:30px;
+left:0; 
+width:98px;
+}
+/* another hack for IE5.5 */
+* html .menu ul ul {
+top:30px;
+t\op:31px;
+}
+ 
+
+ 
+/* style the table so that it takes no part in the layout - required for IE to work */
+.menu table {position:absolute; top:0; left:0;}
+.menu ul ul{margin-left: -11px;}
+/*--0--*/
+.menu ul ul a, .menu ul ul a:visited {
+	/*background:#aeb48d;*/ 
+	color: #fff;
+	height: auto;
+	line-height: 1em;
+	width: 98px;
+	background-image: url(../images/menu1-over.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	padding-top: 5px;
+	padding-right: 10px;
+	padding-bottom: 15px;
+	padding-left: 18px;/* yet another hack for IE5.5 */
+
+}
+/*第2層HOVER設定*/
+.menu ul ul a:hover{
+	color: #faffa4;
+	background-image: url(../images/menu1-over.png);
+	background-repeat: repeat-y;
+	background-position: left top;/*background:#949e7c;*/
+
+} 
+/* style the second level links */
+
+* html .menu ul ul a{
+width:98px;
+w\idth:98px;
+}
+  
+
+/*第一層HOVER設定*/
+.menu :hover > a {
+	color: #2d530f;
+	background: none;
+	/*font-weight: bold;*/
+}
+ 
+/* make the second level visible when hover on first level list OR link */
+.menu ul li:hover ul,
+.menu ul a:hover ul{
+visibility:visible; 
+}
+/* keep the third level hidden when you hover on first level list OR link */
+.menu ul :hover ul ul{
+visibility:hidden;
+}
+/* keep the fourth level hidden when you hover on second level list OR link */
+.menu ul :hover ul :hover ul ul{
+visibility:hidden;
+}
+/* make the third level visible when you hover over second level list OR link */
+.menu ul :hover ul :hover ul{ 
+visibility:visible;
+}
+/* make the fourth level visible when you hover over third level list OR link */
+.menu ul :hover ul :hover ul :hover ul { 
+visibility:visible;
+} 
+
+/*main*/
+.word1 {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+	padding-left: 20px;
+	line-height: 28px;
+}
+
+.word2 {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #68645E;
+}
+
+.word3 {
+	font-size: 20px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+	padding-left: 20px;
+	line-height: 28px;
+}
+
+.word4 {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #68645E;
+	line-height: 19px;
+	text-align: justified;
+}
+
+.word5 a:hover {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+
+.word5 a:active {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+.word5 a:link {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+.word5 a:visited {
+	font-size: 13px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #4D4D4D;
+}
+
+.word6 {
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	text-decoration: none;
+	color: #68645E;
+	font-weight: bold;
+	text-align: left;
+}
+
+.word7 {
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #68645E;
+}
+
+.word8 {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #79894F;
+}
+
+.word9 {
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration: none;
+	color: #ffffff;
+}
+
+.word10 {
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #59564D;
+	padding-left: 20px;
+	padding-top: 2px;
+}
+
+.word11 {
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體";
+	text-decoration: none;
+	color: #68645E;
+	font-weight: bold;
+	text-align: right;
+}
+/*footer*/
+.footer_w1 {
+	font-size: 8px;
+	color: #777674;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	line-height: 15px;
+}
+
+.footer_w2 {
+	font-size: 9px;
+	color: #777674;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	line-height: 15px;
+}
+
+/*footer_menu*/
+.footer_menu {
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #68645E;
+	line-height: 20px;
+}
+
+.footer_menu2 a:hover {
+	font-size: 10px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #B0B0B0;
+	line-height: 18px;
+}
+
+.footer_menu2 a:active {
+	font-size: 10px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #B0B0B0;
+	line-height: 18px;
+}
+
+.footer_menu2 a:link {
+	font-size: 10px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #B0B0B0;
+	line-height: 18px;
+}
+
+.footer_menu2 a:visited {
+	font-size: 10px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #B0B0B0;
+	line-height: 18px;
+}
+
+.footer_menu3 {
+	font-size: 11px;
+	font-family: Arial, Helvetica, sans-serif, "微軟正黑體" ;
+	text-decoration:none;
+	color: #777674;
+	line-height: 20px;
+}
+
+/*banner*/
+.banner_broder {
+	border: #B0B0B0 1px solid;
+}
+
+/*contact*/
+.contact_broder {
+	border: #ecefe4 1px solid;
+	background-color: #ecefe4;
+}

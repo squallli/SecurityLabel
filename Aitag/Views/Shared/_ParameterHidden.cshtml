@@ -1,0 +1,22 @@
+﻿@{
+    string sid = string.Empty;
+    string realsid = string.Empty;
+
+    if (ViewBag.sid != null)
+    {
+        sid = ViewBag.sid as string;
+    }
+    if(ViewBag.realsid !=null)
+    {
+        realsid = ViewBag.realsid as string;
+    }
+    
+}
+@if (!string.IsNullOrWhiteSpace(sid))
+{
+    @Html.Hidden("sid", sid);
+}
+@if (!string.IsNullOrWhiteSpace(realsid))
+{
+    @Html.Hidden("realsid", realsid)
+}

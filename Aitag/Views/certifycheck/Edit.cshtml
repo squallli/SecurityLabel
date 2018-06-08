@@ -1,0 +1,260 @@
+﻿@model Aitag.Models.certifycheck
+@using MvcPaging
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn2 = dbobj.get_conn("Aitag_DBContext");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            // if ($("#cerno").val() == "")
+            // { errmsg = "請選擇縣市代碼\n"; }
+            if ($("#citemid").val() == "")
+            { errmsg += "請輸入認證項目\n"; }
+
+            if ($("#farmerno").val() == "")
+            { errmsg += "請輸入農戶姓名\n"; }
+
+            if ($("#certime").val() == "")
+            { errmsg += "請輸入期別\n"; }
+
+            if ($("#adddate").val() == "")
+            { errmsg += "請選擇申請日期\n"; }
+            else
+            { errmsg = errmsg + check_date(document.FormAdd.adddate, "申請日期") }
+
+            if ($("#cerdate").val() == "")
+            { errmsg += "請選擇受理日期\n"; }
+            else
+            { errmsg = errmsg + check_date(document.FormAdd.cerdate, "受理日期") }
+
+            if ($("#dealdate").val() == "")
+            { errmsg += "請選擇割稻日期\n"; }
+            else
+            { errmsg = errmsg + check_date(document.FormAdd.dealdate, "割稻日期") }
+
+            if ($("input[name='ldno']:checked").length == 0)
+                { errmsg += "請選擇耕地資料-土地地號\n"; }
+                
+
+            if (errmsg != "") {
+                alert(errmsg);
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    });
+</script>
+
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            @using (Html.BeginForm("Edit", "certifycheck", FormMethod.Post, new { @name = "FormAdd", @id = "FormAdd" }))
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="E">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="qcerno" name="qcerno" value="@ViewBag.qcerno">
+                <input type="hidden" id="qcstatus" name="qcstatus" value="@ViewBag.qcstatus">
+                <input type="hidden" id="qcitemid" name="qcitemid" value="@ViewBag.qcitemid">
+                <input type="hidden" id="qfarmerno" name="qfarmerno" value="@ViewBag.qfarmerno">
+                <input type="hidden" id="qscerdate" name="qscerdate" value="@ViewBag.qscerdate">
+                <input type="hidden" id="qecerdate" name="qecerdate" value="@ViewBag.qecerdate">
+                <input type="hidden" id="qsdealdate" name="qsdealdate" value="@ViewBag.qsdealdate">
+                <input type="hidden" id="qedealdate" name="qedealdate" value="@ViewBag.qedealdate">
+    
+    <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+        <tr>
+            <td class="headfont" colspan="2" align="left">資料修改</td>
+        </tr>
+        <tr>
+            <td align="right"> 檢驗登記編號</td>
+            <td align="left">
+                @Model.cerno
+                <input type="hidden" name="cerno" id="cerno" value="@Model.cerno" />
+                <input type="hidden" name="cstatus" id="cstatus" value="@Model.cstatus" />
+            </td>
+        </tr>
+        <tr>
+            <td align="right"> 認證項目</td>
+            <td align="left">
+                @dbobj.get_dbvalue(comconn, "select citemname from certifyitem where citemid = '" + Model.citemid + "' and comid = '" + Session["comid"] + "'  order by citemid")
+                <input type="hidden" name="citemid" id="citemid" value="@Model.citemid" />
+            </td>
+        </tr>
+        <tr>
+            <td align="right"> 農戶姓名</td>
+            <td align="left">
+               @dbobj.get_dbvalue(comconn, "select farmername from farmer where farmerno = '" + Model.farmerno + "'")
+               <input type="hidden" name="farmerno" id="farmerno" value="@Model.farmerno" />
+            </td>
+        </tr>
+        <tr>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 期　　別</td>
+            <td align="left">
+                <input type=text name="certime" id="certime" value="@Model.certime" size=12 maxlength=10 class=c12border>&nbsp;
+
+            </td>
+        </tr>
+        <tr>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 申請日期</td>
+            <td align="left">
+                <input type=text name="adddate" id="adddate" value="@dbobj.get_date(Model.adddate.ToString(),"1")" size=12 maxlength=10 class=c12border>&nbsp;
+                <img src="../images/show-calendar.gif" border=0 id="f_btn1" style='cursor: pointer'>
+                <script type="text/javascript">
+                    cal.manageFields("f_btn1", "adddate", "%Y/%m/%d");
+                </script>
+
+            </td>
+        </tr>
+        <tr>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 受理日期</td>
+            <td align="left">
+                <input type=text name="cerdate" id="cerdate" value="@dbobj.get_date(Model.cerdate.ToString(), "1")" size=12 maxlength=10 class=c12border>&nbsp;
+                <img src="../images/show-calendar.gif" border=0 id="f_btn2" style='cursor: pointer'>
+                <script type="text/javascript">
+                    cal.manageFields("f_btn2", "cerdate", "%Y/%m/%d");
+                </script>
+
+            </td>
+        </tr>
+        <tr>
+            <td align="right"><img src="~/images/art.gif" border="0" /> 割稻日期</td>
+            <td align="left">
+                <input type=text name="dealdate" id="dealdate" value="@dbobj.get_date(Model.dealdate.ToString(), "1")" size=12 maxlength=10 class=c12border>&nbsp;
+                <img src="../images/show-calendar.gif" border=0 id="f_btn3" style='cursor: pointer'>
+                <script type="text/javascript">
+                    cal.manageFields("f_btn3", "dealdate", "%Y/%m/%d");
+                </script>
+
+            </td>
+        </tr>
+        <tr>
+            <td align="right"> 備註</td>
+            <td>
+                <textarea cols="80" rows="5" name="cercomment" id="cercomment">@Model.cercomment</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="headfont">耕地資料</td>
+        </tr>
+        @{
+    string sqlstr = "select distinct lcode from farmwork where comid = '" + Session["comid"] + "' and farmerno = '" + Model.farmerno + "'";
+        SqlCommand lcmd = new SqlCommand(sqlstr, comconn1);
+        SqlDataReader ldr = lcmd.ExecuteReader();
+        }
+
+        @while(ldr.Read())
+        {              
+        <tr>
+            <td colspan="2">
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="maintable" width="60%">
+                    <tr bgcolor="#eeeeee">
+                        <td style="font-size:15px">
+                            <b>
+                                @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn, "select ltitle from landcode where lcode = '" + ldr["lcode"] + "'");}
+                                @dbtitle
+                                段
+                            </b>
+                        </td>
+                    </tr>
+                    <tr bgcolor="#eeeeee">
+                        <th width="25%">土地地號</th>
+                        <th width="25%">耕作面積</th>
+                        <th width="25%">土地地號</th>
+                        <th width="25%">耕作面積</th>
+                    </tr>
+                    @{
+            sqlstr = "select landdata.* , farmwork.fwarea as fwarea1 from  farmwork inner join landdata on farmwork.ldno = landdata.ldno where farmwork.lcode = '" + ldr["lcode"] + "' and farmwork.farmerno = '" + Model.farmerno + "'";
+                        SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                            while (true)
+                            {
+                                <tr>
+                                @if (dr.Read())
+                                {
+                                    sqlstr = "select cerdid from certifycheckdet where ldno = '" + dr["ldno"] + "' and cerno = '" + Model.cerno + "'";
+                                    string ch = dbobj.get_dbvalue(comconn2, sqlstr);
+                                    if (ch != "") { ch = "checked"; }
+                                                   
+                                        <td><input type="checkbox" name="ldno" id="ldno" value="@dr["ldno"]" @(ch) /> @dr["landno1"]@*-@dr["landno2"]*@</td>
+                                        <td>@dr["fwarea1"].ToString()
+                                            <input type="hidden" name="fwarea" id="fwarea" value="@dr["fwarea1"]"></td>
+                                }
+                                else
+                                {
+                                        @Html.Raw("<td colspan=2>&nbsp;</td><td colspan=2>&nbsp;</td></tr>");
+                                    break;
+                                }
+                                @if (dr.Read())
+                                {
+                                    sqlstr = "select cerdid from certifycheckdet where ldno = '" + dr["ldno"] + "' and cerno = '" + Model.cerno + "'";
+                                    string ch = dbobj.get_dbvalue(comconn2, sqlstr);
+                                    if (ch != "") { ch = "checked"; }
+                                        <td><input type="checkbox" name="ldno" id="ldno" value="@dr["ldno"]" @(ch) /> @dr["landno1"]@*-@dr["landno2"]*@</td>
+                                        <td>@dr["fwarea"].ToString()
+                                            <input type="hidden" name="fwarea" id="fwarea" value="@dr["fwarea"]">
+                                        </td>
+                                }
+                                else
+                                {
+                                        @Html.Raw("<td colspan=2>&nbsp;</td></tr>");
+                                    break;
+                                }
+                                </tr>
+                            }
+                        dr.Close();
+                        dr.Dispose();
+                    }
+                    </table>
+                    </td>
+                    </tr>
+                } 
+                @{
+                    ldr.Close();
+                    ldr.Dispose();
+                }
+                    <tr>
+                        @if (Session["realsid"].ToString() == "447" || Session["realsid"].ToString() == "450" || Session["realsid"].ToString() == "451" || Session["realsid"].ToString() == "449")
+                        {
+                            <td align="center" colspan="2" class="footerfont">
+                                <input id="submit1" class="abutton" name="回上頁" type="button" value="回上頁" onclick="javascript:history.go(-1);" />
+                            </td>
+                        }
+                        else
+                        {
+                                <td align="center" colspan="2" class="footerfont">
+                                <input type="submit" value="確認" class="abutton" />
+                                <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+                                @Html.ActionLink("回上頁", "List", "certifycheck", new { }, new { @class = "abutton" })
+                            </td>                                     
+                        }
+
+                                   
+                    </tr>
+                </table>
+                comconn.Close();
+                comconn.Dispose();
+                comconn1.Close();
+                comconn1.Dispose();
+                comconn2.Close();
+                comconn2.Dispose();
+                }
+            </td>
+        </tr>
+                  
+    </table>

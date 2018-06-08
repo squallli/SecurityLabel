@@ -1,0 +1,239 @@
+﻿@model List<Aitag.Models.custproduct>
+@using System.Data.SqlClient
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection erpconn = dbobj.get_conn("AitagBill_DBContext");
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    SqlCommand cmd = new SqlCommand();
+    cmd.Connection = erpconn;
+    string allcomid = ViewBag.allcomid;
+
+    string tmpsql = "";
+    tmpsql = "select * from allcompany where comid = '" + allcomid + "'";
+
+    cmd.CommandText = tmpsql;
+    SqlDataReader dr = cmd.ExecuteReader();
+    dr.Read();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#FormAdd").submit(function (e) {
+            var errmsg = "";
+            var allmoney = 0;
+            var i = 0;
+
+            for (var i = 1 ; i < 11 ; i++) {
+                // alert($("#dptid" + i.toString()).val())
+                // alert($("#wcardno" + i.toString()).val())
+                if (typeof $("#wcardno" + i.toString()).val() == "undefined") {
+                    //alert('test');
+                    break;
+                }
+                /*if($("#dptid" + i.toString()).val().trim()!=""||$("#wcardno" + i.toString()).val().trim()!="")
+                {
+                    if($("#psummoney" + i.toString()).val().trim()==""||$("#psummoney" + i.toString()).val().trim()=="0")
+                        {
+                        errmsg += "分攤金額" + "不可為0或空白"
+                            break;
+                        }
+                        else{
+                            if($("#psummoney" + i.toString()).val()>0)
+                                allmoney+= parseFloat($("#psummoney" + i.toString()).val());
+                    }
+
+                }*/
+
+
+            }
+
+
+
+        });
+    });
+</script>
+<script>
+    function calcu() {
+        var alldata = 0;
+        // alert($("#planemoney1").val());
+        for (var i = 1 ; i < 20 ; i++) {
+            if ($("#dealdate" + i.toString()).val() != "") {
+                alldata = 0;
+                if ($("#planemoney" + i).val() != "")
+                    alldata = parseInt($("#planemoney" + i.toString()).val());
+
+                if ($("#carmoney" + i.toString()).val() != "")
+                    alldata += parseInt($("#carmoney" + i.toString()).val());
+
+                if ($("#othercarmoney" + i.toString()).val() != "")
+                    alldata += parseInt($("#othercarmoney" + i.toString()).val());
+
+                if ($("#livemoney" + i.toString()).val() != "")
+                    alldata += parseInt($("#livemoney" + i.toString()).val());
+
+                if ($("#eatmoney" + i.toString()).val() != "")
+                    alldata += parseInt($("#eatmoney" + i.toString()).val());
+
+                if ($("#othermoney" + i.toString()).val() != "")
+                    alldata += parseInt($("#othermoney" + i.toString()).val());
+
+                $("#psummoney" + i.toString()).val(alldata);
+            }
+        }
+
+
+    }
+</script>
+
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td align="center" width=100%>
+            <form name="FormAdd" id="FormAdd" action="/allcompany/prodlistdo" method="Post">
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="sysflag" name="sysflag" value="A">
+                <input type="hidden" id="page" name="page" value="@ViewBag.page">
+                <input type="hidden" id="orderdata" name="orderdata" value="@ViewBag.orderdata">
+                <input type="hidden" id="orderdata1" name="orderdata1" value="@ViewBag.orderdata1">
+                <input type="hidden" id="syssid" name="syssid" value="@Session["sid"].ToString()">
+                <input type="hidden" id="sysrealsid" name="sysrealsid" value="@Session["realsid"].ToString()">
+                <input type="hidden" id="allcomid" name="allcomid" value="@allcomid">
+
+                <table align="center" border="0" cellpadding="5" cellspacing="0" class="tclass" width="95%">
+                    <tr>
+                        <td class="headfont" colspan="4" align="left">
+                            資料新增
+                        @{
+                               int k = 2;
+                        }
+                        <input type=button value="1.修改" onclick="location.href='/allcompany/edit?comid=@dr["comid"]'" />
+                        @if (dr["comtype"].ToString().IndexOf("1") >= 0)
+                        {
+                            <input type=button value="@(k).客戶產品" onclick="location.href='/allcompany/prodlist?allcomid=@allcomid&fprodid=0'" />
+                            k++;
+                        }
+                        @if (dr["comtype"].ToString().IndexOf("2") >= 0) 
+                        { 
+                            <input type=button value="@(k).媒體資訊" onclick="location.href='/allcompany/medialist?allcomid=@(allcomid)&mcno=@(ViewBag.mcno)'" />
+                            k++;
+                            }
+                        <input type=button value="@(k).交易條件" onclick="location.href='/allcompany/brlist?allcomid=@allcomid&bseason=@(ViewBag.bseason)'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司代碼</td>
+                        <td align="left">
+                           @dr["comid"].ToString()
+                        </td>
+                        <td align="right"> 統編</td>
+                        <td align="left">
+                           @dr["comsno"].ToString()
+                        </td>
+                        <!--td align="right"> 單據代碼</!--td>
+        <td align="left">
+            <input type="text"  class="c12border" id="cmcode" name="cmcode" readonly style="width:60px;" value="@*Model.cmcode*@" />
+        </td-->
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司名稱</td>
+                        <td align="left" colspan="3">
+                            @dr["comtitle"].ToString()
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"> 公司簡稱</td>
+                        <td align="left" colspan="3">
+                            @dr["comsttitle"].ToString()
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><img src="~/images/art.gif" border="0" /> 公司電話</td>
+                        <td align="left">
+                            @dr["comtel"].ToString()
+                            
+                        </td>
+                        <td align="right"> 公司傳真</td>
+                        <td align="left">
+                            @dr["comfax"].ToString()
+                            
+                        </td>
+                    </tr>
+                @{
+                    allcomid = dr["comid"].ToString();
+                    dr.Close();
+                    dr.Dispose();
+                }
+
+                <tr>
+                    <td colspan="4">
+                        @Html.Raw("<table class='maintable' width='100%' border='1' cellspacing='0' cellpadding='3' id='mtable'>")
+                <input type="hidden" name="fprodid" value="@ViewBag.fprodid" />
+                <tr>
+                    <th width="30"><input type=button value="刪除" onclick="FormAdd.action = '/allcompany/proddel'; FormAdd.submit();" /></th>
+
+                    <th width="100">產品大項</th>
+                    <th width="100">產品小項</th>
+                </tr>
+                @{ int a = 1;}
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td align="center" width="50">
+                            <input type="checkbox" id="cdel" name="cdel" value="@item.prodid">
+                            <input type="hidden" id="prodid" name="prodid" value="@item.prodid">
+                        </td>
+                        <td align="left">
+                            <input type="text" size="40" id="prodtitle@(a)" name="prodtitle" value="@item.prodtitle" maxlength="20">
+                        </td>
+                        <td align="left">
+                            <input id="ebut" type="button" value="產品小項" class="abutton" onclick="location.href = '/allcompany/prodlist/?allcomid=@(item.allcomid)&fprodid=@(item.prodid)';" />
+                        </td>
+
+                    </tr>
+a++;
+                }
+                @for (int i = 0; i < 5; i++)
+                {
+                    <tr>
+                        <td align="center" width="50">
+                            <input type=hidden id="cdel" name="cdel" value="">
+                            <input type="hidden" id="prodid" name="prodid" value="">
+                        </td>
+                        <td align="left">
+                            <input type="text" size="40" id="prodtitle@(a)" name="prodtitle" value="" maxlength="20">
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    a++;
+                }
+            </table>
+
+    </td>
+</tr>
+<tr>
+    <td align="center" colspan="4" class="footerfont">
+        
+            <input type="submit" value="確認" class="abutton" />
+            <input id="reset1" class="abutton" name="reset1" type="reset" value="重新輸入" />
+       
+        @Html.ActionLink("回上頁", "list", "custcontract", new { }, new { @class = "abutton" })
+
+    </td>
+</tr>
+</table>
+</form>
+@{
+    erpconn.Close();
+    erpconn.Dispose();
+    comconn.Close();
+    comconn.Dispose();
+}
+
+
+</td>
+</tr>
+</table>
+
+
+

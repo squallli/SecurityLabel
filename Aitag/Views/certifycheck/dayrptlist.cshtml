@@ -1,0 +1,272 @@
+﻿@using System.Data.SqlClient
+@{
+    Layout = "";
+
+    Aitag.Models.NDcommon dbobj = new Aitag.Models.NDcommon();
+    System.Data.SqlClient.SqlConnection comconn = dbobj.get_conn("Aitag_DBContext");
+    System.Data.SqlClient.SqlConnection comconn1 = dbobj.get_conn("Aitag_DBContext");
+    
+    string qcitemid = Request["qcitemid"].ToString();
+    string qcerno = Request["qcerno"].ToString();
+    
+    string qfarmerno = Request["qfarmerno"].ToString();
+    //string searchnu = ""; searchnu = dbobj.get_dbvalue(comconn1, "select farmerno from farmer where farmername like '%" + qfarmerno + "%' ");
+   
+    
+    string qscerdate = Request["qscerdate"].ToString();
+    string qecerdate = Request["qecerdate"].ToString();    
+    string qsdealdate = Request["qsdealdate"].ToString();
+    string qedealdate = Request["qedealdate"].ToString();
+
+    
+
+    string sqlstr = "select *  from  viewcertifycheckdet where cstatus in ('05','06','D') and comid = '" + Session["comid"] + "'  and";
+    if (qcitemid != "")
+         { sqlstr += " citemid = '" + qcitemid + "'  and";}
+    if (qcerno != "")
+         { sqlstr += " cerno like '%" + qcerno + "%'  and"; }
+    //if (searchnu != "")
+    //{ sqlstr += " farmerno = '" + searchnu + "'   and"; }
+    if (qfarmerno != "")
+    { sqlstr += " (farmerno like '%" + qfarmerno + "%' or farmername like '%" + qfarmerno + "%')   and"; }
+    if (qscerdate != "")
+          { sqlstr += " cerdate >= '" + qscerdate + "'  and";}
+    if (qecerdate != "")
+          { sqlstr += " cerdate <= '" + qecerdate + "'  and"; }
+    if (qsdealdate != "")
+           {  sqlstr += " dealdate >= '" + qsdealdate + "'  and";}
+    if (qedealdate != "")
+           { sqlstr += " dealdate <= '" + qedealdate + "'  and";}
+
+    sqlstr = sqlstr.Substring(0, sqlstr.Length - 5);
+    
+    SqlCommand cmd = new SqlCommand(sqlstr, comconn);
+    SqlDataReader dr = cmd.ExecuteReader();
+    dr.Read();
+}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+        body {
+            font-family: "標楷體", Arial, Helvetica, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        tr {
+            mso-yfti-irow: 0;
+            mso-yfti-firstrow: yes;
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        td {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        a {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+
+        span {
+            border-collapse: collapse;
+            padding: 0 0 0 0;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+    <center>
+        <table border=0 width=60%>
+    @{
+    if (dr.HasRows)
+    { 
+            <tr>
+                <td align="center" colspan=6>
+                    <font size=5>稻穀(蔬果)農藥殘毒快速檢驗『殺蟲及殺菌日報表』</font>
+                </td>
+            </tr>
+            <tr>
+                <td width=12%>檢驗單位：</td>
+                <td>@{string a = ""; a = dbobj.get_dbvalue(comconn1, "select comtitle from Company where comid = '" + dr["comid"].ToString() + "'");}
+                    @a 鄉公所
+                </td>
+                <td width=12%>檢驗日期：</td>
+                <td width=12%><span style="color:#009FCC;">
+                    @{string tmptoday = dbobj.get_date(DateTime.Now.ToString(), "1");}
+                    @tmptoday
+                </span></td>
+                <td width=12%>檢驗員：</td>
+                <td width=12%><span style="color:#009FCC;"> </span></td>
+            </tr>
+    }
+      else
+    { 
+         <tr>
+                <td align="center" colspan=6>
+                    <font size=5>稻穀(蔬果)農藥殘毒快速檢驗『殺蟲及殺菌日報表』</font>
+                </td>
+            </tr>
+            <tr>
+                <td width=12%>檢驗單位：</td>
+                <td> 鄉公所
+                </td>
+                <td width=12%>檢驗日期：</td>
+                <td width=12%><span style="color:#009FCC;">
+                    @{string tmptoday = dbobj.get_date(DateTime.Now.ToString(), "1");}
+                    @tmptoday
+                </span></td>
+                <td width=12%>檢驗員：</td>
+                <td width=12%><span style="color:#009FCC;">潘XX</span></td>
+            </tr>
+    }
+            dr.Close();
+            }
+
+            <table border=1 width=60%>
+            
+                <tr>
+                    <td align="center" width=20% rowspan=2>檢驗編號</td>
+                    <td align="center" rowspan=2 width=10%>農戶地名</td>
+                    <td align="center" rowspan=2 width=10%>檢驗品項</td>
+                    <td align="center" width=20% colspan=2>AChE抑制率</td>
+                    <td align="center" width=20% colspan=2>Bt.tset/TTC</td>
+                    <td align="center" rowspan=2>檢驗地段號</td>
+                </tr>
+                <tr>
+                    <td align="center">無溴水</td>
+                    <td align="center">加溴水</td>
+                    <td align="center">陰性</td>
+                    <td align="center">陽性</td>
+                </tr>
+            @{                
+                sqlstr = "select *  from  viewcertifycheckdet where cstatus in ('05','06','D')  and comid = '" + Session["comid"] + "'  and";
+                if (qcitemid != "")
+                { sqlstr += " citemid = '" + qcitemid + "'  and"; }
+                if (qcerno != "")
+                { sqlstr += " cerno like '%" + qcerno + "%'  and"; }
+                if (qfarmerno != "")
+                { sqlstr += " (farmerno like '%" + qfarmerno + "%' or farmername like '%" + qfarmerno + "%')   and"; }
+                if (qscerdate != "")
+                { sqlstr += " cerdate >= '" + qscerdate + "'  and"; }
+                if (qecerdate != "")
+                { sqlstr += " cerdate <= '" + qecerdate + "'  and"; }
+                if (qsdealdate != "")
+                { sqlstr += " dealdate >= '" + qsdealdate + "'  and"; }
+                if (qedealdate != "")
+                { sqlstr += " dealdate <= '" + qedealdate + "'  and"; }
+
+                sqlstr = sqlstr.Substring(0, sqlstr.Length - 5);
+                
+                cmd = new SqlCommand(sqlstr, comconn);
+                dr = cmd.ExecuteReader();
+                
+                if (dr.HasRows)
+                { 
+                    while (dr.Read())
+                    {
+                    <tr>
+                        <td align="center">@dr["cerno"]</td>
+                        <td align="center">
+                            @{string applicant = ""; applicant = dbobj.get_dbvalue(comconn1, "select farmerno from certifycheck where cerno = '" + dr["cerno"].ToString() + "'");}
+                            @{string applicant1 = ""; applicant1 = dbobj.get_dbvalue(comconn1, "select farmername from farmer where farmerno = '" + applicant + "'");}
+                            @applicant1
+                        </td>
+                        <td align="center">
+                            @{string dbtitle = ""; dbtitle = dbobj.get_dbvalue(comconn1, "select citemid from certifycheck where cerno = '" + dr["cerno"].ToString() + "'");}
+                            @{string dbtitle1 = ""; dbtitle1 = dbobj.get_dbvalue(comconn1, "select citemname from certifyitem where citemid in ('" + dbtitle + "')");}
+                            @dbtitle1
+                        </td>
+                        <td align="center">@dr["nobr"].ToString()</td>
+                        <td align="center">@dr["addbr"].ToString()</td>
+                        <td align="center">
+                           @{
+                              string btttc = dr["btttc"].ToString();
+                              if (btttc == "0")
+                              {
+                                  btttc = "√";
+                              }
+                              else
+                              { btttc = ""; }
+                            }
+                            @btttc
+                        </td>
+                        <td align="center">
+                            @{
+                              string btttc1 = dr["btttc"].ToString();
+                              if (btttc1 == "1")
+                              {
+                                  btttc1 = "√";
+                              }
+                              else
+                              { btttc1 = ""; }
+                            }
+                            @btttc1
+                        </td>
+                        <td align="center">
+                            @dr["ltitle"].ToString()@dr["landno1"]-@dr["landno2"]
+                        </td>
+                    </tr>
+                    
+                   } 
+                <tr>
+                    <td align="center" colspan=8>&nbsp;<br /><br /></td>
+                </tr> 
+                 } 
+                else
+                { 
+                <tr>
+                    <td align="center" colspan=8>查無資料</td>
+                </tr>
+                }
+                dr.Close();
+                dr.Dispose();
+                comconn.Close();
+                comconn.Dispose();
+                comconn1.Close();
+                comconn1.Dispose();   
+              }
+                
+                
+            </table>
+
+            <table border=0 width=60%>
+                <br />
+                <tr>
+                    <td align="center" rowspan=3>備註</td>
+                </tr>
+                <tr>
+                    <td colspan=3>1.抑制率(%)＝對照組吸光值－樣品組吸光值／對照組吸光值 x 100。</td>
+                </tr>
+
+                <tr>
+                    <td colspan=3>2.請將原始資料按順序整理好連同日報表一起裝訂保存。</td>
+                </tr>
+
+
+
+                <tr><td><br /></td></tr>
+                <tr><td><br /></td></tr>
+                <tr>
+                    <td width=12%>課長：</td>
+                    <td width=12%>&nbsp;</td>
+                    <td width=12%>檢定員：</td>
+                    <td width=40%>&nbsp;</td>
+                </tr>
+
+            </table>
+
+        </table>
+    </center>
+</body>
+
+</html>
+
